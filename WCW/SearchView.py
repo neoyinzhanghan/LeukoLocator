@@ -14,6 +14,7 @@ class SearchView:
     """ A SearchView class object representing all the information needed at the search view of the WSI. 
 
     === Class Attributes ===
+    - image : the image of the search view
     - crop_dict : a dictionary of crops of the search view, where the key is a tuple tracking (TL_x, TL_y, BR_x, BR_y) of the crop
     - padding_x : the padding of the search view in the x direction (this is so that the search view can be perfectly divided into crops)
     - padding_y : the padding of the search view in the y direction (this is so that the search view can be perfectly divided into crops)
@@ -31,6 +32,7 @@ class SearchView:
         if not isinstance(image, Image.Image):
             raise ValueError("Image must be a PIL image.")
 
+        self.image = image
         self.crop_dict, self.padding_x, self.padding_y = crop_region_view(
             image, crop_width=search_view_crop_size[0], crop_height=search_view_crop_size[1])
         self.downsampling_rate = downsampling_rate
