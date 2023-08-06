@@ -99,18 +99,9 @@ class PBCounter:
             focus_regions_coords.extend(focus_region_coords)
 
         unfiltered_focus_regions = []
-        wsi = openslide.OpenSlide(self.file_name_manager.wsi_path)
         for focus_region_coord in tqdm(focus_regions_coords, desc="Creating focus regions"):
-            focus_region_image = wsi.read_region(
-                (focus_region_coord[0], focus_region_coord[1]), 0, (focus_regions_size, focus_regions_size))
-            focus_region_image = focus_region_image.convert("RGB")
 
-            downsampled_focus_region_image = wsi.read_region(
-                (focus_region_coord[0], focus_region_coord[1]), search_view_level, (focus_regions_size, focus_regions_size))
-            downsampled_focus_region_image = downsampled_focus_region_image.convert(
-                "RGB")
-
-            focus_region = FocusRegion(focus_region_coord, focus_region_image, downsampled_focus_region_image)
+            focus_region = FocusRegion(focus_region_coord, self.search_view.image, int(self.search_view.downsampling_rate))
 
             unfiltered_focus_regions.append(focus_region)
 
@@ -118,6 +109,11 @@ class PBCounter:
             unfiltered_focus_regions)
 
         self.focus_regions = filtered_focus_regions
+
+        wsi = openslide.OpenSlide(self.file_name_manager.wsi_path)
+
+        for focus_region in tqdm(self.focus_regions, desc="Getting focus region images"):
+            focus_region.get_image(wsi)
 
     def find_wbc_candidates(self):
         """ Update the wbc_candidates of the PBCounter object. """
