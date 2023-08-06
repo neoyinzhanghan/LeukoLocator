@@ -23,6 +23,7 @@ class WSICropManager:
     def __init__(self, wsi_path) -> None:
 
         self.wsi_path = wsi_path
+        self.wsi = None
 
     def open_slide(self):
         """ Open the WSI. """

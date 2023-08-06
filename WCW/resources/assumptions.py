@@ -17,9 +17,9 @@ num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 
 zero_pad = False
 
-YOLO_ckpt_path = "/home/dog/neo/WhiteCellWizard/resources/YOLO_checkpoint.pt"
+YOLO_ckpt_path = "/home/dog/neo/WhiteCellWizard/WCW/resources/YOLO_checkpoint.pt"
 YOLO_conf_thres = 0.27
-HemeLabel_ckpt_path = "/home/dog/neo/WhiteCellWizard/resources/HemeLabel_weights.ckpt"
+HemeLabel_ckpt_path = "/home/dog/neo/WhiteCellWizard/WCW/resources/HemeLabel_weights.ckpt"
 
 cellnames = ['B1', 'B2', 'E1', 'E4', 'ER1', 'ER2', 'ER3', 'ER4', 'ER5', 'ER6',
              'L2', 'L4', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6',
