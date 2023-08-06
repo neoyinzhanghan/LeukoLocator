@@ -1,4 +1,4 @@
-from assumptions import *
+from WCW.resources.assumptions import *
 from WCW.PBCounter import PBCounter
 
 if __name__ == "__main__":
