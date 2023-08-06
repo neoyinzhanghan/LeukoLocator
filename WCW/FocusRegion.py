@@ -9,6 +9,7 @@ from PIL import Image
 from WCW.resources.assumptions import *
 from WCW.vision.image_quality import VoL, WMP
 
+
 class FocusRegion:
     """ A focus region class object representing all the information needed at the focus region of the WSI. 
 
@@ -30,7 +31,8 @@ class FocusRegion:
 
         # calculate the downsampled coordinate
 
-        downsampled_coordinate = (int(coordinate[0] / downsample_rate), int(coordinate[1] / downsample_rate), int(coordinate[2] / downsample_rate), int(coordinate[3] / downsample_rate))
+        downsampled_coordinate = (int(coordinate[0] / downsample_rate), int(coordinate[1] / downsample_rate), int(
+            coordinate[2] / downsample_rate), int(coordinate[3] / downsample_rate))
 
         self.downsampled_image = search_view_image.crop(downsampled_coordinate)
         self.downsample_rate = downsample_rate
@@ -39,9 +41,7 @@ class FocusRegion:
         self.VoL = VoL(self.downsampled_image)
         self.WMP = WMP(self.downsampled_image)
 
-    def get_image(self, slide):
-        """ Use the slide object to get the full resolution image of the focus region at level 0. """
+    def get_image(self, image):
+        """ Update the image of the focus region. """
 
-        self.image = slide.read_region(
-            (self.coordinate[0], self.coordinate[1]), 0, (self.coordinate[2] - self.coordinate[0], self.coordinate[3] - self.coordinate[1]))
-        self.image = self.image.convert("RGB")
+        self.image = image

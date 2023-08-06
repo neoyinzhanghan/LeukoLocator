@@ -19,6 +19,7 @@ from WCW.brain.HemeLabelManager import HemeLabelManager
 from WCW.brain.YOLOManager import YOLOManager
 from WCW.Differential import Differential
 from WCW.brain.statistics import focus_region_filtering
+from WCW.vision.WSICropManager import WSICropManager
 
 
 class PBCounter:
@@ -101,7 +102,8 @@ class PBCounter:
         unfiltered_focus_regions = []
         for focus_region_coord in tqdm(focus_regions_coords, desc="Creating focus regions"):
 
-            focus_region = FocusRegion(focus_region_coord, self.search_view.image, int(self.search_view.downsampling_rate))
+            focus_region = FocusRegion(focus_region_coord, self.search_view.image, int(
+                self.search_view.downsampling_rate))
 
             unfiltered_focus_regions.append(focus_region)
 
@@ -110,10 +112,34 @@ class PBCounter:
 
         self.focus_regions = filtered_focus_regions
 
-        wsi = openslide.OpenSlide(self.file_name_manager.wsi_path)
+        ray.init(num_cpus=num_cpus)
 
-        for focus_region in tqdm(self.focus_regions, desc="Getting focus region images"):
-            focus_region.get_image(wsi)
+        crop_managers = [WSICropManager.remote(
+            self.file_name_manager.wsi_path) for _ in range(num_gpus)]
+
+        tasks = {}
+
+        for i, focus_region in enumerate(self.focus_regions):
+            manager = crop_managers[i % num_gpus]
+            task = manager.async_get_focus_region_image.remote(focus_region)
+            tasks[task] = focus_region
+
+        with tqdm(total=len(self.focus_regions), desc="Getting focus region images") as pbar:
+            while tasks:
+                done_ids, _ = ray.wait(list(tasks.keys()))
+
+                for done_id in done_ids:
+                    try:
+                        _ = ray.get(done_id)
+
+                    except RayTaskError as e:
+                        print(
+                            f"Task for focus region {tasks[done_id]} failed with error: {e}")
+
+                    pbar.update()
+                    del tasks[done_id]
+
+        ray.shutdown()
 
     def find_wbc_candidates(self):
         """ Update the wbc_candidates of the PBCounter object. """
