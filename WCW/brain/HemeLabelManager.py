@@ -11,7 +11,7 @@ import numpy as np
 import cv2
 
 # Within package imports ###########################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 
 
 class Myresnext50(nn.Module):

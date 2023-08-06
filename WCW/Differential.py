@@ -6,7 +6,7 @@
 import pandas as pd
 
 # Within package imports ###########################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 
 
 class Differential:

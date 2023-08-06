@@ -6,7 +6,7 @@
 from PIL import Image
 
 # Within package imports ###########################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 from WCW.vision.image_quality import VoL, WMP
 
 class FocusRegion:

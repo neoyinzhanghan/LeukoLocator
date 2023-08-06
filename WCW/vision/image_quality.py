@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 
 # Within package imports ###########################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 from WCW.vision.masking import otsu_white_mask
 
 

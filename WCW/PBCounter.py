@@ -10,7 +10,7 @@ import ray
 from ray.exceptions import RayTaskError
 
 # Within package imports ###########################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 from FileNameManager import FileNameManager
 from TopView import TopView, SpecimenError
 from SearchView import SearchView

@@ -6,7 +6,7 @@
 from PIL import Image, ImageOps
 
 # Within package imports ###########################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 
 
 def crop_region_view(region_view, crop_width=search_view_crop_size[0], crop_height=search_view_crop_size[1], verbose=False):

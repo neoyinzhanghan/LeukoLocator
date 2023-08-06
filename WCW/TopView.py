@@ -7,7 +7,7 @@ from PIL import Image
 
 # Within package imports ###########################################################################
 from WCW.vision.masking import get_white_mask, get_obstructor_mask, get_top_view_mask
-from assumptions import *
+from WCW.resources.assumptions import *
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt

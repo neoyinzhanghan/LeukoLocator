@@ -12,7 +12,7 @@ import cv2
 import matplotlib.pyplot as plt
 
 # Within package imports ###########################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 from WCW.brain.metrics import bb_intersection_over_union
 from WCW.vision.processing import zero_pad
 from WCW.WBCCandidate import WBCCandidate

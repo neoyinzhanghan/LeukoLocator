@@ -6,7 +6,7 @@
 import os
 
 # Within package imports ############################################################################
-from assumptions import *
+from WCW.resources.assumptions import *
 
 class FileNameManager:
     """ A Class representing a FileNameManager of a whole slide image (WSI).
