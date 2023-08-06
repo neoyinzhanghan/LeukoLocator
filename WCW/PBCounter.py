@@ -11,10 +11,10 @@ from ray.exceptions import RayTaskError
 
 # Within package imports ###########################################################################
 from WCW.resources.assumptions import *
-from FileNameManager import FileNameManager
-from TopView import TopView, SpecimenError
-from SearchView import SearchView
-from FocusRegion import FocusRegion
+from WCW.FileNameManager import FileNameManager
+from WCW.TopView import TopView, SpecimenError
+from WCW.SearchView import SearchView
+from WCW.FocusRegion import FocusRegion
 from WCW.brain.HemeLabelManager import HemeLabelManager
 from WCW.brain.YOLOManager import YOLOManager
 from WCW.Differential import Differential
