@@ -105,7 +105,12 @@ class PBCounter:
                 (focus_region_coord[0], focus_region_coord[1]), 0, (focus_regions_size, focus_regions_size))
             focus_region_image = focus_region_image.convert("RGB")
 
-            focus_region = FocusRegion(focus_region_coord, focus_region_image)
+            downsampled_focus_region_image = wsi.read_region(
+                (focus_region_coord[0], focus_region_coord[1]), search_view_level, (focus_regions_size, focus_regions_size))
+            downsampled_focus_region_image = downsampled_focus_region_image.convert(
+                "RGB")
+
+            focus_region = FocusRegion(focus_region_coord, focus_region_image, downsampled_focus_region_image)
 
             unfiltered_focus_regions.append(focus_region)
 
