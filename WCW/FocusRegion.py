@@ -26,6 +26,9 @@ class FocusRegion:
         self.coordinate = coordinate
         self.image = image
 
+        # downsample the image by a factor of 8
+        downsampled = self.image.resize((self.image.size[0] // 8, self.image.size[1] // 8), Image.BICUBIC)
+
         # Calculate the VoL and WMP
-        self.VoL = VoL(image)
-        self.WMP = WMP(image)
+        self.VoL = VoL(downsampled)
+        self.WMP = WMP(downsampled)

@@ -86,12 +86,12 @@ def focus_region_filtering(focus_regions, min_VoL=min_VoL, min_WMP=min_WMP, max_
         focus_regions_df['WMP'] >= min_WMP) & (focus_regions_df['WMP'] <= max_WMP)]
 
     # Linear regression on remaining data
-    focus_regions_df["VoL / (White Mask Proportion)^2"] = focus_regions_df["VoL"] / \
-        (focus_regions_df["White Mask Proportion"] ** 2)
+    focus_regions_df["VoL/(WMP)^2"] = focus_regions_df["VoL"] / \
+        (focus_regions_df["WMP"] ** 2)
 
-    X = focus_regions_df["White Mask Proportion"]
+    X = focus_regions_df["WMP"]
     X = sm.add_constant(X)
-    y = focus_regions_df["VoL / (White Mask Proportion)^2"]
+    y = focus_regions_df["VoL/(WMP)^2"]
 
     model = sm.OLS(y, X).fit()
 
