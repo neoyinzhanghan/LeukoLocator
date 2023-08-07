@@ -85,6 +85,8 @@ class HemeLabelManager:
             image = wbc_candidate.snap_shot
 
         if wbc_candidate.VoL < min_cell_VoL:
+
+            print("bad cell!!!")
             return None
 
         self.model.eval()
