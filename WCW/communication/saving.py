@@ -17,7 +17,7 @@ def save_wbc_candidates(pbc, save_dir=os.path.join(dump_dir, 'wbc_candidates'), 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    for wbc_candidate in tqdm(pbc.candidates, desc='Saving wbc_candidates'):
+    for wbc_candidate in tqdm(pbc.wbc_candidates, desc='Saving wbc_candidates'):
         if image_type == 'snap_shot':
             image = wbc_candidate.snap_shot
         elif image_type == 'YOLO_bbox_image':
