@@ -43,7 +43,10 @@ class WSICropManager:
         if self.wsi is None:
             self.open_slide()
 
-        return self.wsi.read_region(coords, 0, (coords[2] - coords[0], coords[3] - coords[1]))
+        image = self.wsi.read_region(coords, 0, (coords[2] - coords[0], coords[3] - coords[1]))
+        image = image.convert("RGB")
+
+        return image
 
     def async_get_focus_region_image(self, focus_region):
         """ Update the image of the focus region. """
