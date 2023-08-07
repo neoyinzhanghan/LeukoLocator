@@ -144,7 +144,7 @@ class PBCounter:
         # for each focus_region, print the type and dimension of the image
         for focus_region in self.focus_regions:
             print(type(focus_region.image))
-            print(focus_region.image.size)
+            # print(focus_region.image.size)
 
         exit()
 
