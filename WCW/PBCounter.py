@@ -141,6 +141,9 @@ class PBCounter:
 
         ray.shutdown()
 
+        # end the program
+        exit()
+
     def find_wbc_candidates(self):
         """ Update the wbc_candidates of the PBCounter object. """
 
