@@ -201,4 +201,6 @@ class YOLOManager:
 
             wbc_candidates.append(wbc_candidate)
 
+        print(len(wbc_candidates))
+
         return wbc_candidates
