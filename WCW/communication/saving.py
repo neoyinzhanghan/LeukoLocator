@@ -9,7 +9,7 @@ from tqdm import tqdm
 # Within package imports ###########################################################################
 from WCW.resources.assumptions import *
 
-def save_wbc_candidates(pbc, save_dir=os.join(dump_dir, 'wbc_candidates'), image_type='snap_shot'):
+def save_wbc_candidates(pbc, save_dir=os.path.join(dump_dir, 'wbc_candidates'), image_type='snap_shot'):
     """ Save the wbc_candidates of the PBCounter object to the save_path. 
     image_type must be either 'snap_shot' or 'YOLO_bbox_image' or 'padded_YOLO_bbox_image'. """
 
