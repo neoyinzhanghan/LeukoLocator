@@ -169,7 +169,8 @@ class PBCounter:
                 for done_id in done_ids:
                     try:
                         result = ray.get(done_id)
-                        all_results.extend(result)
+                        for wbc_candidate in result:
+                            all_results.append(wbc_candidate)
 
                     except RayTaskError as e:
                         print(
