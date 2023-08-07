@@ -28,7 +28,7 @@ def save_wbc_candidates(pbc, save_dir=os.path.join(dump_dir, 'wbc_candidates'), 
             raise ValueError("image_type must be either 'snap_shot' or 'YOLO_bbox_image' or 'padded_YOLO_bbox_image'.")
 
         # save the image as a jpg file
-        image.save(os.path.join(save_dir) + str(wbc_candidate.snap_shot_bbox) + '.jpg')
+        image.save(os.path.join(save_dir, str(wbc_candidate.snap_shot_bbox) + '.jpg'))
 
 def save_focus_regions(pbc, save_dir=os.path.join(dump_dir, 'focus_regions')):
     """ Save the focus region images of the PBCounter object to the save_path. """
