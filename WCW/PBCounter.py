@@ -217,8 +217,7 @@ class PBCounter:
                     del tasks[done_id]
 
         ray.shutdown()
-
-        print(len(all_results))
+        
         self.wbc_candidates = all_results
         self.differential = Differential(self.wbc_candidates)
 

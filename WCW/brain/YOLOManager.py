@@ -10,6 +10,8 @@ import numpy as np
 import torch
 import cv2
 import matplotlib.pyplot as plt
+import os
+import contextlib
 
 # Within package imports ###########################################################################
 from WCW.resources.assumptions import *
@@ -124,9 +126,11 @@ class YOLOManager:
 
         wbc_candidates = []
 
-        df = YOLO_detect(self.model,
-                         focus_region.image,
-                         conf_thres=self.conf_thres)
+        with open(os.devnull, 'w') as devnull:
+            with contextlib.redirect_stdout(devnull):
+                df = YOLO_detect(self.model,
+                                focus_region.image,
+                                conf_thres=self.conf_thres)
 
         # add the coordinate of the focus region to the df
         df['focus_region_TL_x'] = focus_region.coordinate[0]

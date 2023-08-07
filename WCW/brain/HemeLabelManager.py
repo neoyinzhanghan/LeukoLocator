@@ -101,8 +101,8 @@ class HemeLabelManager:
         output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
 
         # make a clone of the output vector, use tuple to avoid deprecation and aliasing errors down the road
-        wbc_candidate.softmax_vector = tuple(output)
+        wbc_candidate.softmax_vector = tuple(output[0])
 
-        print(wbc_candidate.softmax_vector)
+        print(len(wbc_candidate.softmax_vector()))
 
         return wbc_candidate
