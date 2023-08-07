@@ -144,12 +144,7 @@ class PBCounter:
 
         ray.shutdown()
 
-        # for each focus_region, print the type and dimension of the image
-        for focus_region in tqdm(all_results):
-            print(type(focus_region.image))
-            # print(focus_region.image.size)
-
-        exit()
+        self.focus_regions = all_results
 
     def find_wbc_candidates(self):
         """ Update the wbc_candidates of the PBCounter object. """
@@ -196,6 +191,7 @@ class PBCounter:
             HemeLabel_ckpt_path) for _ in range(num_gpus)]
 
         tasks = {}
+        all_results = []
 
         for i, wbc_candidate in enumerate(self.wbc_candidates):
             manager = task_managers[i % num_gpus]
@@ -208,7 +204,8 @@ class PBCounter:
 
                 for done_id in done_ids:
                     try:
-                        _ = ray.get(done_id)
+                        wbc_candidate = ray.get(done_id)
+                        all_results.append(wbc_candidate)
 
                     except RayTaskError as e:
                         print(
@@ -219,6 +216,7 @@ class PBCounter:
 
         ray.shutdown()
 
+        self.wbc_candidates = all_results
         self.differential = Differential(self.wbc_candidates)
 
     def tally_differential(self):
