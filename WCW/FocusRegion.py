@@ -46,4 +46,4 @@ class FocusRegion:
 
         self.image = image
 
-        print(type(self.image))
+        print(self.image.size)
