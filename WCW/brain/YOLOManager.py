@@ -124,8 +124,6 @@ class YOLOManager:
 
         wbc_candidates = []
 
-        print(type(focus_region.image))
-
         df = YOLO_detect(self.model,
                          focus_region.image,
                          conf_thres=self.conf_thres)
@@ -134,9 +132,9 @@ class YOLOManager:
         df['focus_region_TL_x'] = focus_region.coordinate[0]
         df['focus_region_TL_y'] = focus_region.coordinate[1]
 
-
-        # print the number of rows in the df
-        print(len(df))
+        # if the df is not empty, print the df to the console
+        if not df.empty:
+            print(df)
 
         # traverse through the df and create a list of WBCCandidate objects
         for i in range(len(df)):
@@ -204,7 +202,5 @@ class YOLOManager:
                                          confidence)
 
             wbc_candidates.append(wbc_candidate)
-
-        print(len(wbc_candidates))
 
         return wbc_candidates
