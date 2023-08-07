@@ -30,3 +30,14 @@ class Differential:
             df = pd.concat([df, new_df], ignore_index=True)
         
         self.wbc_candidate_df = df
+    
+    def __len__(self):
+        """ Return the number of cells in the differential. """
+            
+        return len(self.wbc_candidate_df)
+    
+    def __getitem__(self, key) -> dict:
+        """ Return the key-th row of the dataframe.
+        The key is the row index of the dataframe as a dictionary."""
+
+        return self.wbc_candidate_df.iloc[key].to_dict()
