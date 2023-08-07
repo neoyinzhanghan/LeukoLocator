@@ -15,4 +15,6 @@ if __name__ == "__main__":
     # save_focus_regions(pbc)
     save_wbc_candidates_sorted(pbc, image_type='padded_YOLO_bbox_image')
 
+    tally = pbc.differential.tally(omitted_classes=[], removed_classes=[])
     tally = pbc.differential.tally(omitted_classes=[], removed_classes=['ER5', 'ER6'])
+    tally = pbc.differential.tally(omitted_classes=[], removed_classes=['ER5', 'ER6', 'PL2', 'PL3'])
