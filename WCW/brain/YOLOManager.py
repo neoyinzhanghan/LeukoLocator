@@ -162,12 +162,12 @@ class YOLOManager:
             YOLO_bbox_image = focus_region.image.crop(YOLO_bbox_intra_image)
 
             # get the snap_shot_bbox
-            snap_shot_bbox_intra_image = (int(centroid_x_level_0 - snap_shot_size // 2),
-                                          int(centroid_y_level_0 -
+            snap_shot_bbox_intra_image = (int(centroid_x_intra_image - snap_shot_size // 2),
+                                          int(centroid_y_intra_image -
                                               snap_shot_size // 2),
-                                          int(centroid_x_level_0 +
+                                          int(centroid_x_intra_image +
                                               snap_shot_size // 2),
-                                          int(centroid_y_level_0 + snap_shot_size // 2))
+                                          int(centroid_y_intra_image + snap_shot_size // 2))
 
             # use snap_shot_bbox to crop the focus_region.image
             snap_shot = focus_region.image.crop(snap_shot_bbox_intra_image)

@@ -39,5 +39,5 @@ def save_focus_regions(pbc, save_dir=os.path.join(dump_dir, 'focus_regions')):
 
     for focus_region in tqdm(pbc.focus_regions, desc='Saving focus regions'):
         # save the image as a jpg file
-        focus_region.image.save(os.path.join(save_dir) + str(focus_region.coordinate) + '.jpg')
+        focus_region.image.save(os.path.join(save_dir, str(focus_region.coordinate) + '.jpg'))
     
