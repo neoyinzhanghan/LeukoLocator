@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     print(f"{len(pbc.differential)} cells are extracted and classified in {total_time} seconds.")
 
-    save_focus_regions(pbc)
-    save_wbc_candidates(pbc)
+    # save_focus_regions(pbc)
+    save_wbc_candidates(pbc, image_type='padded_YOLO_bbox_image')
 
     tally = pbc.differential.tally(omitted_classes=[], removed_classes=[])
