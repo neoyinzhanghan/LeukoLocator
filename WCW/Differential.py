@@ -26,7 +26,7 @@ class Differential:
         # traverse through the list of WBCCandidate objects and add them to the dataframe
         for wbc_candidate in wbc_candidates:
             # use concat to avoid deprecation
-            new_df = pd.DataFrame([[wbc_candidate.snap_shot_bbox, wbc_candidate.confidence, wbc_candidate.VoL] + wbc_candidate.softmax_vector], columns=['coords', 'confidence', 'VoL'] + [cellnames[i] for i in range(num_classes)])
+            new_df = pd.DataFrame([[wbc_candidate.snap_shot_bbox, wbc_candidate.confidence, wbc_candidate.VoL] + list(wbc_candidate.softmax_vector)], columns=['coords', 'confidence', 'VoL'] + [cellnames[i] for i in range(num_classes)])
             df = pd.concat([df, new_df], ignore_index=True)
         
         self.wbc_candidate_df = df

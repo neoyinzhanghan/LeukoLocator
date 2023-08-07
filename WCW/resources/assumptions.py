@@ -15,6 +15,8 @@ num_cpus = 64
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 
+min_cell_VoL = 10
+
 zero_pad = False
 
 YOLO_ckpt_path = "/home/dog/neo/WhiteCellWizard/WCW/resources/YOLO_checkpoint.pt"

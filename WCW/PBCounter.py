@@ -206,7 +206,8 @@ class PBCounter:
                 for done_id in done_ids:
                     try:
                         wbc_candidate = ray.get(done_id)
-                        all_results.append(wbc_candidate)
+                        if wbc_candidate is not None:
+                            all_results.append(wbc_candidate)
 
                     except RayTaskError as e:
                         print(
