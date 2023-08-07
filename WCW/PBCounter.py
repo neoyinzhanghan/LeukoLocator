@@ -141,6 +141,13 @@ class PBCounter:
 
         ray.shutdown()
 
+        # for each focus_region, print the type and dimension of the image
+        for focus_region in self.focus_regions:
+            print(type(focus_region.image))
+            print(focus_region.image.size)
+
+        exit()
+
     def find_wbc_candidates(self):
         """ Update the wbc_candidates of the PBCounter object. """
 
