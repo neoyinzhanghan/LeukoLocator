@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     print(f"{len(pbc.differential)} cells are extracted and classified in {total_time} seconds.")
 
-    tally = pbc.differential.tally(omitted_classes=[], removed_classes=['ER5', 'ER6'])
+    tally = pbc.differential.tally(omitted_classes=[], removed_classes=[])
 
     for cellname in tally:
         print(f"{cellnames_dict[cellname]}: {tally[cellname]}")
