@@ -88,7 +88,6 @@ class HemeLabelManager:
         self.model.to('cuda')
 
         image = np.array(image)
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         image = cv2.resize(image, (96, 96), interpolation=cv2.INTER_AREA)
 
         image = np.einsum('ijk->kij', image)
