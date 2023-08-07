@@ -1,4 +1,5 @@
 from WCW.resources.assumptions import *
+from WCW.communication.saving import save_wbc_candidates
 from WCW.PBCounter import PBCounter
 import time
 
@@ -11,7 +12,6 @@ if __name__ == "__main__":
 
     print(f"{len(pbc.differential)} cells are extracted and classified in {total_time} seconds.")
 
-    tally = pbc.differential.tally(omitted_classes=[], removed_classes=[])
+    save_wbc_candidates(pbc)
 
-    for cellname in tally:
-        print(f"{cellnames_dict[cellname]}: {tally[cellname]}")
+    tally = pbc.differential.tally(omitted_classes=[], removed_classes=[])
