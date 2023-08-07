@@ -180,6 +180,8 @@ class PBCounter:
 
         self.wbc_candidates = all_results
 
+        print(len(self.wbc_candidates))
+
         ray.shutdown()
 
     def label_wbc_candidates(self):
