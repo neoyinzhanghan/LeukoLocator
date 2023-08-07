@@ -126,10 +126,7 @@ class YOLOManager:
 
         wbc_candidates = []
 
-        with open(os.devnull, 'w') as devnull:
-            with contextlib.redirect_stdout(devnull), contextlib.redirect_stderr(devnull):
-                df = YOLO_detect(self.model, focus_region.image,
-                                 conf_thres=self.conf_thres)
+        df = YOLO_detect(self.model, focus_region.image, conf_thres=self.conf_thres)
 
         # add the coordinate of the focus region to the df
         df['focus_region_TL_x'] = focus_region.coordinate[0]
