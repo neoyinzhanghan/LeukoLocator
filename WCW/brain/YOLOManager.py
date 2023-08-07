@@ -127,10 +127,9 @@ class YOLOManager:
         wbc_candidates = []
 
         with open(os.devnull, 'w') as devnull:
-            with contextlib.redirect_stdout(devnull):
-                df = YOLO_detect(self.model,
-                                focus_region.image,
-                                conf_thres=self.conf_thres)
+            with contextlib.redirect_stdout(devnull), contextlib.redirect_stderr(devnull):
+                df = YOLO_detect(self.model, focus_region.image,
+                                 conf_thres=self.conf_thres)
 
         # add the coordinate of the focus region to the df
         df['focus_region_TL_x'] = focus_region.coordinate[0]
@@ -146,10 +145,12 @@ class YOLOManager:
                 row["BR_x"] - row["TL_x"]) // 2 + row["TL_x"] + row['focus_region_TL_x']
             centroid_y_level_0 = (
                 row["BR_y"] - row["TL_y"]) // 2 + row["TL_y"] + row['focus_region_TL_y']
-            
-            centroid_x_intra_image = centroid_x_level_0 - row['focus_region_TL_x']
-            centroid_y_intra_image = centroid_y_level_0 - row['focus_region_TL_y']
-            
+
+            centroid_x_intra_image = centroid_x_level_0 - \
+                row['focus_region_TL_x']
+            centroid_y_intra_image = centroid_y_level_0 - \
+                row['focus_region_TL_y']
+
             confidence = row['confidence']
 
             # check whether if a square of size snap_shot_size centered at the centroid is out of bound of focus_region.image
