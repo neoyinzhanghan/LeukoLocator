@@ -103,6 +103,6 @@ class HemeLabelManager:
         # make a clone of the output vector, use tuple to avoid deprecation and aliasing errors down the road
         wbc_candidate.softmax_vector = tuple(output[0])
 
-        print(len(wbc_candidate.softmax_vector()))
+        print(len(wbc_candidate.softmax_vector))
 
         return wbc_candidate
