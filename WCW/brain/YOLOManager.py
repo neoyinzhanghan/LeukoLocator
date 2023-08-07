@@ -134,6 +134,10 @@ class YOLOManager:
         df['focus_region_TL_x'] = focus_region.coordinate[0]
         df['focus_region_TL_y'] = focus_region.coordinate[1]
 
+
+        # print the number of rows in the df
+        print(len(df))
+
         # traverse through the df and create a list of WBCCandidate objects
         for i in range(len(df)):
             # get the ith row of the df as a dictionary
