@@ -29,4 +29,15 @@ def save_wbc_candidates(pbc, save_dir=os.path.join(dump_dir, 'wbc_candidates'), 
 
         # save the image as a jpg file
         image.save(os.path.join(save_dir) + str(wbc_candidate.snap_shot_bbox) + '.jpg')
+
+def save_focus_regions(pbc, save_dir=os.path.join(dump_dir, 'focus_regions')):
+    """ Save the focus region images of the PBCounter object to the save_path. """
+
+    # if the save_dir does not exist, create it
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    for focus_region in tqdm(pbc.focus_regions, desc='Saving focus regions'):
+        # save the image as a jpg file
+        focus_region.image.save(os.path.join(save_dir) + str(focus_region.coordinate) + '.jpg')
     
