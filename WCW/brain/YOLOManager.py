@@ -124,6 +124,8 @@ class YOLOManager:
 
         wbc_candidates = []
 
+        print(type(focus_region.image))
+
         df = YOLO_detect(self.model,
                          focus_region.image,
                          conf_thres=self.conf_thres)
