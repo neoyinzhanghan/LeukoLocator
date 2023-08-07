@@ -132,10 +132,6 @@ class YOLOManager:
         df['focus_region_TL_x'] = focus_region.coordinate[0]
         df['focus_region_TL_y'] = focus_region.coordinate[1]
 
-        # if the df is not empty, print the df to the console
-        if not df.empty:
-            print(df)
-
         # traverse through the df and create a list of WBCCandidate objects
         for i in range(len(df)):
             # get the ith row of the df as a dictionary
@@ -147,10 +143,13 @@ class YOLOManager:
             centroid_y_level_0 = (
                 row["BR_y"] - row["TL_y"]) // 2 + row["TL_y"] + row['focus_region_TL_y']
             
+            centroid_x_intra_image = centroid_x_level_0 - row['focus_region_TL_x']
+            centroid_y_intra_image = centroid_y_level_0 - row['focus_region_TL_y']
+            
             confidence = row['confidence']
 
             # check whether if a square of size snap_shot_size centered at the centroid is out of bound of focus_region.image
-            if centroid_x_level_0 - snap_shot_size // 2 < 0 or centroid_x_level_0 + snap_shot_size // 2 >= focus_regions_size or centroid_y_level_0 - snap_shot_size // 2 < 0 or centroid_y_level_0 + snap_shot_size // 2 >= focus_regions_size:
+            if centroid_x_intra_image - snap_shot_size // 2 < 0 or centroid_x_intra_image + snap_shot_size // 2 >= focus_regions_size or centroid_y_intra_image - snap_shot_size // 2 < 0 or centroid_y_intra_image + snap_shot_size // 2 >= focus_regions_size:
                 continue  # if so, then skip this candidate
 
             # get the YOLO_bbox
