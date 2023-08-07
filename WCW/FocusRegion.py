@@ -45,5 +45,3 @@ class FocusRegion:
         """ Update the image of the focus region. """
 
         self.image = image
-
-        print(self.image.size)

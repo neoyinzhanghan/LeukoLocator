@@ -118,6 +118,7 @@ class PBCounter:
             self.file_name_manager.wsi_path) for _ in range(num_gpus)]
 
         tasks = {}
+        all_results = []
 
         for i, focus_region in enumerate(self.focus_regions):
             manager = crop_managers[i % num_gpus]
@@ -130,7 +131,9 @@ class PBCounter:
 
                 for done_id in done_ids:
                     try:
-                        _ = ray.get(done_id)
+
+                        result = ray.get(done_id)
+                        all_results.append(result)
 
                     except RayTaskError as e:
                         print(
@@ -142,7 +145,7 @@ class PBCounter:
         ray.shutdown()
 
         # for each focus_region, print the type and dimension of the image
-        for focus_region in self.focus_regions:
+        for focus_region in tqdm(all_results):
             print(type(focus_region.image))
             # print(focus_region.image.size)
 

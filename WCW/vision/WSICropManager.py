@@ -53,3 +53,5 @@ class WSICropManager:
 
         if focus_region.image is None:
             focus_region.get_image(self.crop(focus_region.coordinate))
+        
+        return focus_region
