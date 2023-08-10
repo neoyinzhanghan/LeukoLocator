@@ -43,7 +43,7 @@ class Differential:
 
         return self.wbc_candidate_df.iloc[key].to_dict()
     
-    def tally(self, omitted_classes, removed_classes, print_results=True):
+    def tally_dict(self, omitted_classes, removed_classes, print_results=True):
         """ Return a dictionary of the tally of the differential. 
         First make a clone of the dataframe. Set all omitted classes to -np.inf. 
         Then add a column which is the label computed as the argmax of the softmax vector.
@@ -84,3 +84,17 @@ class Differential:
                 print(f"{cellnames_dict[cellname]}: {tally[cellname]}")
         
         return tally
+    
+    def tally_string(self, omitted_classes, removed_classes, print_results=True):
+        """ First get the tally dictionary, and then convert it to a string as how it would be printed. """
+
+        # get the tally dictionary
+        tally = self.tally_dict(omitted_classes, removed_classes, print_results)
+
+        # convert the tally dictionary to a string
+        tally_string = ""
+
+        for cellname in tally:
+            tally_string += f"{cellnames_dict[cellname]}: {tally[cellname]}\n"
+        
+        return tally_string
