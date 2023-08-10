@@ -17,6 +17,9 @@ save_dir = "/home/greg/Documents/neo"
 # Get the dataframe of PB annotations
 PB_annotations_df = get_PB_annotations_from_csv(H23_csv_path)
 
+# print the top 5 rows of the dataframe and the column names
+print(PB_annotations_df.head())
+
 # Get a list of files in WSI_dir that end with .ndpi and start with H23
 fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
     ".ndpi") and fname.startswith("H23")]
