@@ -5,6 +5,8 @@ import time
 
 if __name__ == "__main__":
 
+    test_example_path = "/pesgisipth/NDPI/H23-852;S12;MSKW - 2023-06-15 16.42.50.ndpi"
+
     start_time = time.time()
     pbc = PBCounter(test_example_path)
     pbc.tally_differential()
