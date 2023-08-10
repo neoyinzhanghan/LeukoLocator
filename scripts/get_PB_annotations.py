@@ -8,7 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 
 # Within package imports ###########################################################################
-from WCW.brain.read_annotations import get_PB_annotations_from_csv, get_PB_metadata
+from WCW.brain.read_annotations import get_PB_annotations_from_csv, get_PB_metadata, NotAnnotatedError
 
 H23_csv_path = "/media/ssd2/clinical_text_data/PathReports_Heme/H23-20230720.csv"
 WSI_dir = "/pesgisipth/NDPI"
@@ -23,6 +23,15 @@ fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
 
 # the metadata are dictionaries, get them and concatenate them into a pandas dataframe
 # use tqdm to show a progress bar
+
+lst = []
+
+for fname in tqdm(fnames):
+    try:
+        lst.append(get_PB_metadata(fname, PB_annotations_df))
+    except NotAnnotatedError:
+        continue
+    
 metadata_df = pd.concat([pd.DataFrame(get_PB_metadata(
     fname, PB_annotations_df), index=[0]) for fname in tqdm(fnames)])
 

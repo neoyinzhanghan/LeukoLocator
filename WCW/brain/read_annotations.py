@@ -45,6 +45,10 @@ def get_PB_metadata(wsi_fname, PB_annotations_df):
     # filter the dataframe by barcode, make sure to strip blank spaces
     df = PB_annotations_df[PB_annotations_df['barcode'].str.strip() == barcode]
 
+    # if the dataframe is empty, raise a NotAnnotatedError
+    if df.empty:
+        raise NotAnnotatedError
+
     # get the row with the latest processed_date
     row = df[df['processed_date'] == last_date(df['processed_date'])].iloc[0]
 
@@ -60,3 +64,7 @@ def get_PB_metadata(wsi_fname, PB_annotations_df):
             'processed_date': processed_date,
             'text_data_clindx': text_data_clindx,
             'text_data_final': text_data_final}
+
+
+class NotAnnotatedError(Exception):
+    pass
