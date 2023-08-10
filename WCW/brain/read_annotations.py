@@ -49,8 +49,11 @@ def get_PB_metadata(wsi_fname, PB_annotations_df):
     if df.empty:
         raise NotAnnotatedError
 
+    # turn df['processed_date']) into a list
+    processed_dates = df['processed_date'].tolist()
+
     # get the row with the latest processed_date
-    row = df[df['processed_date'] == last_date(df['processed_date'])].iloc[0]
+    row = df[df['processed_date'] == last_date(processed_dates)].iloc[0]
 
     # get the part_description, processed_date, text_data_clindx, text_data_final
     part_description = row['part_description']
