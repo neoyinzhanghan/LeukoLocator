@@ -20,6 +20,9 @@ PB_annotations_df = get_PB_annotations_from_csv(H23_csv_path)
 # print the top 5 rows of the dataframe and the column names
 print(PB_annotations_df.head())
 
+# print the column names
+print(PB_annotations_df.columns)
+
 quit()
 
 # Get a list of files in WSI_dir that end with .ndpi and start with H23
