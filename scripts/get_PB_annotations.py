@@ -30,6 +30,7 @@ for fname in tqdm(fnames):
     try:
         lst.append(get_PB_metadata(fname, PB_annotations_df))
     except NotAnnotatedError:
+        print("NotAnnotatedError")
         continue
     
 metadata_df = pd.concat([pd.DataFrame(get_PB_metadata(
