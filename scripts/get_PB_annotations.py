@@ -44,8 +44,7 @@ for fname in tqdm(fnames):
         print("NotAnnotatedError")
         continue
 
-df_lst = [pd.DataFrame(get_PB_metadata(
-    fname, PB_annotations_df), index=[0]) for fname in tqdm(fnames)]
+df_lst = [pd.DataFrame(row, index=[0]) for row in tqdm(lst)]
     
 metadata_df = pd.concat(df_lst, ignore_index=True)
 
