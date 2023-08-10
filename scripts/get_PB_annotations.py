@@ -17,17 +17,8 @@ save_dir = "/home/greg/Documents/neo"
 # Get the dataframe of PB annotations
 PB_annotations_df = get_PB_annotations_from_csv(H23_csv_path)
 
-# print the top 5 rows of the dataframe and the column names
-print(PB_annotations_df.head())
-
-# print the column names
-print(PB_annotations_df.columns)
-
-# print the first element of the column processed_date
-print(PB_annotations_df['processed_date'])
-print(type(PB_annotations_df['processed_date']))
-
-quit()
+# Only keep the rows the processed_date is not empty NaN
+PB_annotations_df = PB_annotations_df[~PB_annotations_df['processed_date'].isnull()]
 
 # Get a list of files in WSI_dir that end with .ndpi and start with H23
 fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
