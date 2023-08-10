@@ -96,14 +96,14 @@ def last_date(dates):
     """ Return the latest date in the list of dates. Assuming that the date is in the format of YYYY-MM-DD """
 
     # Initialize the earliest date
-    earliest_date = dates[0]
+    latest_date = dates[0]
 
     # Iterate through the list of dates
     for date in dates:
-        if after(date, earliest_date):
-            earliest_date = date
+        if after(date, latest_date):
+            latest_date = date
 
-    return earliest_date
+    return latest_date
 
 
 def last_dated_fname(fnames):
