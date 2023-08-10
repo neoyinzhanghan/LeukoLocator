@@ -24,8 +24,8 @@ print(PB_annotations_df.head())
 print(PB_annotations_df.columns)
 
 # print the first element of the column processed_date
-print(PB_annotations_df['processed_date'][0])
-print(type(PB_annotations_df['processed_date'][0]))
+print(PB_annotations_df['processed_date'])
+print(type(PB_annotations_df['processed_date']))
 
 quit()
 
