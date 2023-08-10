@@ -40,7 +40,7 @@ def get_PB_metadata(wsi_fname, PB_annotations_df):
     """
 
     # first get barcode from wsi_fname
-    barcode = get_barcode_from_fname(wsi_fname)
+    barcode = get_barcode_from_fname(wsi_fname).strip()
     print(barcode)
 
     print(PB_annotations_df['barcode'].str.strip() == barcode)
