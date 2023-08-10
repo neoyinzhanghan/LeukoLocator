@@ -43,9 +43,11 @@ for fname in tqdm(fnames):
     except NotAnnotatedError:
         print("NotAnnotatedError")
         continue
+
+df_lst = [pd.DataFrame(get_PB_metadata(
+    fname, PB_annotations_df), index=[0]) for fname in tqdm(fnames)]
     
-metadata_df = pd.concat([pd.DataFrame(get_PB_metadata(
-    fname, PB_annotations_df), index=[0]) for fname in tqdm(fnames)])
+metadata_df = pd.concat(df_lst, ignore_index=True)
 
 # save the dataframe as a csv file in the save_dir with file name H23_PB_metadata.csv
 metadata_df.to_csv(os.path.join(save_dir, "H23_PB_metadata.csv"), index=False)
