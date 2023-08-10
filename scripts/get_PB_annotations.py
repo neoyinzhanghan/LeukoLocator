@@ -23,6 +23,10 @@ print(PB_annotations_df.head())
 # print the column names
 print(PB_annotations_df.columns)
 
+# print the first element of the column processed_date
+print(PB_annotations_df['processed_date'][0])
+print(type(PB_annotations_df['processed_date'][0]))
+
 quit()
 
 # Get a list of files in WSI_dir that end with .ndpi and start with H23
