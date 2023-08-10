@@ -43,6 +43,8 @@ def get_PB_metadata(wsi_fname, PB_annotations_df):
     barcode = get_barcode_from_fname(wsi_fname)
     print(barcode)
 
+    print(PB_annotations_df['barcode'].str.strip())
+
     # filter the dataframe by barcode, make sure to strip blank spaces
     df = PB_annotations_df[PB_annotations_df['barcode'].str.strip() == barcode]
 
