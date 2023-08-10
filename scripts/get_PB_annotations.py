@@ -20,6 +20,11 @@ PB_annotations_df = get_PB_annotations_from_csv(H23_csv_path)
 # Only keep the rows the processed_date is not empty NaN
 PB_annotations_df = PB_annotations_df[~PB_annotations_df['processed_date'].isnull()]
 
+# further subset so that barcode and text_data_final and text_data_clindx are not empty
+PB_annotations_df = PB_annotations_df[~PB_annotations_df['barcode'].isnull()]
+PB_annotations_df = PB_annotations_df[~PB_annotations_df['text_data_final'].isnull()]
+PB_annotations_df = PB_annotations_df[~PB_annotations_df['text_data_clindx'].isnull()]
+
 # Get a list of files in WSI_dir that end with .ndpi and start with H23
 fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
     ".ndpi") and fname.startswith("H23")]
