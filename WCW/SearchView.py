@@ -22,22 +22,32 @@ class SearchView:
     - width : the width of the search view
     - height : the height of the search view
 
+    - verbose : whether to print out the progress of the search view
+
     """
 
-    def __init__(self, image, downsampling_rate):
+    def __init__(self, image, downsampling_rate, verbose=False):
         """ Initialize a SearchView object. 
         Image is a PIL image. Check the type of image. If not PIL image, raise ValueError."""
 
+        self.verbose = verbose
+
+        if self.verbose:
+            print("Checking the type of image...")
         # check the type of image
         if not isinstance(image, Image.Image):
             raise ValueError("Image must be a PIL image.")
-
+        
         self.image = image
+
+        if self.verbose:
+            print("Cropping the search view...")
         self.crop_dict, self.padding_x, self.padding_y = crop_region_view(
             image, crop_width=search_view_crop_size[0], crop_height=search_view_crop_size[1])
         self.downsampling_rate = downsampling_rate
         self.width = image.size[0]
         self.height = image.size[1]
+
 
     def get_locations(self):
         """ Return a list of locations of the crops in the format of (TL_x, TL_y, BR_x, BR_y). """

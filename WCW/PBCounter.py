@@ -63,12 +63,15 @@ class PBCounter:
             print(f"Processing WSI top view as TopView object")
         # Processing the top level image
         top_level = len(wsi.level_dimensions) - 1
+
+        if self.verbose:
+            print(f"Obtaining top view image")
         top_view = wsi.read_region(
             (0, 0), top_level, wsi.level_dimensions[top_level])
         top_view = top_view.convert("RGB")
         top_view_downsampling_rate = wsi.level_downsamples[top_level]
         self.top_view = TopView(
-            top_view, top_view_downsampling_rate, top_level)
+            top_view, top_view_downsampling_rate, top_level, verbose=self.verbose)
 
         if self.verbose:
             print(f"Checking if the specimen is peripheral blood")
@@ -82,7 +85,7 @@ class PBCounter:
             (0, 0), search_view_level, wsi.level_dimensions[search_view_level])
         search_view_downsampling_rate = wsi.level_downsamples[search_view_level]
         self.search_view = SearchView(
-            search_view, search_view_downsampling_rate)
+            search_view, search_view_downsampling_rate, verbose=self.verbose)
 
         if self.verbose:
             print(f"Closing WSI")
