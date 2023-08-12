@@ -27,18 +27,25 @@ class TopView:
     - downsampling_rate : the downsampling rate of the top view
     - level : the level of the top view in the WSI
 
+    - verbose : whether to print out the progress of the top view
     """
 
-    def __init__(self, image, downsampling_rate, level):
+    def __init__(self, image, downsampling_rate, level, verbose=False):
         """ Initialize a TopView object. 
         Image is a PIL image. Check the type of image. If not PIL image, raise ValueError.
         """
+        self.verbose = verbose
 
+        if self.verbose:
+            print("Checking the type of image...")
         # check the type of image
         if not isinstance(image, Image.Image):
             raise ValueError("Image must be a PIL image.")
 
         self.image = image
+
+        if self.verbose:
+            print('Printing various masks of the top view...')
         self.obstructor_mask = get_obstructor_mask(image)
         self.white_mask = get_white_mask(image)
         self.top_view_mask = get_top_view_mask(image,
@@ -225,9 +232,11 @@ class TopView:
                             break
 
                     if contain_good_stuff:
-                        block_coords.append((int(block_TL_x * search_to_0_zoom_ratio), 
-                                             int(block_TL_y * search_to_0_zoom_ratio),
-                                             int(block_BR_x * search_to_0_zoom_ratio),
+                        block_coords.append((int(block_TL_x * search_to_0_zoom_ratio),
+                                             int(block_TL_y *
+                                                 search_to_0_zoom_ratio),
+                                             int(block_BR_x *
+                                                 search_to_0_zoom_ratio),
                                              int(block_BR_y * search_to_0_zoom_ratio)))
 
         return block_coords
