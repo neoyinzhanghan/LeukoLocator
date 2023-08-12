@@ -5,7 +5,9 @@ import time
 
 if __name__ == "__main__":
 
-    test_example_path = "/pesgisipth/NDPI/H23-376;S16;MSK1 - 2023-06-12 14.10.18.ndpi"
+    # test_example_path = "/pesgisipth/NDPI/H23-376;S16;MSK1 - 2023-06-12 14.10.18.ndpi"
+
+    test_example_path = "/media/hdd3/neo/H20-4473;S11;MSK5 - 2023-04-25 20.58.14.ndpi"
 
     start_time = time.time()
     pbc = PBCounter(test_example_path)
