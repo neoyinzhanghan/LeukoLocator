@@ -14,6 +14,7 @@ num_gpus = 3
 num_cpus = 18
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
+allowed_time = 10 # in seconds
 
 min_cell_VoL = 10
 
