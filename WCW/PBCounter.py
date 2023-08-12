@@ -34,21 +34,33 @@ class PBCounter:
     - focus_regions : a list of FocusRegion class objects representing the focus regions of the search view
     - differential : a Differential class object representing the differential of the WSI
 
+    - verbose : whether to print out the progress of the PBCounter object
+
     """
 
     def __init__(self,
-                 wsi_path: str):
+                 wsi_path: str,
+                 verbose: bool = True,):
         """ Initialize a PBCounter object. """
 
+        self.verbose = verbose
+
+        if self.verbose:
+            print(f"Initializing FileNameManager object for {wsi_path}")
         # Initialize the manager
         self.file_name_manager = FileNameManager(wsi_path)
 
         # Processing the WSI
         try:
+            if self.verbose:
+                print(f"Opening WSI as {wsi_path}")
+
             wsi = openslide.OpenSlide(wsi_path)
         except Exception as e:
             raise SlideError(e)
 
+        if self.verbose:
+            print(f"Processing WSI top view as TopView object")
         # Processing the top level image
         top_level = len(wsi.level_dimensions) - 1
         top_view = wsi.read_region(
@@ -58,9 +70,13 @@ class PBCounter:
         self.top_view = TopView(
             top_view, top_view_downsampling_rate, top_level)
 
+        if self.verbose:
+            print(f"Checking if the specimen is peripheral blood")
         if not self.top_view.is_peripheral_blood():
             raise SpecimenError("The specimen is not peripheral blood.")
 
+        if self.verbose:
+            print(f"Processing WSI search view as SearchView object")
         # Processing the search level image
         search_view = wsi.read_region(
             (0, 0), search_view_level, wsi.level_dimensions[search_view_level])
@@ -68,12 +84,14 @@ class PBCounter:
         self.search_view = SearchView(
             search_view, search_view_downsampling_rate)
 
+        if self.verbose:
+            print(f"Closing WSI")
+        wsi.close()
+
         # The focus regions and WBC candidates are None until they are processed
         self.focus_regions = None
         self.wbc_candidates = None
         self.differential = None
-
-        wsi.close()
 
     def find_focus_regions(self):
         """ Find the focus regions of the WSI. """
@@ -112,8 +130,12 @@ class PBCounter:
 
         self.focus_regions = filtered_focus_regions
 
+        if self.verbose:
+            print(f"Initializing {num_gpus} Ray workers")
         ray.init(num_cpus=num_cpus)
 
+        if self.verbose:
+            print('Initializing WSICropManager')
         crop_managers = [WSICropManager.remote(
             self.file_name_manager.wsi_path) for _ in range(num_gpus)]
 
@@ -142,6 +164,8 @@ class PBCounter:
                     pbar.update()
                     del tasks[done_id]
 
+        if self.verbose:
+            print(f"Shutting down Ray")
         ray.shutdown()
 
         self.focus_regions = all_results
@@ -149,8 +173,12 @@ class PBCounter:
     def find_wbc_candidates(self):
         """ Update the wbc_candidates of the PBCounter object. """
 
+        if self.verbose:
+            print(f"Initializing {num_gpus} Ray workers")
         ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
 
+        if self.verbose:
+            print('Initializing YOLOManager')
         task_managers = [YOLOManager.remote(
             YOLO_ckpt_path, YOLO_conf_thres) for _ in range(num_gpus)]
 
@@ -181,13 +209,19 @@ class PBCounter:
 
         self.wbc_candidates = all_results
 
+        if self.verbose:
+            print(f"Shutting down Ray")
         ray.shutdown()
 
     def label_wbc_candidates(self):
         """ Update the labels of the wbc_candidates of the PBCounter object. """
 
+        if self.verbose:
+            print(f"Initializing {num_gpus} Ray workers")
         ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
 
+        if self.verbose:
+            print('Initializing HemeLabelManager')
         task_managers = [HemeLabelManager.remote(
             HemeLabel_ckpt_path) for _ in range(num_gpus)]
 
@@ -215,9 +249,10 @@ class PBCounter:
 
                     pbar.update()
                     del tasks[done_id]
-
+        if self.verbose:
+            print(f"Shutting down Ray")
         ray.shutdown()
-        
+
         self.wbc_candidates = all_results
         self.differential = Differential(self.wbc_candidates)
 
