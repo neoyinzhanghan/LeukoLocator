@@ -62,7 +62,7 @@ class PBCounter:
         if self.verbose:
             print(f"Processing WSI top view as TopView object")
         # Processing the top level image
-        top_level = len(wsi.level_dimensions) - 1
+        top_level = len(wsi.level_dimensions) - 2
 
         if self.verbose:
             print(f"Obtaining top view image")
