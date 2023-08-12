@@ -10,8 +10,8 @@ min_VoL = 10 # 10
 min_WMP = 0.55 # 0.55
 max_WMP = 0.9 # 0.9
 focus_region_outlier_tolerance = 1
-num_gpus = 8
-num_cpus = 64
+num_gpus = 3
+num_cpus = 18
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 
