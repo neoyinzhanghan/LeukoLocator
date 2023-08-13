@@ -10,7 +10,7 @@ from WCW.communication.saving import save_wbc_candidates_sorted
 from WCW.vision.processing import SlideError
 
 PB_annotations_path = "/home/greg/Documents/neo/H23_PB_metadata.csv"
-wsi_dir = "/pesgisipth/NDPI"
+wsi_dir = "/media/hdd3/neo/H23"
 save_dir = dump_dir
 
 num_to_skip = 1
