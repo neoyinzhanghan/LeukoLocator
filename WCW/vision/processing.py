@@ -81,7 +81,7 @@ def read_with_timeout(wsi, location, level, dimensions):
 
     thread = threading.Thread(target=target)
     thread.start()
-    thread.join(timeout=10)  # 10 seconds timeout
+    thread.join(timeout=allowed_time)  # 10 seconds timeout
 
     if thread.is_alive():
         # The method hasn't finished in 10 seconds
