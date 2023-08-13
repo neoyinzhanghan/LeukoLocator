@@ -41,7 +41,7 @@ class PBCounter:
 
     def __init__(self,
                  wsi_path: str,
-                 verbose: bool = False):
+                 verbose: bool = True):
         """ Initialize a PBCounter object. """
 
         self.verbose = verbose
