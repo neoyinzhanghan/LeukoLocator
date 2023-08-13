@@ -86,7 +86,7 @@ def read_with_timeout(wsi, location, level, dimensions):
     if thread.is_alive():
         # The method hasn't finished in 10 seconds
         thread.join()  # Wait for it to finish or terminate, up to you.
-        raise SlideError("read_region took longer than 10 seconds")
+        raise SlideError(f"read_region took longer than {allowed_time} seconds")
 
     if result['error']:
         raise result['error']  # Rethrow the error from the thread
