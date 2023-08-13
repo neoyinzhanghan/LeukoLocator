@@ -7,6 +7,7 @@ from WCW.resources.assumptions import *
 import pandas as pd
 from WCW.PBCounter import PBCounter
 from WCW.communication.saving import save_wbc_candidates_sorted
+from WCW.vision.processing import SlideError
 
 PB_annotations_path = "/home/greg/Documents/neo/H23_PB_metadata.csv"
 wsi_dir = "/pesgisipth/NDPI"
@@ -31,19 +32,22 @@ for i in range(len(PB_annotations_df)):
     # get the wsi_path
     wsi_path = os.path.join(wsi_dir, wsi_fname)
 
-    pbc = PBCounter(wsi_path)
-    pbc.tally_differential()
+    try:
+        pbc = PBCounter(wsi_path)
+        pbc.tally_differential()
 
-    tally_string = pbc.differential.tally_string(
+        tally_string = pbc.differential.tally_string(
         omitted_classes=[], removed_classes=['ER5', 'ER6', 'PL2', 'PL3'])
 
-    # save_focus_regions(pbc)
-    save_wbc_candidates_sorted(pbc, image_type='snap_shot')
+        # save_focus_regions(pbc)
+        save_wbc_candidates_sorted(pbc, image_type='snap_shot')
+
+    except SlideError:
+        tally_string = "SlideError"
+
 
     # add the tally_string to the dataframe
     PB_annotations_df['WCW_tally'][i] = tally_string
-
-    save_dir
 
 # save the dataframe as a csv file
 PB_annotations_df.to_csv(os.path.join(save_dir, 'WCW_tally.csv'), index=False)
