@@ -4,6 +4,7 @@
 
 # Outside imports ##################################################################################
 from PIL import Image, ImageOps
+import threading
 
 # Within package imports ###########################################################################
 from WCW.resources.assumptions import *
@@ -67,3 +68,37 @@ def zero_pad(image, snap_shot_size):
     image = ImageOps.expand(image, padding)
 
     return image
+
+
+def read_with_timeout(wsi, location, level, dimensions):
+    result = {'top_view': None, 'error': None}
+
+    def target():
+        try:
+            result['top_view'] = wsi.read_region(location, level, dimensions)
+        except Exception as e:
+            result['error'] = e
+
+    thread = threading.Thread(target=target)
+    thread.start()
+    thread.join(timeout=10)  # 10 seconds timeout
+
+    if thread.is_alive():
+        # The method hasn't finished in 10 seconds
+        thread.join()  # Wait for it to finish or terminate, up to you.
+        raise SlideError("read_region took longer than 10 seconds")
+
+    if result['error']:
+        raise result['error']  # Rethrow the error from the thread
+
+    return result['top_view']
+
+
+class SlideError(ValueError):
+    """ The slide file has some issues that has nothing to do with the code. """
+
+    def __init__(self, e):
+        self.e = e
+
+    def __str__(self):
+        return f"SlideError: {self.e}"

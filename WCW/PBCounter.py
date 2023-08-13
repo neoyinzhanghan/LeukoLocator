@@ -19,6 +19,7 @@ from WCW.brain.HemeLabelManager import HemeLabelManager
 from WCW.brain.YOLOManager import YOLOManager
 from WCW.Differential import Differential
 from WCW.brain.statistics import focus_region_filtering
+from WCW.vision.processing import SlideError, read_with_timeout
 from WCW.vision.WSICropManager import WSICropManager
 
 
@@ -66,8 +67,15 @@ class PBCounter:
 
         if self.verbose:
             print(f"Obtaining top view image")
-        top_view = wsi.read_region(
-            (0, 0), top_level, wsi.level_dimensions[top_level])
+
+        # if the read_region takes longer than 10 seconds, then raise a SlideError
+
+        top_view = read_with_timeout(
+            wsi, (0, 0), top_level, wsi.level_dimensions[top_level])
+
+        # top_view = wsi.read_region(
+        #     (0, 0), top_level, wsi.level_dimensions[top_level])
+
         top_view = top_view.convert("RGB")
         top_view_downsampling_rate = wsi.level_downsamples[top_level]
         self.top_view = TopView(
@@ -81,8 +89,12 @@ class PBCounter:
         if self.verbose:
             print(f"Processing WSI search view as SearchView object")
         # Processing the search level image
-        search_view = wsi.read_region(
-            (0, 0), search_view_level, wsi.level_dimensions[search_view_level])
+
+        search_view = read_with_timeout(
+            wsi, (0, 0), search_view_level, wsi.level_dimensions[search_view_level])
+
+        # search_view = wsi.read_region(
+        #     (0, 0), search_view_level, wsi.level_dimensions[search_view_level])
         search_view_downsampling_rate = wsi.level_downsamples[search_view_level]
         self.search_view = SearchView(
             search_view, search_view_downsampling_rate, verbose=self.verbose)
@@ -270,13 +282,3 @@ class PBCounter:
 
         if self.differential is None:
             self.label_wbc_candidates()
-
-
-class SlideError(ValueError):
-    """ The slide file has some issues that has nothing to do with the code. """
-
-    def __init__(self, e):
-        self.e = e
-
-    def __str__(self):
-        return f"SlideError: {self.e}"

@@ -18,7 +18,7 @@ allowed_time = 10 # in seconds
 
 min_cell_VoL = 10
 
-zero_pad = False
+do_zero_pad = False
 
 YOLO_ckpt_path = "/home/greg/Documents/neo/WhiteCellWizard/WCW/resources/YOLO_checkpoint.pt"
 YOLO_conf_thres = 0.27
