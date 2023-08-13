@@ -79,7 +79,7 @@ class HemeLabelManager:
     def async_label_wbc_candidate(self, wbc_candidate):
         """ Label a WBC candidate. """
 
-        if zero_pad:
+        if do_zero_pad:
             image = wbc_candidate.padded_YOLO_bbox_image
         else:
             image = wbc_candidate.snap_shot
