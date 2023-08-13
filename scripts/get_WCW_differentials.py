@@ -13,6 +13,8 @@ PB_annotations_path = "/home/greg/Documents/neo/H23_PB_metadata.csv"
 wsi_dir = "/pesgisipth/NDPI"
 save_dir = dump_dir
 
+num_to_skip = 1
+
 # first open the csv file in PB_annotations_path and read it into a pandas dataframe
 PB_annotations_df = pd.read_csv(PB_annotations_path)
 
@@ -33,18 +35,27 @@ for i in range(len(PB_annotations_df)):
     wsi_path = os.path.join(wsi_dir, wsi_fname)
 
     try:
-        pbc = PBCounter(wsi_path)
-        pbc.tally_differential()
+        if i + 1 <= num_to_skip:
+            
+            print(f"Skipping {wsi_fname}")
+            tally_string = "Skipped"
 
-        tally_string = pbc.differential.tally_string(
-        omitted_classes=[], removed_classes=['ER5', 'ER6', 'PL2', 'PL3'])
+            continue
 
-        # save_focus_regions(pbc)
-        save_wbc_candidates_sorted(pbc, image_type='snap_shot')
+        else:
+            pbc = PBCounter(wsi_path)
+            pbc.tally_differential()
+
+            tally_string = pbc.differential.tally_string(
+                omitted_classes=[], removed_classes=['ER5', 'ER6', 'PL2', 'PL3'])
+
+            # save_focus_regions(pbc)
+            save_wbc_candidates_sorted(pbc, image_type='snap_shot')
 
     except SlideError:
-        tally_string = "SlideError"
 
+        print(f"SlideError: {wsi_fname}")
+        tally_string = "SlideError"
 
     # add the tally_string to the dataframe
     PB_annotations_df['WCW_tally'][i] = tally_string
