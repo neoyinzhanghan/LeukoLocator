@@ -61,5 +61,5 @@ for i in range(num_wsis):
         print(f"SlideError: {wsi_fname}")
         tally_string = "SlideError"
 
-    # add the tally_string to the dataframe
-    PB_annotations_df['WCW_tally'][i] = tally_string
+        # add the tally_string to the dataframe
+        PB_annotations_df[class_name][i] = tally_string
