@@ -26,7 +26,7 @@ class Differential:
                           'VoL'] + [cellnames[i] for i in range(num_classes)])
 
         # traverse through the list of WBCCandidate objects and add them to the dataframe
-        for ind in len(wbc_candidates):
+        for ind in range(len(wbc_candidates)):
             # use concat to avoid deprecation
             new_df = wbc_candidates[ind].compute_cell_info(ind)
             df = pd.concat([df, new_df], ignore_index=True)
