@@ -126,11 +126,15 @@ class YOLOManager:
 
         wbc_candidates = []
 
-        df = YOLO_detect(self.model, focus_region.image, conf_thres=self.conf_thres)
+        df = YOLO_detect(self.model, focus_region.image,
+                         conf_thres=self.conf_thres)
 
         # add the coordinate of the focus region to the df
         df['focus_region_TL_x'] = focus_region.coordinate[0]
         df['focus_region_TL_y'] = focus_region.coordinate[1]
+
+        # wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
+        wbc_candidate_bboxes = []
 
         # traverse through the df and create a list of WBCCandidate objects
         for i in range(len(df)):
@@ -194,6 +198,8 @@ class YOLOManager:
                          int(YOLO_bbox_intra_image[3] +
                              focus_region.coordinate[1]))
 
+            wbc_candidate_bboxes.append(YOLO_bbox)
+
             # create a WBCCandidate object
             wbc_candidate = WBCCandidate(snap_shot,
                                          YOLO_bbox_image,
@@ -203,5 +209,7 @@ class YOLOManager:
                                          confidence)
 
             wbc_candidates.append(wbc_candidate)
+
+        focus_region.wbc_candidate_bboxes = wbc_candidate_bboxes
 
         return wbc_candidates

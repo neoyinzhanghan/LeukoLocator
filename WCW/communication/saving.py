@@ -73,7 +73,7 @@ def save_focus_regions_annotated(pbc, save_dir=dump_dir):
             images_save_dir, str(focus_region.coordinate) + '.jpg'))
 
         # save the annotated image as a jpg file
-        focus_region.annotated_image.save(os.path.join(
+        focus_region.get_annotated_image().save(os.path.join(
             annotated_images_save_dir, str(focus_region.coordinate) + '.jpg'))
 
         # get the df of the annotations
