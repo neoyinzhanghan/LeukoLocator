@@ -23,18 +23,18 @@ num_to_skip = 10
 # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
 for i in range(num_wsis):
 
+    # get the wsi_fname
+    wsi_fname = PB_annotations_df['wsi_fname'][i]
+
+    # get the wsi_path
+    wsi_path = os.path.join(wsi_dir, wsi_fname)
+
     if num_ran + 1 <= num_to_skip:
 
         print(f"Skipping {wsi_fname}")
         tally_string = "Skipped"
 
         continue
-
-    # get the wsi_fname
-    wsi_fname = PB_annotations_df['wsi_fname'][i]
-
-    # get the wsi_path
-    wsi_path = os.path.join(wsi_dir, wsi_fname)
 
     print(f"Processing {wsi_fname} with {num_ran} slides processed so far.")
 
