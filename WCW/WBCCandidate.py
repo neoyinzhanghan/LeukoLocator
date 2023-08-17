@@ -4,6 +4,7 @@
 
 # Outside imports ##################################################################################
 import pandas as pd
+import numpy as np
 
 # Within package imports ###########################################################################
 from WCW.vision.image_quality import VoL
