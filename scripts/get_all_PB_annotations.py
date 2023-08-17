@@ -28,50 +28,56 @@ PB_annotations_dfs = []
 
 for csv_path in csv_paths:
 
-    # Get the dataframe of PB annotations
-    PB_annotations_df = get_PB_annotations_from_csv(csv_path)
+    try:
 
-    # Only keep the rows the processed_date is not empty NaN
-    PB_annotations_df = PB_annotations_df[~PB_annotations_df['processed_date'].isnull(
-    )]
+        # Get the dataframe of PB annotations
+        PB_annotations_df = get_PB_annotations_from_csv(csv_path)
 
-    # further subset so that barcode and text_data_final and text_data_clindx are not empty
-    PB_annotations_df = PB_annotations_df[~PB_annotations_df['barcode'].isnull(
-    )]
-    PB_annotations_df = PB_annotations_df[~PB_annotations_df['text_data_final'].isnull(
-    )]
-    PB_annotations_df = PB_annotations_df[~PB_annotations_df['text_data_clindx'].isnull(
-    )]
+        # Only keep the rows the processed_date is not empty NaN
+        PB_annotations_df = PB_annotations_df[~PB_annotations_df['processed_date'].isnull(
+        )]
 
-    # save the dataframe as a csv file in the save_dir with file name H23_PB_annotations.csv
-    PB_annotations_df.to_csv(os.path.join(
-        save_dir, "H23_PB_annotations_filtered.csv"), index=False)
+        # further subset so that barcode and text_data_final and text_data_clindx are not empty
+        PB_annotations_df = PB_annotations_df[~PB_annotations_df['barcode'].isnull(
+        )]
+        PB_annotations_df = PB_annotations_df[~PB_annotations_df['text_data_final'].isnull(
+        )]
+        PB_annotations_df = PB_annotations_df[~PB_annotations_df['text_data_clindx'].isnull(
+        )]
 
-    # Get a list of files in WSI_dir that end with .ndpi and start with H23
-    fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
-        ".ndpi") and fname.startswith("H")]
+        # save the dataframe as a csv file in the save_dir with file name H23_PB_annotations.csv
+        PB_annotations_df.to_csv(os.path.join(
+            save_dir, "H23_PB_annotations_filtered.csv"), index=False)
 
-    # the metadata are dictionaries, get them and concatenate them into a pandas dataframe
-    # use tqdm to show a progress bar
+        # Get a list of files in WSI_dir that end with .ndpi and start with H23
+        fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
+            ".ndpi") and fname.startswith("H")]
 
-    lst = []
+        # the metadata are dictionaries, get them and concatenate them into a pandas dataframe
+        # use tqdm to show a progress bar
 
-    for fname in tqdm(fnames):
-        try:
-            lst.append(get_PB_metadata(fname, PB_annotations_df))
-        except NotAnnotatedError:
-            print("NotAnnotatedError")
+        lst = []
+
+        for fname in tqdm(fnames):
+            try:
+                lst.append(get_PB_metadata(fname, PB_annotations_df))
+            except NotAnnotatedError:
+                print("NotAnnotatedError")
+                continue
+
+        df_lst = [pd.DataFrame(row, index=[0]) for row in tqdm(lst)]
+
+        if len(df_lst) == 0:
+            print("No metadata found")
             continue
 
-    df_lst = [pd.DataFrame(row, index=[0]) for row in tqdm(lst)]
+        metadata_df = pd.concat(df_lst, ignore_index=True)
 
-    if len(df_lst) == 0:
-        print("No metadata found")
+        PB_annotations_dfs.append(PB_annotations_df)
+    
+    except Exception as e:
+        print(f'{e} happened to {csv_path}')
         continue
-        
-    metadata_df = pd.concat(df_lst, ignore_index=True)
-
-    PB_annotations_dfs.append(PB_annotations_df)
 
 # concatenate the dataframes together into one big dataframe
 PB_annotations_df = pd.concat(PB_annotations_dfs, ignore_index=True)
