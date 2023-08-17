@@ -15,6 +15,10 @@ PB_annotations_df = pd.read_csv(PB_annotations_path)
 for class_name in PB_final_classes:
     PB_annotations_df[class_name] = [0] * len(PB_annotations_df)
 
+# now add a new column of num of wbcs scanned and num of focus regions scanned
+PB_annotations_df['num_wbcs_scanned'] = [0] * len(PB_annotations_df)
+PB_annotations_df['num_focus_regions_scanned'] = [0] * len(PB_annotations_df)
+
 num_wsis = len(PB_annotations_df)
 num_to_run = 20  # num_wsis
 num_ran = 0
@@ -62,9 +66,17 @@ for i in range(num_wsis):
             save_focus_regions_annotated(pbc, save_dir=sub_dir)
             save_wbc_candidates_sorted(
                 pbc, image_type='snap_shot', save_dir=sub_dir)
+            
+            # save the top view image in the sub_dir
+            pbc.top_view.image.save(os.path.join(sub_dir, "top_view.jpg"))
 
             for class_name in PB_final_classes:
                 PB_annotations_df.loc[i, class_name] = tally_dict[class_name]
+
+            PB_annotations_df.loc[i, 'num_wbcs_scanned'] = len(
+                pbc.wbc_candidates)
+            PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = len(
+                pbc.focus_regions)
 
             # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
             PB_annotations_df.to_csv(os.path.join(
