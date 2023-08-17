@@ -34,6 +34,8 @@ for i in range(num_wsis):
         print(f"Skipping {wsi_fname}")
         tally_string = "Skipped"
 
+        num_ran += 1
+
         continue
 
     print(f"Processing {wsi_fname} with {num_ran} slides processed so far.")
