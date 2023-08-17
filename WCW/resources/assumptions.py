@@ -78,13 +78,30 @@ cellnames_dict = {
 supported_extensions = ['.svs', '.ndpi']
 test_example_path = "/media/hdd1/neo/PB2/666 - 2023-05-31 22.53.12.ndpi"
 
-different_dict = {
+differential_group_dict = {
     'Immature Granulocyte': ['M3'],
     'Neutrophil': ['M4', 'M5', 'M6'],
-    'Eosinophil': ['E0', 'E1', 'E2', 'E3', 'E4'],
+    'Eosinophil': ['E1', 'E4'],
     'Blast': ['M1', 'ER1', 'M2'],
     'Monocyte': ['MO2'],
-    'Lymphocyte': ['L2'],
+    'Lymphocyte': ['L2', 'L4'],
     'Nucleated RBC': ['ER2', 'ER3', 'ER4'],
     'Basophil': ['B2', 'B1'],
 }
+
+# differential_group_dict = {
+#     'Immature Granulocyte': ['M3'],
+#     'Neutrophil': ['M4', 'M5', 'M6'],
+#     'Eosinophil': ['E0', 'E1', 'E2', 'E3', 'E4'],
+#     'Blast': ['M1', 'ER1', 'M2'],
+#     'Monocyte': ['MO2'],
+#     'Lymphocyte': ['L2'],
+#     'Nucleated RBC': ['ER2', 'ER3', 'ER4'],
+#     'Basophil': ['B2', 'B1'],
+# }
+
+PB_final_classes = ['Immature Granulocyte', 'Neutrophil', 'Eosinophil', 'Blast', 'Monocyte',
+                    'Lymphocyte', 'Nucleated RBC', 'Basophil']
+
+omitted_classes = ['ER5', 'ER6', 'U4']
+removed_classes = ['U1', 'PL2', 'PL3']

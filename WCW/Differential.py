@@ -12,7 +12,7 @@ from WCW.resources.assumptions import *
 
 class Differential:
     """ A class representing the differential of a PBCounter object.
-    
+
     === Class Attributes ===
     - wbc_candidate_df : a pandas dataframe containing the information of the WBC candidates
         its columns are: coords, confidence, VoL, cellnames[0], ..., cellnames[num_classes - 1]
@@ -22,27 +22,28 @@ class Differential:
         """ Initialize a Differential object. The input is a list of WBCCandidate objects. """
 
         # initialize the dataframe
-        df = pd.DataFrame(columns=['coords', 'confidence', 'VoL'] + [cellnames[i] for i in range(num_classes)])
+        df = pd.DataFrame(columns=['cell_id', 'name', 'coords', 'confidence',
+                          'VoL'] + [cellnames[i] for i in range(num_classes)])
 
         # traverse through the list of WBCCandidate objects and add them to the dataframe
-        for wbc_candidate in wbc_candidates:
+        for ind in len(wbc_candidates):
             # use concat to avoid deprecation
-            new_df = pd.DataFrame([[wbc_candidate.snap_shot_bbox, wbc_candidate.confidence, wbc_candidate.VoL] + list(wbc_candidate.softmax_vector)], columns=['coords', 'confidence', 'VoL'] + [cellnames[i] for i in range(num_classes)])
+            new_df = wbc_candidates[ind].compute_cell_info(ind)
             df = pd.concat([df, new_df], ignore_index=True)
-        
+
         self.wbc_candidate_df = df
-    
+
     def __len__(self):
         """ Return the number of cells in the differential. """
-            
+
         return len(self.wbc_candidate_df)
-    
+
     def __getitem__(self, key) -> dict:
         """ Return the key-th row of the dataframe.
         The key is the row index of the dataframe as a dictionary."""
 
         return self.wbc_candidate_df.iloc[key].to_dict()
-    
+
     def tally_dict(self, omitted_classes, removed_classes, print_results=True):
         """ Return a dictionary of the tally of the differential. 
         First make a clone of the dataframe. Set all omitted classes to -np.inf. 
@@ -54,12 +55,14 @@ class Differential:
         # check if omitted_classes are inside cellnames, if not raise a ValueError
         for omitted_class in omitted_classes:
             if omitted_class not in cellnames:
-                raise ValueError(f"One of the omitted class ({omitted_class}) is not a element of supported classes {cellnames}.")
-            
+                raise ValueError(
+                    f"One of the omitted class ({omitted_class}) is not a element of supported classes {cellnames}.")
+
         # do the same for removed_classes
         for removed_class in removed_classes:
             if removed_class not in cellnames:
-                raise ValueError(f"One of the removed class ({removed_class}) is not a element of supported classes {cellnames}.")
+                raise ValueError(
+                    f"One of the removed class ({removed_class}) is not a element of supported classes {cellnames}.")
 
         # clone the dataframe
         df = self.wbc_candidate_df.copy()
@@ -82,19 +85,46 @@ class Differential:
         if print_results:
             for cellname in tally:
                 print(f"{cellnames_dict[cellname]}: {tally[cellname]}")
-        
+
         return tally
-    
+
     def tally_string(self, omitted_classes, removed_classes, print_results=True):
         """ First get the tally dictionary, and then convert it to a string as how it would be printed. """
 
         # get the tally dictionary
-        tally = self.tally_dict(omitted_classes, removed_classes, print_results)
+        tally = self.tally_dict(
+            omitted_classes, removed_classes, print_results)
 
         # convert the tally dictionary to a string
         tally_string = ""
 
         for cellname in tally:
             tally_string += f"{cellnames_dict[cellname]}: {tally[cellname]}\n"
-        
+
         return tally_string
+
+    def compute_PB_differential(self, omitted_classes=omitted_classes, removed_classes=removed_classes, differential_group_dict=differential_group_dict):
+        """ Return a dictionary of the tally of the differential for the final PB result.
+        Use differential_group_dict to group the cells into the following categories:
+        Immature Granulocyte, Neutrophil, Eosinophil, Blast, Monocyte, Lymphocyte, Nucleated RBC, Basophil. """
+
+        # get the tally dictionary
+        tally = self.tally_dict(
+            omitted_classes, removed_classes, print_results=False)
+
+        # create a new dictionary
+        PB_tally = {}
+
+        # traverse through the keys of differential_group_dict
+        for key in differential_group_dict:
+
+            # initialize the value of the key to be 0
+            PB_tally[key] = 0
+
+            # traverse through the values of the key
+            for value in differential_group_dict[key]:
+
+                # add the value to the key
+                PB_tally[key] += tally[value]
+
+        return PB_tally
