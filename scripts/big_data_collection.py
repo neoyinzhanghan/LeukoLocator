@@ -16,7 +16,7 @@ for class_name in PB_final_classes:
     PB_annotations_df[class_name] = [0] * len(PB_annotations_df)
 
 num_wsis = len(PB_annotations_df)
-num_to_run = num_wsis
+num_to_run = 2 # num_wsis
 num_ran = 0
 
 # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
