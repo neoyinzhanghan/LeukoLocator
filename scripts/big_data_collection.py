@@ -54,7 +54,8 @@ for i in range(num_wsis):
                 pbc, image_type='snap_shot', save_dir=sub_dir)
 
             for class_name in PB_final_classes:
-                PB_annotations_df[class_name][i] = tally_dict[class_name]
+                PB_annotations_df.loc[i, class_name] = tally_dict[class_name]
+
 
     except SlideError:
 
@@ -62,4 +63,5 @@ for i in range(num_wsis):
         tally_string = "SlideError"
 
         # add the tally_string to the dataframe
-        PB_annotations_df[class_name][i] = tally_string
+        PB_annotations_df.loc[i, class_name] = tally_dict[class_name]
+
