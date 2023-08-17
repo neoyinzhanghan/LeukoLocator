@@ -67,8 +67,9 @@ class WBCCandidate:
             return self.cell_df_row
 
         else:
+            sofmax_vector_np = np.array(self.softmax_vector)
             self.name = str(cell_id) + '-' + '-'.join([cellnames[i]
-                                                       for i in self.softmax_vector.argsort()[-4:][::-1]]) + '.jpg'
+                                                       for i in sofmax_vector_np.argsort()[-4:][::-1]]) + '.jpg'
             self.cell_id = cell_id
             cell_df_row = [self.cell_id, self.name, self.YOLO_bbox,
                            self.confidence, self.VoL] + list(self.softmax_vector)
