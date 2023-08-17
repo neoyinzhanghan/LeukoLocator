@@ -18,6 +18,7 @@ from WCW.resources.assumptions import *
 from WCW.brain.metrics import bb_intersection_over_union
 from WCW.vision.processing import zero_pad
 from WCW.WBCCandidate import WBCCandidate
+from WCW.vision.image_quality import VoL
 
 
 def _remove_wbc_df_duplicates(df):

@@ -9,6 +9,7 @@ import ray
 # Within package imports ###########################################################################
 from WCW.FocusRegion import FocusRegion
 from WCW.resources.assumptions import *
+from WCW.vision.image_quality import VoL
 
 
 @ray.remote(num_cpus=num_cpus_per_manager)
@@ -43,7 +44,8 @@ class WSICropManager:
         if self.wsi is None:
             self.open_slide()
 
-        image = self.wsi.read_region(coords, 0, (coords[2] - coords[0], coords[3] - coords[1]))
+        image = self.wsi.read_region(
+            coords, 0, (coords[2] - coords[0], coords[3] - coords[1]))
         image = image.convert("RGB")
 
         return image
@@ -52,6 +54,14 @@ class WSICropManager:
         """ Update the image of the focus region. """
 
         if focus_region.image is None:
-            focus_region.get_image(self.crop(focus_region.coordinate))
-        
-        return focus_region
+            image = self.crop(focus_region.coordinate)
+
+        vol = VoL(image)
+        if vol < min_VoL:
+            return None
+
+        else:
+            focus_region.get_image(image)
+            focus_region.VoL = vol
+
+            return focus_region

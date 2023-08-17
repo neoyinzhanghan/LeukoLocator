@@ -170,7 +170,8 @@ class PBCounter:
                     try:
 
                         result = ray.get(done_id)
-                        all_results.append(result)
+                        if result is not None:
+                            all_results.append(result)
 
                     except RayTaskError as e:
                         print(
