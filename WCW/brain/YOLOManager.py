@@ -198,7 +198,12 @@ class YOLOManager:
                          int(YOLO_bbox_intra_image[3] +
                              focus_region.coordinate[1]))
 
-            wbc_candidate_bboxes.append(YOLO_bbox)
+            YOLO_bbox_relative = (YOLO_bbox_intra_image[0],
+                                  YOLO_bbox_intra_image[1],
+                                  YOLO_bbox_intra_image[2],
+                                  YOLO_bbox_intra_image[3])
+
+            wbc_candidate_bboxes.append(YOLO_bbox_relative)
 
             # create a WBCCandidate object
             wbc_candidate = WBCCandidate(snap_shot,

@@ -8,8 +8,6 @@ import os
 PB_annotations_path = "/media/hdd3/neo/results/PB_annotations_filtered.csv"
 wsi_dir = "/media/hdd3/neo/PB_slides"
 save_dir = dump_dir
-num_to_run = 10
-num_ran = 0
 
 PB_annotations_df = pd.read_csv(PB_annotations_path)
 
@@ -18,6 +16,8 @@ for class_name in PB_final_classes:
     PB_annotations_df[class_name] = [0] * len(PB_annotations_df)
 
 num_wsis = len(PB_annotations_df)
+num_to_run = num_wsis
+num_ran = 0
 
 # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
 for i in range(num_wsis):
@@ -56,6 +56,9 @@ for i in range(num_wsis):
             for class_name in PB_final_classes:
                 PB_annotations_df.loc[i, class_name] = tally_dict[class_name]
 
+            # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
+            PB_annotations_df.to_csv(os.path.join(
+                save_dir, "PB_annotations_filtered_processed.csv"), index=False)
 
     except SlideError:
 
@@ -65,3 +68,12 @@ for i in range(num_wsis):
         # add the tally_string to the dataframe
         PB_annotations_df.loc[i, class_name] = tally_dict[class_name]
 
+        # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
+        PB_annotations_df.to_csv(os.path.join(
+            save_dir, "PB_annotations_filtered_processed.csv"), index=False)
+
+    num_ran += 1
+
+# save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
+PB_annotations_df.to_csv(os.path.join(
+    save_dir, "PB_annotations_filtered_processed.csv"), index=False)
