@@ -20,9 +20,9 @@ PB_annotations_df['num_wbcs_scanned'] = [0] * len(PB_annotations_df)
 PB_annotations_df['num_focus_regions_scanned'] = [0] * len(PB_annotations_df)
 
 num_wsis = len(PB_annotations_df)
-num_to_run = 20  # num_wsis
+num_to_run = 30  # num_wsis
 num_ran = 0
-num_to_skip = 10
+num_to_skip = 25
 
 # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
 for i in range(num_wsis):
