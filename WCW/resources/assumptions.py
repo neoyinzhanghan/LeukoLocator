@@ -20,10 +20,10 @@ min_cell_VoL = 10
 
 do_zero_pad = False
 
-YOLO_ckpt_path = "/home/greg/Documents/neo/WhiteCellWizard/WCW/resources/YOLO_checkpoint.pt"
+YOLO_ckpt_path = "/media/hdd3/neo/resources/YOLO_checkpoint.pt"
 YOLO_conf_thres = 0.27
-HemeLabel_ckpt_path = "/home/greg/Documents/neo/WhiteCellWizard/WCW/resources/HemeLabel_weights.ckpt"
-dump_dir = "/media/hdd3/neo/dump"
+HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
+dump_dir = "/media/hdd3/neo/results"
 
 cellnames = ['B1', 'B2', 'E1', 'E4', 'ER1', 'ER2', 'ER3', 'ER4', 'ER5', 'ER6',
              'L2', 'L4', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6',
