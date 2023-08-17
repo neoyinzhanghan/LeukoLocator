@@ -38,11 +38,6 @@ for i in range(num_wsis):
 
     print(f"Processing {wsi_fname} with {num_ran} slides processed so far.")
 
-    # create a subdirectory in save_dir with the name of the wsi_fname without the extension .ndpi
-    sub_dir = os.path.join(save_dir, wsi_fname[:-5])
-    if not os.path.exists(sub_dir):
-        os.mkdir(sub_dir)
-
     try:
         if i + 1 > num_to_run:
 
@@ -52,6 +47,11 @@ for i in range(num_wsis):
             continue
 
         else:
+
+            # create a subdirectory in save_dir with the name of the wsi_fname without the extension .ndpi
+            sub_dir = os.path.join(save_dir, wsi_fname[:-5])
+            if not os.path.exists(sub_dir):
+                os.mkdir(sub_dir)
             pbc = PBCounter(wsi_path)
             pbc.tally_differential()
 
