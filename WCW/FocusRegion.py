@@ -76,9 +76,9 @@ class FocusRegion:
         else:
             return pd.DataFrame(self.wbc_candidate_bboxes, columns=['TL_x', 'TL_y', 'BR_x', 'BR_y'])
 
-    class FocusRegionNotAnnotatedError(ValueError):
-        """ Raised when the focus region is not annotated. """
+class FocusRegionNotAnnotatedError(ValueError):
+    """ Raised when the focus region is not annotated. """
 
-        def __init__(self, message="The focus region is not annotated."):
-            self.message = message
-            super().__init__(self.message)
+    def __init__(self, message="The focus region is not annotated."):
+        self.message = message
+        super().__init__(self.message)
