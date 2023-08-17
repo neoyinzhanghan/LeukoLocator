@@ -4,6 +4,7 @@ from WCW.vision.processing import SlideError
 from WCW.PBCounter import PBCounter
 import pandas as pd
 import os
+import time
 
 PB_annotations_path = "/media/hdd3/neo/results/PB_annotations_filtered.csv"
 wsi_dir = "/media/hdd3/neo/PB_slides"
@@ -18,6 +19,9 @@ for class_name in PB_final_classes:
 # now add a new column of num of wbcs scanned and num of focus regions scanned
 PB_annotations_df['num_wbcs_scanned'] = [0] * len(PB_annotations_df)
 PB_annotations_df['num_focus_regions_scanned'] = [0] * len(PB_annotations_df)
+
+# add a new column named processing_time
+PB_annotations_df['processing_time'] = [0] * len(PB_annotations_df)
 
 num_wsis = len(PB_annotations_df)
 num_to_run = 50  # num_wsis
@@ -50,9 +54,19 @@ for i in range(num_wsis):
             print(f"Skipping {wsi_fname}")
             tally_string = "Skipped"
 
+            PB_annotations_df.loc[i, class_name] = tally_string
+
+            PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
+            PB_annotations_df.loc[i,
+                                  'num_focus_regions_scanned'] = tally_string
+
+            PB_annotations_df.loc[i, 'processing_time'] = tally_string
+
             continue
 
         else:
+
+            start_time = time.time()
 
             # create a subdirectory in save_dir with the name of the wsi_fname without the extension .ndpi
             sub_dir = os.path.join(save_dir, wsi_fname[:-5])
@@ -63,10 +77,12 @@ for i in range(num_wsis):
 
             tally_dict = pbc.differential.compute_PB_differential()
 
+            time_taken = time.time() - start_time
+
             save_focus_regions_annotated(pbc, save_dir=sub_dir)
             save_wbc_candidates_sorted(
                 pbc, image_type='snap_shot', save_dir=sub_dir)
-            
+
             # save the top view image in the sub_dir
             pbc.top_view.image.save(os.path.join(sub_dir, "top_view.jpg"))
 
@@ -78,6 +94,8 @@ for i in range(num_wsis):
             PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = len(
                 pbc.focus_regions)
 
+            PB_annotations_df.loc[i, 'processing_time'] = time_taken
+
             # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
             PB_annotations_df.to_csv(os.path.join(
                 save_dir, "PB_annotations_filtered_processed.csv"), index=False)
@@ -88,7 +106,12 @@ for i in range(num_wsis):
         tally_string = "SlideError"
 
         # add the tally_string to the dataframe
-        PB_annotations_df.loc[i, class_name] = tally_dict[class_name]
+        PB_annotations_df.loc[i, class_name] = tally_string
+
+        PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
+        PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = tally_string
+
+        PB_annotations_df.loc[i, 'processing_time'] = tally_string
 
         # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
         PB_annotations_df.to_csv(os.path.join(
