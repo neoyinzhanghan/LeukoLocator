@@ -2,3 +2,4 @@ WCW/resources/HemeLabel_weights.ckpt
 WCW/resources/YOLO_checkpoint.pt
 WCW/resources/H16-20230726.csv
 WCW/resources/H16-20230726-reexported.csv
+WCW/resources/PB_annotations_filtered.csv

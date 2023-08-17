@@ -68,7 +68,7 @@ for csv_path in csv_paths:
 
         metadata_df = pd.concat(df_lst, ignore_index=True)
 
-        PB_annotations_dfs.append(PB_annotations_df)
+        PB_annotations_dfs.append(metadata_df)
     
     except Exception as e:
         print(f'{e} happened to {csv_path}')
