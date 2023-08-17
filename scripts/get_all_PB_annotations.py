@@ -18,7 +18,7 @@ csv_paths = ["/media/ssd2/clinical_text_data/PathReports_Heme/H23-20230720.csv",
              "/media/ssd2/clinical_text_data/PathReports_Heme/H19-20230724.csv",
              "/media/ssd2/clinical_text_data/PathReports_Heme/H18-20230724.csv",
              "/media/ssd2/clinical_text_data/PathReports_Heme/H17-20230724.csv",
-             "/media/ssd2/clinical_text_data/PathReports_Heme/H16-20230726.csv",
+             "/media/ssd2/clinical_text_data/PathReports_Heme/H16-20230726-reexported.csv",
              "/media/ssd2/clinical_text_data/PathReports_Heme/H15-20230726.csv"]
 
 WSI_dir = "/pesgisipth/NDPI"
