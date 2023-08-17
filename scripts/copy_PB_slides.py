@@ -11,4 +11,4 @@ PB_annotations_df = pd.read_csv(PB_annotations_path)
 
 # traverse through the wsi_fname column in the dataframe, and copy the files from from_dir to to_dir
 for wsi_fname in tqdm(PB_annotations_df['wsi_fname']): # do not use shutil 
-    os.system(f"cp {os.path.join(from_dir, wsi_fname)} {to_dir}")
+    os.system(f"cp \'{os.path.join(from_dir, wsi_fname)}\' {to_dir}")
