@@ -45,10 +45,6 @@ for csv_path in csv_paths:
         PB_annotations_df = PB_annotations_df[~PB_annotations_df['text_data_clindx'].isnull(
         )]
 
-        # save the dataframe as a csv file in the save_dir with file name H23_PB_annotations.csv
-        PB_annotations_df.to_csv(os.path.join(
-            save_dir, "H23_PB_annotations_filtered.csv"), index=False)
-
         # Get a list of files in WSI_dir that end with .ndpi and start with H23
         fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
             ".ndpi") and fname.startswith("H")]
