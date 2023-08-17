@@ -4,3 +4,8 @@ WCW/resources/H16-20230726.csv
 WCW/resources/H16-20230726-reexported.csv
 WCW/resources/PB_annotations_filtered.csv
 .DS_Store
+WCW/.DS_Store
+WCW/resources/.DS_Store
+WCW/brain/.DS_Store
+WCW/vision/.DS_Store
+WCW/communication/.DS_Store
