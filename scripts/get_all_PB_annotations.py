@@ -65,6 +65,10 @@ for csv_path in csv_paths:
 
     df_lst = [pd.DataFrame(row, index=[0]) for row in tqdm(lst)]
 
+    if len(df_lst) == 0:
+        print("No metadata found")
+        continue
+        
     metadata_df = pd.concat(df_lst, ignore_index=True)
 
     PB_annotations_dfs.append(PB_annotations_df)
