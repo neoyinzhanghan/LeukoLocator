@@ -81,7 +81,7 @@ def save_focus_regions_annotated(pbc, save_dir=dump_dir):
 
         # save the df as a csv file
         df.to_csv(os.path.join(
-            annotations_save_dir, str(focus_region.coordinate) + '.csv'))
+            annotations_save_dir, str(focus_region.coordinate) + '.csv'), index=False)
 
 
 def save_wbc_candidates_sorted(pbc, save_dir=os.path.join(dump_dir, 'wbc_candidates_sorted'), image_type='padded_YOLO_bbox_image'):
