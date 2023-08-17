@@ -62,7 +62,6 @@ for csv_path in csv_paths:
             try:
                 lst.append(get_PB_metadata(fname, PB_annotations_df))
             except NotAnnotatedError:
-                print("NotAnnotatedError")
                 continue
 
         df_lst = [pd.DataFrame(row, index=[0]) for row in tqdm(lst)]
