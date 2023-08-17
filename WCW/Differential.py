@@ -116,13 +116,16 @@ class Differential:
         PB_tally = {}
 
         # traverse through the keys of differential_group_dict
-        for key in differential_group_dict:
+        for key in PB_final_classes:
 
             # initialize the value of the key to be 0
             PB_tally[key] = 0
 
             # traverse through the values of the key
             for value in differential_group_dict[key]:
+                
+                if value not in tally:
+                    continue
 
                 # add the value to the key
                 PB_tally[key] += tally[value]
