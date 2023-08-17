@@ -199,6 +199,7 @@ class PBCounter:
 
         tasks = {}
         all_results = []
+        new_focus_regions = []
 
         for i, focus_region in enumerate(self.focus_regions):
             manager = task_managers[i % num_gpus]
@@ -211,9 +212,10 @@ class PBCounter:
 
                 for done_id in done_ids:
                     try:
-                        result = ray.get(done_id)
+                        result, new_focus_region = ray.get(done_id)
                         for wbc_candidate in result:
                             all_results.append(wbc_candidate)
+                        new_focus_regions.append(new_focus_region)
 
                     except RayTaskError as e:
                         print(
@@ -223,6 +225,7 @@ class PBCounter:
                     del tasks[done_id]
 
         self.wbc_candidates = all_results
+        self.focus_regions = new_focus_regions
 
         if self.verbose:
             print(f"Shutting down Ray")

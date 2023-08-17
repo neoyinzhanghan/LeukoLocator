@@ -212,4 +212,4 @@ class YOLOManager:
 
         focus_region.wbc_candidate_bboxes = wbc_candidate_bboxes
 
-        return wbc_candidates
+        return wbc_candidates, focus_region
