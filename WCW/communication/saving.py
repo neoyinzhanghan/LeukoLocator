@@ -93,7 +93,7 @@ def save_wbc_candidates_sorted(pbc, save_dir=os.path.join(dump_dir, 'wbc_candida
 
     # for each cellname in the cellnames, create a folder
     for cellname in cellnames:
-        cellname_dir = os.path.join(save_dir, cellnames_dict[cellname])
+        cellname_dir = os.path.join(save_dir, cellname)
         if not os.path.exists(cellname_dir):
             os.makedirs(cellname_dir)
 
