@@ -49,7 +49,7 @@ for csv_path in csv_paths:
 
     # Get a list of files in WSI_dir that end with .ndpi and start with H23
     fnames = [fname for fname in os.listdir(WSI_dir) if fname.endswith(
-        ".ndpi") and fname.startswith("H23")]
+        ".ndpi") and fname.startswith("H")]
 
     # the metadata are dictionaries, get them and concatenate them into a pandas dataframe
     # use tqdm to show a progress bar
