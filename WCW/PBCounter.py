@@ -235,6 +235,10 @@ class PBCounter:
     def label_wbc_candidates(self):
         """ Update the labels of the wbc_candidates of the PBCounter object. """
 
+        if self.wbc_candidates == [] or self.wbc_candidates is None:
+            raise NoCellFoundError(
+                "No WBC candidates found. Please run find_wbc_candidates() first. If problem persists, the slide may be problematic.")
+
         if self.verbose:
             print(f"Initializing {num_gpus} Ray workers")
         ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
@@ -286,3 +290,12 @@ class PBCounter:
 
         if self.differential is None:
             self.label_wbc_candidates()
+
+
+class NoCellFoundError(ValueError):
+    """ An exception raised when no cell is found. """
+
+    def __init__(self, message):
+        """ Initialize a NoCellFoundError object. """
+
+        super().__init__(message)

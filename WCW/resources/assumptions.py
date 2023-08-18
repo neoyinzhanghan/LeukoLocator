@@ -29,7 +29,6 @@ cellnames = ['B1', 'B2', 'E1', 'E4', 'ER1', 'ER2', 'ER3', 'ER4', 'ER5', 'ER6',
              'L2', 'L4', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6',
              'MO2', 'PL2', 'PL3', 'U1', 'U4']  # the last element would never be indexed
 
-ignored_cellnames = ['ER5', 'ER6']
 what_to_ignore = 'class'  # 'class' or 'instance' if ignore class, then the softmax probability of ignored classes will be set to -np.inf, if ignore instance, then instances of ignored classes will be removed
 
 cellnames_dict = {
