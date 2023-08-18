@@ -10,3 +10,9 @@ WCW/brain/.DS_Store
 WCW/vision/.DS_Store
 WCW/communication/.DS_Store
 WhiteCellWizard.egg-info
+build/bdist.macosx-10.9-x86_64
+build/lib/WCW
+build/lib/WCW/brain
+build/lib/WCW/communication
+build/lib/WCW/vision
+build/lib/WCW/resources
