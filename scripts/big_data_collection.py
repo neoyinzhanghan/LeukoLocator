@@ -26,7 +26,7 @@ PB_annotations_df = pd.read_csv(PB_annotations_path)
 num_wsis = len(PB_annotations_df)
 num_to_run = num_wsis + 1000
 num_ran = 0
-num_to_skip = 12
+num_to_skip = 25
 
 # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
 for i in range(num_wsis):
