@@ -54,7 +54,8 @@ for i in range(num_wsis):
             print(f"Skipping {wsi_fname}")
             tally_string = "Skipped"
 
-            PB_annotations_df.loc[i, class_name] = tally_string
+            for class_name in PB_final_classes:
+                PB_annotations_df.loc[i, class_name] = tally_string
 
             PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
             PB_annotations_df.loc[i,
@@ -99,7 +100,7 @@ for i in range(num_wsis):
             # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
             PB_annotations_df.to_csv(os.path.join(
                 save_dir, "PB_annotations_filtered_processed.csv"), index=False)
-            
+
             i += 1
 
     except NoCellFoundError:
@@ -108,7 +109,8 @@ for i in range(num_wsis):
         tally_string = "NoCellFoundError"
 
         # add the tally_string to the dataframe
-        PB_annotations_df.loc[i, class_name] = tally_string
+        for class_name in PB_final_classes:
+            PB_annotations_df.loc[i, class_name] = tally_string
 
         PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
         PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = tally_string
@@ -118,7 +120,7 @@ for i in range(num_wsis):
         # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
         PB_annotations_df.to_csv(os.path.join(
             save_dir, "PB_annotations_filtered_processed.csv"), index=False)
-        
+
         i += 1
 
     except SlideError:
@@ -127,7 +129,8 @@ for i in range(num_wsis):
         tally_string = "SlideError"
 
         # add the tally_string to the dataframe
-        PB_annotations_df.loc[i, class_name] = tally_string
+        for class_name in PB_final_classes:
+            PB_annotations_df.loc[i, class_name] = tally_string
 
         PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
         PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = tally_string
@@ -137,7 +140,7 @@ for i in range(num_wsis):
         # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
         PB_annotations_df.to_csv(os.path.join(
             save_dir, "PB_annotations_filtered_processed.csv"), index=False)
-        
+
         i += 1
 
 # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
