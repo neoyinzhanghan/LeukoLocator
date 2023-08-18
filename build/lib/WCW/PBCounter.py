@@ -216,9 +216,6 @@ class PBCounter:
                         result, new_focus_region = ray.get(done_id)
                         for wbc_candidate in result:
                             all_results.append(wbc_candidate)
-                        if len(all_results) > max_num_candidates:
-                            raise TooManyCandidatesError(
-                                f"Too many candidates found. max_num_candidates {max_num_candidates} is exceeded. Increase max_num_candidates or check code and slide for error.")
                         new_focus_regions.append(new_focus_region)
 
                     except RayTaskError as e:
@@ -300,14 +297,5 @@ class NoCellFoundError(ValueError):
 
     def __init__(self, message):
         """ Initialize a NoCellFoundError object. """
-
-        super().__init__(message)
-
-
-class TooManyCandidatesError(ValueError):
-    """ An exception raised when too many candidates are found. """
-
-    def __init__(self, message):
-        """ Initialize a TooManyCandidatesError object. """
 
         super().__init__(message)
