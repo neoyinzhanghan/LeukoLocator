@@ -1,7 +1,7 @@
 from WCW.resources.assumptions import *
 from WCW.communication.saving import save_wbc_candidates_sorted, save_focus_regions_annotated
 from WCW.vision.processing import SlideError
-from WCW.PBCounter import PBCounter, NoCellFoundError
+from WCW.PBCounter import PBCounter, NoCellFoundError, TooManyCandidatesError
 import pandas as pd
 import os
 import time
@@ -142,6 +142,27 @@ for i in range(num_wsis):
             save_dir, "PB_annotations_filtered_processed.csv"), index=False)
 
         i += 1
+    
+    except TooManyCandidatesError:
+
+        print(f"TooManyCandidatesError: {wsi_fname}")
+        tally_string = "TooManyCandidatesError"
+
+        # add the tally_string to the dataframe
+        for class_name in PB_final_classes:
+            PB_annotations_df.loc[i, class_name] = tally_string
+
+        PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
+        PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = tally_string
+
+        PB_annotations_df.loc[i, 'processing_time'] = tally_string
+
+        # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
+        PB_annotations_df.to_csv(os.path.join(
+            save_dir, "PB_annotations_filtered_processed.csv"), index=False)
+
+        i += 1
+    
 
 # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
 PB_annotations_df.to_csv(os.path.join(
