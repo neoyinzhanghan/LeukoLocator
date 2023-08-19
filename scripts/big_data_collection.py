@@ -27,7 +27,7 @@ PB_annotations_df = pd.read_csv(PB_annotations_path)
 num_wsis = len(PB_annotations_df)
 num_to_run = num_wsis + 1000
 num_ran = 0
-num_to_skip = 65
+num_to_skip = 120
 
 # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
 for i in range(num_wsis):
@@ -172,6 +172,26 @@ for i in range(num_wsis):
         # add the tally_string to the dataframe
         for class_name in PB_final_classes:
             PB_annotations_df.loc[i, class_name] = tally_string
+
+        PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
+        PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = tally_string
+
+        PB_annotations_df.loc[i, 'processing_time'] = tally_string
+
+        # save the dataframe as a csv file in the save_dir with file name PB_annotations_filtered_processed.csv
+        PB_annotations_df.to_csv(os.path.join(
+            save_dir, "PB_annotations_filtered_processed.csv"), index=False)
+
+        i += 1
+
+    except Exception as e:
+
+        print(f"Exception: {wsi_fname}", e)
+        tally_string = "Exception Occurred" + str(e)
+
+        # add the tally_string to the dataframe
+        for class_name in PB_final_classes:
+            PB_annotations_df.loc[i, class_name] = 'ERROR' + str(e)
 
         PB_annotations_df.loc[i, 'num_wbcs_scanned'] = tally_string
         PB_annotations_df.loc[i, 'num_focus_regions_scanned'] = tally_string
