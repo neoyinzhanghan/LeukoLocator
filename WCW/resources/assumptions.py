@@ -16,6 +16,7 @@ num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 allowed_time = 20  # in seconds
 max_num_candidates = 16384
+min_focus_regions_before_filtering = 50
 
 min_cell_VoL = 10
 
@@ -105,3 +106,28 @@ PB_final_classes = ['Immature Granulocyte', 'Neutrophil', 'Eosinophil', 'Blast',
 
 omitted_classes = ['ER5', 'ER6', 'U4']
 removed_classes = ['U1', 'PL2', 'PL3']
+
+translate = {
+    "Mono": "Monocyte",
+    "mono": "Monocyte",
+    "Eos": "Eosinophil",
+    "eos": "Eosinophil",
+    "Baso": "Basophil",
+    "baso": "Basophil",
+    "Lymph": "Lymphocyte",
+    "lymph": "Lymphocyte",
+    "Lymphocyte": "Lymphocyte",
+    "Immature Granulocyte": "Immature Granulocyte",
+    "Neutrophil": "Neutrophil",
+    "Eosinophil": "Eosinophil",
+    "Blast": "Blast",
+    "Monocyte": "Monocyte",
+    "Nucleated RBC": "Nucleated RBC",
+    "lymphocyte": "Lymphocyte",
+    "immature granulocyte": "Immature Granulocyte",
+    "neutrophil": "Neutrophil",
+    "eosinophil": "Eosinophil",
+    "blast": "Blast",
+    "monocyte": "Monocyte",
+    "nucleated rbc": "Nucleated RBC",
+}

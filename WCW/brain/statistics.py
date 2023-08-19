@@ -38,7 +38,7 @@ def last_min_before_last_max(local_minima, local_maxima, last_n=1):
 
 
 def first_min_after_first_max(local_minima, local_maxima, first_n=2):
-    """Returns the first local minimum after the first local maximum. 
+    """Returns the first local minimum after the first local maximum.
     This is a computation needed for obstructor removal. """
 
     if not local_minima:
@@ -63,9 +63,22 @@ def first_min_after_first_max(local_minima, local_maxima, first_n=2):
         "first_min_after_first_max: no local minimum is found after the first_n local maximum")
 
 
+class TooFewFocusRegionsError(ValueError):
+    """ An exception raised when too few focus regions are found. """
+
+    def __init__(self, message):
+        """ Initialize a TooFewFocusRegionsError object. """
+
+        super().__init__(message)
+
+
 def focus_region_filtering(focus_regions, min_VoL=min_VoL, min_WMP=min_WMP, max_WMP=max_WMP):
-    """ Filter out the focus regions that do not satisfy the VoL and WMP requirements. 
+    """ Filter out the focus regions that do not satisfy the VoL and WMP requirements.
     And then perform a linear regression based outlier removal on the remaining focus regions. """
+
+    if len(focus_regions) < min_focus_regions_before_filtering:
+        raise TooFewFocusRegionsError(
+            f"focus_region_filtering: less than {min_focus_regions_before_filtering} focus regions are found")
 
     # create a dataframe and a list, each focus_region is given a unique id, and the VoL and WMP are recorded in the dataframe along with the id
     focus_regions_df = pd.DataFrame(

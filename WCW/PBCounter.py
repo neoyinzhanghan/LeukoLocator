@@ -147,7 +147,7 @@ class PBCounter:
 
         if self.verbose:
             print(f"Initializing {num_gpus} Ray workers")
-        
+
         ray.shutdown()
         ray.init(num_cpus=num_cpus)
 
