@@ -4,7 +4,7 @@ import shutil
 from tqdm import tqdm
 
 results_path = "/media/hdd3/neo/results"
-save_path = "/media/hdd3/neo/cells"
+save_path = "/media/hdd3/neo/cells_pooled"
 
 # traverse through all folders in results_path
 # each folder contains folders named in the list cellnames
