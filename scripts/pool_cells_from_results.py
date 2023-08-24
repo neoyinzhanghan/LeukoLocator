@@ -17,6 +17,12 @@ subfolders = [f.path for f in os.scandir(
 # traverse through the subfolders
 for subfolder in tqdm(subfolders, desc="Saving images"):
 
+    # create the subfolder in save_path with the same basename
+    save_subfolder = os.path.join(save_path, os.path.basename(subfolder))
+
+    if not os.path.exists(save_subfolder):
+        os.mkdir(save_subfolder)
+
     for cellname in cellnames:
 
         subsubfolder = os.path.join(subfolder, cellname)
@@ -32,4 +38,4 @@ for subfolder in tqdm(subfolders, desc="Saving images"):
             for image_file in image_files:
 
                 # copy the image file to the save_path
-                shutil.copy(image_file, save_path)
+                shutil.copy(image_file, save_subfolder)
