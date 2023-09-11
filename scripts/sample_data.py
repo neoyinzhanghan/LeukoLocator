@@ -27,45 +27,52 @@ def save_as_centroids(fpath, save_dir):
 num_per_slide = 100
 # for each folder in data_dir
 for folder in os.listdir(data_dir):
-    # create a folder with the same folder name in save_dir if it doesn't exist
-    if not os.path.exists(os.path.join(save_dir, folder)):
-        os.makedirs(os.path.join(save_dir, folder))
+    try:
+        # create a folder with the same folder name in save_dir if it doesn't exist
+        if not os.path.exists(os.path.join(save_dir, folder)):
+            os.makedirs(os.path.join(save_dir, folder))
 
-    # in that new folder create a subfolder called focus_regions and one called annotations
-    if not os.path.exists(os.path.join(save_dir, folder, "focus_regions")):
-        os.makedirs(os.path.join(save_dir, folder, "focus_regions"))
+        # in that new folder create a subfolder called focus_regions and one called annotations
+        if not os.path.exists(os.path.join(save_dir, folder, "focus_regions")):
+            os.makedirs(os.path.join(save_dir, folder, "focus_regions"))
 
-    if not os.path.exists(os.path.join(save_dir, folder, "annotations")):
-        os.makedirs(os.path.join(save_dir, folder, "annotations"))
+        if not os.path.exists(os.path.join(save_dir, folder, "annotations")):
+            os.makedirs(os.path.join(save_dir, folder, "annotations"))
 
-    # there is a subfolder named focus_regions and one named annotations
-    # we want to sample 100 images from the focus_regions folder without replacement and save them in the new folder
-    # we also want to copy the corresponding annotations to the new folder
-    # we want to do this for each folder in data_dir
+        # there is a subfolder named focus_regions and one named annotations
+        # we want to sample 100 images from the focus_regions folder without replacement and save them in the new folder
+        # we also want to copy the corresponding annotations to the new folder
+        # we want to do this for each folder in data_dir
 
-    # get the list of images in the focus_regions folder
-    focus_regions = os.listdir(os.path.join(data_dir, folder, "focus_regions"))
-    # get the list of annotations in the annotations folder
-    annotations = os.listdir(os.path.join(data_dir, folder, "annotations"))
+        # get the list of images in the focus_regions folder
+        focus_regions = os.listdir(os.path.join(
+            data_dir, folder, "focus_regions"))
+        # get the list of annotations in the annotations folder
+        annotations = os.listdir(os.path.join(data_dir, folder, "annotations"))
 
-    # sample 100 images from the focus_regions folder without replacement
-    # if 100 is larger than the number of images in the folder, just sample all the images
-    if len(focus_regions) < num_per_slide:
-        sampled_focus_regions = focus_regions
-    else:
-        sampled_focus_regions = random.sample(
-            focus_regions, num_per_slide)
-        
-    # find the corresponding annotations, same name but with .csv extension
-    sampled_annotations = [os.path.splitext(
-        x)[0] + ".csv" for x in sampled_focus_regions]
+        # sample 100 images from the focus_regions folder without replacement
+        # if 100 is larger than the number of images in the folder, just sample all the images
+        if len(focus_regions) < num_per_slide:
+            sampled_focus_regions = focus_regions
+        else:
+            sampled_focus_regions = random.sample(
+                focus_regions, num_per_slide)
 
-    # copy the sampled images to the new folder
-    for img in sampled_focus_regions:  # use shutil.copy
-        shutil.copy(os.path.join(data_dir, folder, "focus_regions", img),
-                    os.path.join(save_dir, folder, "focus_regions"))
+        # find the corresponding annotations, same name but with .csv extension
+        sampled_annotations = [os.path.splitext(
+            x)[0] + ".csv" for x in sampled_focus_regions]
 
-    # copy the corresponding annotations to the new folder using the save_as_centroids function
-    for ann in sampled_annotations:
-        save_as_centroids(os.path.join(data_dir, folder, "annotations", ann),
-                          os.path.join(save_dir, folder, "annotations"))
+        # copy the sampled images to the new folder
+        for img in sampled_focus_regions:  # use shutil.copy
+            shutil.copy(os.path.join(data_dir, folder, "focus_regions", img),
+                        os.path.join(save_dir, folder, "focus_regions"))
+
+        # copy the corresponding annotations to the new folder using the save_as_centroids function
+        for ann in sampled_annotations:
+            save_as_centroids(os.path.join(data_dir, folder, "annotations", ann),
+                              os.path.join(save_dir, folder, "annotations"))
+
+    except FileNotFoundError:
+        print("Folder not found: ", folder)
+        # skip this folder and continue with the next one
+        continue
