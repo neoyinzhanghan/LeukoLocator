@@ -5,7 +5,7 @@ import shutil
 from tqdm import tqdm
 
 data_dir = "/media/hdd3/neo/results"
-save_dir = "/media/hdd3/neo/sampled_focus_regions"
+save_dir = "/media/hdd3/neo/sampled_focus_regions_to_annotate"
 
 
 def save_as_centroids(fpath, save_dir):
