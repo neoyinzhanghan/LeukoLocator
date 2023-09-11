@@ -1,6 +1,7 @@
 import os
 import random
 import pandas as pd
+import shutil
 
 data_dir = "/media/hdd3/neo/results"
 save_dir = "/media/hdd3/neo/sampled/focus/regions"
@@ -54,9 +55,9 @@ for folder in os.listdir(data_dir):
         x)[0] + ".csv" for x in sampled_focus_regions]
 
     # copy the sampled images to the new folder
-    for img in sampled_focus_regions:
-        os.system("cp {} {}".format(os.path.join(data_dir, folder, "focus_regions", img),
-                                    os.path.join(save_dir, folder, "focus_regions", img)))
+    for img in sampled_focus_regions:  # use shutil.copy
+        shutil.copy(os.path.join(data_dir, folder, "focus_regions", img),
+                    os.path.join(save_dir, folder, "focus_regions"))
 
     # copy the corresponding annotations to the new folder using the save_as_centroids function
     for ann in sampled_annotations:
