@@ -28,6 +28,11 @@ def save_as_centroids(fpath, save_dir):
 num_per_slide = 100
 # for each folder in data_dir
 for folder in tqdm(os.listdir(data_dir), desc="Sampling data"):
+
+    # check that folder is indeed a folder
+    if not os.path.isdir(os.path.join(data_dir, folder)):
+        continue
+
     try:
         # create a folder with the same folder name in save_dir if it doesn't exist
         if not os.path.exists(os.path.join(save_dir, folder)):
