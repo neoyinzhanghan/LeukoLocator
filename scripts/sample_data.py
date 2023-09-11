@@ -49,7 +49,13 @@ for folder in os.listdir(data_dir):
     annotations = os.listdir(os.path.join(data_dir, folder, "annotations"))
 
     # sample 100 images from the focus_regions folder without replacement
-    sampled_focus_regions = random.sample(focus_regions, num_per_slide)
+    # if 100 is larger than the number of images in the folder, just sample all the images
+    if len(focus_regions) < num_per_slide:
+        sampled_focus_regions = focus_regions
+    else:
+        sampled_focus_regions = random.sample(
+            focus_regions, num_per_slide)
+        
     # find the corresponding annotations, same name but with .csv extension
     sampled_annotations = [os.path.splitext(
         x)[0] + ".csv" for x in sampled_focus_regions]
