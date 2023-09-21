@@ -10,6 +10,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import random_split
+from PIL import Image
 
 class CustomDataset(Dataset):
     def __init__(self, dataframe, transform=None):
