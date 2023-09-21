@@ -18,6 +18,7 @@ allowed_time = 20  # in seconds
 max_num_candidates = 16384
 min_focus_regions_before_filtering = 50
 
+search_view_downsample_rate = 8
 min_cell_VoL = 10
 
 do_zero_pad = False
