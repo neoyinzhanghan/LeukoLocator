@@ -57,7 +57,7 @@ class ImageClassifier(pl.LightningModule):
         self.log('val_loss', loss)
         return {'val_loss': loss, 'y': y, 'logits': logits}
 
-    def validation_epoch_end(self, outputs):
+    def on_validation_epoch_end(self, outputs):
         avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
         logits = torch.cat([x['logits'] for x in outputs])
         y = torch.cat([x['y'] for x in outputs])
