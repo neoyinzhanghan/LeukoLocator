@@ -93,7 +93,7 @@ def main(args):
     checkpoint_callback = ModelCheckpoint(monitor='avg_val_loss', save_top_k=1, mode='min')
     
     trainer = pl.Trainer(
-        gpus=args.gpus,
+        devices=args.gpus,
         max_epochs=args.epochs,
         logger=logger,
         callbacks=[checkpoint_callback],
