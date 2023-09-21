@@ -97,7 +97,7 @@ def main(args):
         max_epochs=args.epochs,
         logger=logger,
         callbacks=[checkpoint_callback],
-        accelerator="ddp" if args.gpus > 1 else None
+        accelerator="gpu"
     )
     
     trainer.fit(model, train_loader, val_loader)
