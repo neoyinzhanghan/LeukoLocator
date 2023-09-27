@@ -14,7 +14,7 @@ save_dir = "/media/ssd1/neo/regions_50_reduced_classified"
 # then classify the images in the image_dir
 # create folders in the save_dir for each class
 # then save the images in the corresponding folder
-# also save a csv file with two columns -- image_name, class
+# also save a csv file with two columns -- image_name, probability
 
 
 # TODO -- read the yaimpl package to figure this out
@@ -65,11 +65,14 @@ for image_name in tqdm(os.listdir(image_dir)):
         # get the class
         class_ = torch.argmax(prediction).item()
 
+        # get the probability of class 1
+        prob = prediction[0][1].item()
+
         # save the image in the corresponding folder
         os.rename(
             os.path.join(image_dir, image_name),
             os.path.join(save_dir, str(class_), image_name),
         )
 
-        # write the image name and class to the csv file
-        csv_file.write(image_name + "," + str(class_) + "\n")
+        # write to the csv file
+        csv_file.write(image_name + "," + str(prob) + "\n")
