@@ -1,6 +1,7 @@
 import os
 import torch
 from torchvision import datasets, transforms
+from tqdm import tqdm
 
 image_dir = "/media/ssd1/neo/regions_50k_reduced"
 checkpoint_path = "/media/ssd1/neo/models/resnet50/PB_region_1.ckpt"
@@ -15,6 +16,7 @@ save_dir = "/media/ssd1/neo/regions_50_reduced_classified"
 
 # load the checkpoint
 checkpoint = torch.load(checkpoint_path)
+print(checkpoint.keys())
 model = checkpoint["model"]
 
 # create the save_dir
@@ -35,7 +37,7 @@ dataset = datasets.ImageFolder(image_dir, transform=transforms.ToTensor())
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False)
 
 # iterate through the dataloader
-for i, (image, label) in enumerate(dataloader):
+for i, (image, label) in tqdm(enumerate(dataloader), desc="Classifying images"):
     # predict the label
     output = model(image)
     _, pred = torch.max(output, 1)
