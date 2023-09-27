@@ -7,7 +7,7 @@ import timm
 
 image_dir = "/media/ssd1/neo/regions_50k_reduced"
 checkpoint_path = "/media/ssd1/neo/models/resnet50/PB_region_1.ckpt"
-save_dir = "/media/ssd1/neo/regions_50_reduced_classified"
+save_dir = "/media/ssd1/neo/regions_50k_reduced_classified"
 
 
 ### the goal of this script is to first load the checkpoint
