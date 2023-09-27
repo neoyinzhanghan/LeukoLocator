@@ -23,7 +23,7 @@ save_dir = "/media/ssd1/neo/regions_50_reduced_classified"
 checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
 
 model = timm.create_model(
-    model_name="Region Classifier",  # replace with your model name
+    model_name="resnet50",  # replace with your model name
     pretrained=True,  # or True, as per your training script
     num_classes=2,  # replace with your number of classes
 )
