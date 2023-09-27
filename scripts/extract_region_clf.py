@@ -1,7 +1,9 @@
 import os
 import torch
 from torchvision import datasets, transforms, models
+from yaimpl.LitSupervisedModel import LitSupervisedModel
 from tqdm import tqdm
+import timm
 
 image_dir = "/media/ssd1/neo/regions_50k_reduced"
 checkpoint_path = "/media/ssd1/neo/models/resnet50/PB_region_1.ckpt"
@@ -14,16 +16,24 @@ save_dir = "/media/ssd1/neo/regions_50_reduced_classified"
 # then save the images in the corresponding folder
 # also save a csv file with two columns -- image_name, class
 
-# load the checkpoint
-checkpoint = torch.load(checkpoint_path)
-# ... rest of your code ...
 
-# Initialize the model
-model = models.resnet50()
+# TODO -- read the yaimpl package to figure this out
+# Initialize the model (ensure these parameters are same as your training script)
 
-# Load the state dict into the model
-model.load_state_dict(checkpoint["state_dict"])
-model.eval()  # set the model to evaluation mode
+checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
+
+model = timm.create_model(
+    model_name="Region Classifier",  # replace with your model name
+    pretrained=True,  # or True, as per your training script
+    num_classes=2,  # replace with your number of classes
+)
+
+# Initialize the LitSupervisedModel
+lit_model = LitSupervisedModel(model=model)  # add other parameters if required
+
+# Load the state dict into the lit_model
+lit_model.load_state_dict(checkpoint["state_dict"])
+lit_model.eval()  # set the model to evaluation mode
 
 
 # create the save_dir
