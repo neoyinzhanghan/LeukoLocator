@@ -13,18 +13,26 @@ csv_file = open("ndpi_mpp_level_0.csv", "w")
 
 # iterate through the ndpi files
 for ndpi_name in tqdm(os.listdir(ndpi_dir)):
-    if ndpi_name.endswith(".ndpi"):
-        # open the ndpi file
-        ndpi = openslide.OpenSlide(os.path.join(ndpi_dir, ndpi_name))
+    try:
+        if ndpi_name.endswith(".ndpi"):
+            # open the ndpi file
+            ndpi = openslide.OpenSlide(os.path.join(ndpi_dir, ndpi_name))
 
-        # get the mpp level 0
-        mpp_level_0 = ndpi.properties[openslide.PROPERTY_NAME_MPP_X]
+            # get the mpp level 0
+            mpp_level_0 = ndpi.properties[openslide.PROPERTY_NAME_MPP_X]
 
-        # write to the csv file
-        csv_file.write(ndpi_name + "," + str(mpp_level_0) + "\n")
+            # write to the csv file
+            csv_file.write(ndpi_name + "," + str(mpp_level_0) + "\n")
 
-        # close the ndpi file
-        ndpi.close()
+            # close the ndpi file
+            ndpi.close()
+
+    except Exception as e:
+        print(e)
+
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt")
+        break
 
 # close the csv file
 csv_file.close()
