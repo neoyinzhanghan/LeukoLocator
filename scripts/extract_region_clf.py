@@ -1,6 +1,6 @@
 import os
 import torch
-from torchvision import datasets, transforms
+from torchvision import datasets, transforms, models
 from tqdm import tqdm
 
 image_dir = "/media/ssd1/neo/regions_50k_reduced"
@@ -16,8 +16,15 @@ save_dir = "/media/ssd1/neo/regions_50_reduced_classified"
 
 # load the checkpoint
 checkpoint = torch.load(checkpoint_path)
-print(checkpoint.keys())
-model = checkpoint["model"]
+# ... rest of your code ...
+
+# Initialize the model
+model = models.resnet50()
+
+# Load the state dict into the model
+model.load_state_dict(checkpoint["state_dict"])
+model.eval()  # set the model to evaluation mode
+
 
 # create the save_dir
 if not os.path.exists(save_dir):
