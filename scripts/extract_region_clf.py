@@ -48,25 +48,24 @@ for i in range(2):
 # create the csv file
 csv_file = open(os.path.join(save_dir, "region_clf.csv"), "w")
 
-# create the dataloader
-dataset = datasets.ImageFolder(image_dir, transform=transforms.ToTensor())
+# traverse through the image_dir
+for image_name in tqdm(os.listdir(image_dir)):
+    if image_name.endswith(".jpg"):
+        # load the image
+        image = datasets.folder.default_loader(os.path.join(image_dir, image_name))
 
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False)
+        # preprocess the image
+        # get the prediction
+        prediction = lit_model(image.unsqueeze(0))
 
-# iterate through the dataloader
-for i, (image, label) in tqdm(enumerate(dataloader), desc="Classifying images"):
-    # predict the label
-    output = model(image)
-    _, pred = torch.max(output, 1)
-    pred = pred.item()
+        # get the class
+        class_ = torch.argmax(prediction).item()
 
-    # save the image
-    image_name = dataset.imgs[i][0].split("/")[-1]
-    image.save(os.path.join(save_dir, str(pred), image_name))
+        # save the image in the corresponding folder
+        os.rename(
+            os.path.join(image_dir, image_name),
+            os.path.join(save_dir, str(class_), image_name),
+        )
 
-    # write to the csv file
-    csv_file.write(image_name + "," + str(pred) + "\n")
-
-csv_file.close()
-
-print("Done!")
+        # write the image name and class to the csv file
+        csv_file.write(image_name + "," + str(class_) + "\n")
