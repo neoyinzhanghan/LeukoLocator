@@ -54,6 +54,10 @@ for image_name in tqdm(os.listdir(image_dir)):
         # load the image
         image = datasets.folder.default_loader(os.path.join(image_dir, image_name))
 
+        # make use the image is a tensor
+        if not torch.is_tensor(image):
+            image = transforms.ToTensor()(image)
+
         # preprocess the image
         # get the prediction
         prediction = lit_model(image.unsqueeze(0))
