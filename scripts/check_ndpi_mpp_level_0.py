@@ -8,8 +8,8 @@ ndpi_dir = "/pesgisipth/NDPI"
 # get the mpp level 0 for each ndpi file
 # put them in a csv file with two columns -- ndpi_name, mpp_level_0
 
-# create the csv file
-csv_file = open(os.path.join(ndpi_dir, "zzz_ndpi_mpp_level_0.csv"), "w")
+# create the csv file in the working directory
+csv_file = open("ndpi_mpp_level_0.csv", "w")
 
 # iterate through the ndpi files
 for ndpi_name in tqdm(os.listdir(ndpi_dir)):
