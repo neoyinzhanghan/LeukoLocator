@@ -76,3 +76,6 @@ for image_name in tqdm(os.listdir(image_dir)):
 
         # write to the csv file
         csv_file.write(image_name + "," + str(prob) + "\n")
+
+# close the csv file
+csv_file.close()
