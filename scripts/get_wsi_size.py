@@ -1,6 +1,6 @@
 import openslide
 
-wsi_path = "/pegisipth/NDPI/H23-852;S12;MSKW - 2023-06-15 16.42.50.ndpi"
+wsi_path = "/pesgisipth/NDPI/H23-852;S12;MSKW - 2023-06-15 16.42.50.ndpi"
 
 # open the wsi
 wsi = openslide.OpenSlide(wsi_path)
