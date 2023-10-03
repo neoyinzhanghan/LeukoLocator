@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 input_dir = "/Users/neo/Documents/Research/DeepHeme/HemeYolo_data/sampled_focus_regions_to_annotate"
 output_dir = (
-    "/Users/neo/Documents/Research/DeepHeme/HemeYolo_data/focus_regions_50k_reduced"
+    "/Users/neo/Documents/Research/DeepHeme/HemeYolo_data/focus_regions_50k"
 )
 
 
@@ -25,7 +25,7 @@ for folder in tqdm(os.listdir(input_dir)):
         # open the image
         im = Image.open(os.path.join(input_dir, folder, "focus_regions", image))
         # resize it to 256x256
-        im = im.resize((256, 256))
+        # im = im.resize((256, 256))
         # save it to output_dir
         # the file name should be concatenated in the folder_img_name
 
