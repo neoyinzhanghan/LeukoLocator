@@ -1,4 +1,4 @@
-from WCW.resources.assumptions import *
+from LL.resources.assumptions import *
 import os
 import shutil
 from tqdm import tqdm

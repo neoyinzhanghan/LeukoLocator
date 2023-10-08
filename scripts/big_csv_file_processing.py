@@ -1,6 +1,6 @@
 import pandas as pd
-from WCW.brain.regex import *
-from WCW.resources.assumptions import *
+from LL.brain.regex import *
+from LL.resources.assumptions import *
 from tqdm import tqdm
 import os
 

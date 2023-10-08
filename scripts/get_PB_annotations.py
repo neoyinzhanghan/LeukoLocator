@@ -8,7 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 
 # Within package imports ###########################################################################
-from WCW.brain.read_annotations import get_PB_annotations_from_csv, get_PB_metadata, NotAnnotatedError
+from LL.brain.read_annotations import get_PB_annotations_from_csv, get_PB_metadata, NotAnnotatedError
 
 H23_csv_path = "/media/ssd2/clinical_text_data/PathReports_Heme/H23-20230720.csv"
 WSI_dir = "/pesgisipth/NDPI"

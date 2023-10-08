@@ -3,11 +3,11 @@
 ###################################################################################################
 
 import os
-from WCW.resources.assumptions import *
+from LL.resources.assumptions import *
 import pandas as pd
-from WCW.PBCounter import PBCounter
-from WCW.communication.saving import save_wbc_candidates_sorted
-from WCW.vision.processing import SlideError
+from LL.PBCounter import PBCounter
+from LL.communication.saving import save_wbc_candidates_sorted
+from LL.vision.processing import SlideError
 
 PB_annotations_path = "/home/greg/Documents/neo/H23_PB_metadata.csv"
 wsi_dir = "/media/hdd3/neo/H23"

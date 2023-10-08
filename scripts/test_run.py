@@ -1,6 +1,6 @@
-from WCW.resources.assumptions import *
-from WCW.communication.saving import save_wbc_candidates, save_focus_regions, save_wbc_candidates_sorted
-from WCW.PBCounter import PBCounter
+from LL.resources.assumptions import *
+from LL.communication.saving import save_wbc_candidates, save_focus_regions, save_wbc_candidates_sorted
+from LL.PBCounter import PBCounter
 import time
 
 if __name__ == "__main__":

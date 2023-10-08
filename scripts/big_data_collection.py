@@ -1,8 +1,8 @@
-from WCW.resources.assumptions import *
-from WCW.communication.saving import save_wbc_candidates_sorted, save_focus_regions_annotated
-from WCW.vision.processing import SlideError
-from WCW.PBCounter import PBCounter, NoCellFoundError, TooManyCandidatesError
-from WCW.brain.statistics import TooFewFocusRegionsError
+from LL.resources.assumptions import *
+from LL.communication.saving import save_wbc_candidates_sorted, save_focus_regions_annotated
+from LL.vision.processing import SlideError
+from LL.PBCounter import PBCounter, NoCellFoundError, TooManyCandidatesError
+from LL.brain.statistics import TooFewFocusRegionsError
 import pandas as pd
 import os
 import time
