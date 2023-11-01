@@ -6,7 +6,6 @@
 import os
 import numpy as np
 import pandas as pd
-import numpy.nan as nan
 import yaml
 import statsmodels.api as sm
 from matplotlib import pyplot as plt
@@ -118,12 +117,12 @@ def _gather_focus_regions_and_metrics(
             "VoL": focus_region.VoL,
             "WMP": focus_region.WMP,
             "rejected": 0,
-            "region_classification_passed": nan,
-            "max_WMP_passed": nan,
-            "min_WMP_passed": nan,
-            "min_VoL_passed": nan,
-            "lm_outier_removal_passed": nan,
-            "reason_for_rejection": nan,
+            "region_classification_passed": np.nan,
+            "max_WMP_passed": np.nan,
+            "min_WMP_passed": np.nan,
+            "min_VoL_passed": np.nan,
+            "lm_outier_removal_passed": np.nan,
+            "reason_for_rejection": np.nan,
         }
 
         image_metrics.append(new_row)
