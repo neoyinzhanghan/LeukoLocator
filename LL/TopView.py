@@ -298,34 +298,7 @@ class TopView:
             verbose=verbose,
         )
 
-        current_num_sds = num_sds
-        while (
-            len(block_coords) < min_num_regions_within_foci_sd and current_num_sds > 0
-        ):
-            if current_num_sds == 0:
-                raise RelativeBlueSignalTooWeakError(
-                    f"The relative blue signal is too weak. Only {len(block_coords)} focus regions are found at num_sds=0 when {min_num_regions_within_foci_sd} is required."
-                )
-
-            current_num_sds -= foci_sd_inc
-
-            upper_bound = mean + current_num_sds * std
-            outliers = np.where(blue_intensity > upper_bound)
-
-            block_coords = self._crop_using_connected_components(
-                blue_intensity,
-                outliers,
-                location,
-                top_to_search_zoom_ratio,
-                image,
-                search_to_0_zoom_ratio,
-                focus_regions_size,
-                padding_x,
-                padding_y,
-                verbose=verbose,
-            )
-
-        return block_coords, current_num_sds
+        return block_coords
 
 
 class SpecimenError(ValueError):

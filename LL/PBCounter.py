@@ -14,7 +14,7 @@ from ray.exceptions import RayTaskError
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
 from LL.FileNameManager import FileNameManager
-from LL.TopView import TopView, SpecimenError
+from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
 from LL.SearchView import SearchView
 from LL.FocusRegion import FocusRegion, FocusRegionsTracker
 from LL.brain.HemeLabelManager import HemeLabelManager
@@ -129,7 +129,11 @@ class PBCounter:
         focus_regions_coords = []
         locations = self.search_view.get_locations()
 
-        for location in tqdm(locations, desc="Finding focus regions"):
+        num_sds = foci_sds
+
+        for location in tqdm(
+            locations, desc=f"Finding focus regions at num_sds={num_sds}"
+        ):
             crop = self.search_view[location]
 
             focus_region_coords = list(
@@ -139,7 +143,7 @@ class PBCounter:
                     focus_regions_size,
                     self.search_view.padding_x,
                     self.search_view.padding_y,
-                    num_sds=foci_sds,
+                    num_sds=num_sds,
                     top_to_search_zoom_ratio=int(
                         self.top_view.downsampling_rate
                         / self.search_view.downsampling_rate
@@ -149,6 +153,37 @@ class PBCounter:
             )
 
             focus_regions_coords.extend(focus_region_coords)
+
+        while len(focus_region_coords) < min_num_regions_within_foci_sd and num_sds > 0:
+            num_sds -= 1
+            if num_sds == 0:
+                raise RelativeBlueSignalTooWeakError(
+                    f"Relative blue signal is too weak. min_num_regions_within_foci_sd {min_num_regions_within_foci_sd} is not reached. Only {len(focus_region_coords)} regions found at num_sds=1. Check slide for potential poor staining/imaging.)"
+                )
+
+            focus_regions_coords = []
+            for location in tqdm(
+                locations, desc=f"Finding focus regions at num_sds={num_sds}"
+            ):
+                crop = self.search_view[location]
+
+                focus_region_coords = list(
+                    self.top_view.find_focus_regions(
+                        crop,
+                        location,
+                        focus_regions_size,
+                        self.search_view.padding_x,
+                        self.search_view.padding_y,
+                        num_sds=num_sds,
+                        top_to_search_zoom_ratio=int(
+                            self.top_view.downsampling_rate
+                            / self.search_view.downsampling_rate
+                        ),
+                        search_to_0_zoom_ratio=int(self.search_view.downsampling_rate),
+                    )
+                )
+
+                focus_region_coords.extend(focus_region_coords)
 
         fr_tracker = FocusRegionsTracker(
             search_view=self.search_view, focus_regions_coords=focus_regions_coords
