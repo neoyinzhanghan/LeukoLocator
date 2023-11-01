@@ -39,9 +39,7 @@ class FocusRegion:
         self.image = None
         self.annotated_image = None
 
-        # calculate the downsampled coordinate
-
-        print(coordinate) #TODO remove, for debugging
+        # calculate the downsampled coordinateF
 
         downsampled_coordinate = (
             int(coordinate[0] / downsample_rate),
