@@ -59,82 +59,19 @@ class TopView:
         """Return True iff the top view is a peripheral blood top view."""
         return True
 
-    def find_focus_regions(
+    def _crop_using_connected_components(
         self,
-        crop,
+        blue_intensity,
+        outliers,
         location,
+        top_to_search_zoom_ratio,
+        image,
+        search_to_0_zoom_ratio,
         focus_regions_size,
         padding_x,
         padding_y,
-        num_sds=foci_sds,
-        top_to_search_zoom_ratio=16,
-        search_to_0_zoom_ratio=8,
         verbose=False,
     ):
-        """Find the focus regions related to the crop. Return a list of focus region level 0 coordinates in the format of (TL_x, TL_y, BR_x, BR_y)."""
-
-        # make sure to convert from PIL to a numpy array of BGR
-        crop_clone = cv2.cvtColor(np.array(crop), cv2.COLOR_RGB2BGR)
-
-        # Make sure to convert to float32
-        image = crop_clone.astype(np.float32)
-
-        # Get the sum of all three channels and add small constant to avoid division by zero
-        # add a small constant to prevent division by zero
-        total = image.sum(axis=2) + 1e-8
-
-        # Get the relative blue pixel intensity, which is the blue channel divided by the sum of all three channels
-        blue_intensity = image[:, :, 0] / total
-
-        # Make sure to convert to int8
-        blue_intensity = (blue_intensity * 255).astype(np.uint8)
-
-        # apply a gaussian blurring filter to the image
-        blue_intensity = cv2.GaussianBlur(blue_intensity, (15, 15), 0)
-
-        if verbose:
-            # Plot the original image and the blue intensity side by side
-            plt.subplot(1, 2, 1)
-            # cv2 reads image in BGR format
-            plt.imshow(cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB))
-            plt.subplot(1, 2, 2)
-            plt.imshow(blue_intensity, cmap="gray")
-            plt.show()
-
-        # identify the outliers in the blue intensity image
-        # Get the mean and standard deviation of the blue intensity
-        mean, std = cv2.meanStdDev(blue_intensity)
-
-        # Get the lower and upper bounds of the blue intensity
-        upper_bound = mean + num_sds * std
-
-        # Get the right-side outliers
-        outliers = np.where(blue_intensity > upper_bound)
-
-        # this is where we increment the num_sds until we have enough signal passing the threshold
-        current_num_sds = num_sds
-        while len(outliers[0]) < min_num_regions_within_foci_sd and current_num_sds > 0:
-            current_num_sds -= 1
-            upper_bound = mean + current_num_sds * std
-            outliers = np.where(blue_intensity > upper_bound)
-
-        if current_num_sds == 0:
-            raise RelativeBlueSignalTooWeakError(
-                f"find_focus_regions: relative blue signal is too weak, only {len(outliers[0])} regions are found out of {min_num_regions_within_foci_sd} required at {num_sds} standard deviations away from the mean"
-            )
-
-        if verbose:
-            # Plot the original image, the blue intensity, and the outliers side by side
-            plt.subplot(1, 3, 1)
-            # cv2 reads image in BGR format
-            plt.imshow(cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB))
-            plt.subplot(1, 3, 2)
-            plt.imshow(blue_intensity, cmap="gray")
-            plt.subplot(1, 3, 3)
-            plt.imshow(blue_intensity, cmap="gray", alpha=0)
-            plt.scatter(outliers[1], outliers[0], s=1, c="blue")
-            plt.show()
-
         # find the connected components of the outliers
         # Create a mask of the outliers
         mask = np.zeros_like(blue_intensity, dtype=np.uint8)
@@ -277,6 +214,116 @@ class TopView:
                                 int(block_BR_y * search_to_0_zoom_ratio),
                             )
                         )
+
+        return block_coords
+
+    def find_focus_regions(
+        self,
+        crop,
+        location,
+        focus_regions_size,
+        padding_x,
+        padding_y,
+        num_sds=foci_sds,
+        top_to_search_zoom_ratio=16,
+        search_to_0_zoom_ratio=8,
+        verbose=False,
+    ):
+        """Find the focus regions related to the crop. Return a list of focus region level 0 coordinates in the format of (TL_x, TL_y, BR_x, BR_y)."""
+
+        # make sure to convert from PIL to a numpy array of BGR
+        crop_clone = cv2.cvtColor(np.array(crop), cv2.COLOR_RGB2BGR)
+
+        # Make sure to convert to float32
+        image = crop_clone.astype(np.float32)
+
+        # Get the sum of all three channels and add small constant to avoid division by zero
+        # add a small constant to prevent division by zero
+        total = image.sum(axis=2) + 1e-8
+
+        # Get the relative blue pixel intensity, which is the blue channel divided by the sum of all three channels
+        blue_intensity = image[:, :, 0] / total
+
+        # Make sure to convert to int8
+        blue_intensity = (blue_intensity * 255).astype(np.uint8)
+
+        # apply a gaussian blurring filter to the image
+        blue_intensity = cv2.GaussianBlur(blue_intensity, (15, 15), 0)
+
+        if verbose:
+            # Plot the original image and the blue intensity side by side
+            plt.subplot(1, 2, 1)
+            # cv2 reads image in BGR format
+            plt.imshow(cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB))
+            plt.subplot(1, 2, 2)
+            plt.imshow(blue_intensity, cmap="gray")
+            plt.show()
+
+        # identify the outliers in the blue intensity image
+        # Get the mean and standard deviation of the blue intensity
+        mean, std = cv2.meanStdDev(blue_intensity)
+
+        # Get the lower and upper bounds of the blue intensity
+        upper_bound = mean + num_sds * std
+
+        # Get the right-side outliers
+        outliers = np.where(blue_intensity > upper_bound)
+
+        if verbose:
+            # Plot the original image, the blue intensity, and the outliers side by side
+            plt.subplot(1, 3, 1)
+            # cv2 reads image in BGR format
+            plt.imshow(cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB))
+            plt.subplot(1, 3, 2)
+            plt.imshow(blue_intensity, cmap="gray")
+            plt.subplot(1, 3, 3)
+            plt.imshow(blue_intensity, cmap="gray", alpha=0)
+            plt.scatter(outliers[1], outliers[0], s=1, c="blue")
+            plt.show()
+
+        #############################################################################
+        # This is the piece of code that we are to potentially repeat with while loop
+        #############################################################################
+
+        block_coords = self._crop_using_connected_components(
+            blue_intensity,
+            outliers,
+            location,
+            top_to_search_zoom_ratio,
+            image,
+            search_to_0_zoom_ratio,
+            focus_regions_size,
+            padding_x,
+            padding_y,
+            verbose=verbose,
+        )
+
+        current_num_sds = num_sds
+        while (
+            len(block_coords) < min_num_regions_within_foci_sd and current_num_sds > 0
+        ):
+            if current_num_sds == 0:
+                raise RelativeBlueSignalTooWeakError(
+                    f"The relative blue signal is too weak. Only {len(block_coords)} focus regions are found at num_sds=0 when {min_num_regions_within_foci_sd} is required."
+                )
+
+            current_num_sds -= foci_sd_inc
+
+            upper_bound = mean + current_num_sds * std
+            outliers = np.where(blue_intensity > upper_bound)
+
+            block_coords = self._crop_using_connected_components(
+                blue_intensity,
+                outliers,
+                location,
+                top_to_search_zoom_ratio,
+                image,
+                search_to_0_zoom_ratio,
+                focus_regions_size,
+                padding_x,
+                padding_y,
+                verbose=verbose,
+            )
 
         return block_coords, current_num_sds
 
