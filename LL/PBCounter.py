@@ -136,7 +136,7 @@ class PBCounter:
         ):
             crop = self.search_view[location]
 
-            focus_region_coords = list(
+            more_focus_regions_coords = list(
                 self.top_view.find_focus_regions(
                     crop,
                     location,
@@ -152,9 +152,11 @@ class PBCounter:
                 )
             )
 
-            focus_regions_coords.extend(focus_region_coords)
+            focus_regions_coords.extend(more_focus_regions_coords)
 
-        while len(focus_region_coords) < min_num_regions_within_foci_sd and num_sds > 0:
+        print(f"{len(focus_regions_coords)} regions found at num_sds={num_sds}")
+
+        while len(focus_regions_coords) < min_num_regions_within_foci_sd and num_sds > 0:
             num_sds -= 1
             if num_sds == 0:
                 raise RelativeBlueSignalTooWeakError(
@@ -162,12 +164,13 @@ class PBCounter:
                 )
 
             focus_regions_coords = []
+            
             for location in tqdm(
                 locations, desc=f"Finding focus regions at num_sds={num_sds}"
             ):
                 crop = self.search_view[location]
 
-                focus_region_coords = list(
+                more_focus_region_coords = list(
                     self.top_view.find_focus_regions(
                         crop,
                         location,
@@ -183,7 +186,9 @@ class PBCounter:
                     )
                 )
 
-                focus_region_coords.extend(focus_region_coords)
+                focus_regions_coords.extend(more_focus_regions_coords)
+
+            print(f"{len(focus_regions_coords)} regions found at num_sds={num_sds}")
 
         fr_tracker = FocusRegionsTracker(
             search_view=self.search_view, focus_regions_coords=focus_regions_coords
