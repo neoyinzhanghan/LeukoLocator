@@ -41,6 +41,8 @@ class FocusRegion:
 
         # calculate the downsampled coordinate
 
+        print(coordinate) #TODO remove, for debugging
+
         downsampled_coordinate = (
             int(coordinate[0] / downsample_rate),
             int(coordinate[1] / downsample_rate),
