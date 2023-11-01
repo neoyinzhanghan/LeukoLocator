@@ -6,7 +6,7 @@
 import os
 import numpy as np
 import pandas as pd
-import np.nan as nan
+import numpy.nan as nan
 import yaml
 import statsmodels.api as sm
 from matplotlib import pyplot as plt
