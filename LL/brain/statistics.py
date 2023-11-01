@@ -72,52 +72,56 @@ class TooFewFocusRegionsError(ValueError):
         super().__init__(message)
 
 
-def focus_region_filtering(focus_regions, min_VoL=min_VoL, min_WMP=min_WMP, max_WMP=max_WMP):
-    """ Filter out the focus regions that do not satisfy the VoL and WMP requirements.
-    And then perform a linear regression based outlier removal on the remaining focus regions. """
 
-    if len(focus_regions) < min_focus_regions_before_filtering:
-        raise TooFewFocusRegionsError(
-            f"focus_region_filtering: less than {min_focus_regions_before_filtering} focus regions are found")
 
-    # create a dataframe and a list, each focus_region is given a unique id, and the VoL and WMP are recorded in the dataframe along with the id
-    focus_regions_df = pd.DataFrame(
-        columns=['id', 'VoL', 'WMP'])
+# DEPRECATED # TODO REMOVE
 
-    # create a list of focus_region objects
-    focus_regions_list = []
+# def focus_region_filtering(focus_regions):
+#     """ Filter out the focus regions that do not satisfy the VoL and WMP requirements.
+#     And then perform a linear regression based outlier removal on the remaining focus regions. """
 
-    for i in range(len(focus_regions)):
-        focus_regions_list.append(focus_regions[i])
+#     if len(focus_regions) < min_num_regions_within_foci_sd:
+#         raise TooFewFocusRegionsError(
+#             f"focus_region_filtering: less than {min_num_regions_within_foci_sd} focus regions are found")
 
-        # use concat to add a row to the dataframe
-        focus_regions_df = pd.concat([focus_regions_df, pd.DataFrame(
-            [[i, focus_regions[i].VoL, focus_regions[i].WMP]], columns=['id', 'VoL', 'WMP'])])
+#     # create a dataframe and a list, each focus_region is given a unique id, and the VoL and WMP are recorded in the dataframe along with the id
+#     focus_regions_df = pd.DataFrame(
+#         columns=['id', 'VoL', 'WMP'])
 
-    # filter out the focus regions that do not satisfy the VoL and WMP requirements
-    focus_regions_df = focus_regions_df[(focus_regions_df['VoL'] >= min_VoL) & (
-        focus_regions_df['WMP'] >= min_WMP) & (focus_regions_df['WMP'] <= max_WMP)]
+#     # create a list of focus_region objects
+#     focus_regions_list = []
 
-    # Linear regression on remaining data
-    focus_regions_df["VoL/(WMP)^2"] = focus_regions_df["VoL"] / \
-        (focus_regions_df["WMP"] ** 2)
+#     for i in range(len(focus_regions)):
+#         focus_regions_list.append(focus_regions[i])
 
-    X = focus_regions_df["WMP"]
-    X = sm.add_constant(X)
-    y = focus_regions_df["VoL/(WMP)^2"]
+#         # use concat to add a row to the dataframe
+#         focus_regions_df = pd.concat([focus_regions_df, pd.DataFrame(
+#             [[i, focus_regions[i].VoL, focus_regions[i].WMP]], columns=['id', 'VoL', 'WMP'])])
 
-    model = sm.OLS(y, X).fit()
+#     # filter out the focus regions that do not satisfy the VoL and WMP requirements
+#     focus_regions_df = focus_regions_df[(focus_regions_df['VoL'] >= min_VoL) & (
+#         focus_regions_df['WMP'] >= min_WMP) & (focus_regions_df['WMP'] <= max_WMP)]
 
-    residuals = y - model.predict(X)
-    std_resid = np.std(residuals)
-    mean_resid = np.mean(residuals)
+#     # Linear regression on remaining data
+#     focus_regions_df["VoL/(WMP)^2"] = focus_regions_df["VoL"] / \
+#         (focus_regions_df["WMP"] ** 2)
 
-    # Define inliers based on residuals
-    inlier_mask = (residuals >= mean_resid - focus_region_outlier_tolerance *
-                   std_resid) & (residuals <= mean_resid + focus_region_outlier_tolerance * std_resid)
+#     X = focus_regions_df["WMP"]
+#     X = sm.add_constant(X)
+#     y = focus_regions_df["VoL/(WMP)^2"]
 
-    # Filter out outliers
-    focus_regions_df = focus_regions_df[inlier_mask]
+#     model = sm.OLS(y, X).fit()
 
-    # Return the focus regions that are not filtered out as a list
-    return [focus_regions_list[i] for i in focus_regions_df['id'].tolist()]
+#     residuals = y - model.predict(X)
+#     std_resid = np.std(residuals)
+#     mean_resid = np.mean(residuals)
+
+#     # Define inliers based on residuals
+#     inlier_mask = (residuals >= mean_resid - focus_region_outlier_tolerance *
+#                    std_resid) & (residuals <= mean_resid + focus_region_outlier_tolerance * std_resid)
+
+#     # Filter out outliers
+#     focus_regions_df = focus_regions_df[inlier_mask]
+
+#     # Return the focus regions that are not filtered out as a list
+#     return [focus_regions_list[i] for i in focus_regions_df['id'].tolist()]

@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 class TopView:
 
-    """ A TopView class object representing all the information needed at the top view of the WSI. 
+    """A TopView class object representing all the information needed at the top view of the WSI.
 
     === Class Attributes ===
     - image : the image of the top view
@@ -31,7 +31,7 @@ class TopView:
     """
 
     def __init__(self, image, downsampling_rate, level, verbose=False):
-        """ Initialize a TopView object. 
+        """Initialize a TopView object.
         Image is a PIL image. Check the type of image. If not PIL image, raise ValueError.
         """
         self.verbose = verbose
@@ -45,23 +45,33 @@ class TopView:
         self.image = image
 
         if self.verbose:
-            print('Printing various masks of the top view...')
+            print("Printing various masks of the top view...")
         self.obstructor_mask = get_obstructor_mask(image)
         self.white_mask = get_white_mask(image)
-        self.top_view_mask = get_top_view_mask(image,
-                                               obstructor_mask=self.obstructor_mask,
-                                               white_mask=self.white_mask)
+        self.top_view_mask = get_top_view_mask(
+            image, obstructor_mask=self.obstructor_mask, white_mask=self.white_mask
+        )
         self.width = image.size[0]
         self.height = image.size[1]
         self.downsampling_rate = downsampling_rate
 
     def is_peripheral_blood(self):
-        """ Return True iff the top view is a peripheral blood top view. """
+        """Return True iff the top view is a peripheral blood top view."""
         return True
 
-    def find_focus_regions(self, crop, location, focus_regions_size, padding_x, padding_y,
-                           num_sds=foci_sds, top_to_search_zoom_ratio=16, search_to_0_zoom_ratio=8, verbose=False):
-        """ Find the focus regions related to the crop. Return a list of focus region level 0 coordinates in the format of (TL_x, TL_y, BR_x, BR_y). """
+    def find_focus_regions(
+        self,
+        crop,
+        location,
+        focus_regions_size,
+        padding_x,
+        padding_y,
+        num_sds=foci_sds,
+        top_to_search_zoom_ratio=16,
+        search_to_0_zoom_ratio=8,
+        verbose=False,
+    ):
+        """Find the focus regions related to the crop. Return a list of focus region level 0 coordinates in the format of (TL_x, TL_y, BR_x, BR_y)."""
 
         # make sure to convert from PIL to a numpy array of BGR
         crop_clone = cv2.cvtColor(np.array(crop), cv2.COLOR_RGB2BGR)
@@ -101,6 +111,18 @@ class TopView:
         # Get the right-side outliers
         outliers = np.where(blue_intensity > upper_bound)
 
+        # this is where we increment the num_sds until we have enough signal passing the threshold
+        current_num_sds = num_sds
+        while len(outliers[0]) < min_num_regions_within_foci_sd and current_num_sds > 0:
+            current_num_sds -= 1
+            upper_bound = mean + current_num_sds * std
+            outliers = np.where(blue_intensity > upper_bound)
+
+        if current_num_sds == 0:
+            raise RelativeBlueSignalTooWeakError(
+                f"find_focus_regions: relative blue signal is too weak, only {len(outliers[0])} regions are found out of {min_num_regions_within_foci_sd} required at {num_sds} standard deviations away from the mean"
+            )
+
         if verbose:
             # Plot the original image, the blue intensity, and the outliers side by side
             plt.subplot(1, 3, 1)
@@ -119,8 +141,7 @@ class TopView:
         mask[outliers] = 255
 
         # Find the connected components of the outliers
-        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
-            mask)
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask)
 
         if verbose:
             # Print how many connected components were found
@@ -134,12 +155,11 @@ class TopView:
 
         # check if the centroid coordinate, scaled down by zoom_ratio, is in the top_view_mask, if not remove it
         for centroid in centroids:
-            scaled_centroid_0 = (
-                centroid[0] + location[0]) / top_to_search_zoom_ratio
-            scaled_centroid_1 = (
-                centroid[1] + location[1]) / top_to_search_zoom_ratio
-            mask_value = self.top_view_mask[int(
-                scaled_centroid_1), int(scaled_centroid_0)]
+            scaled_centroid_0 = (centroid[0] + location[0]) / top_to_search_zoom_ratio
+            scaled_centroid_1 = (centroid[1] + location[1]) / top_to_search_zoom_ratio
+            mask_value = self.top_view_mask[
+                int(scaled_centroid_1), int(scaled_centroid_0)
+            ]
             # print(f"Scaled Centroid: ({scaled_centroid_0}, {scaled_centroid_1}), Mask Value: {mask_value}")
             if mask_value > 0:
                 filtered_centroids.append(centroid)
@@ -147,8 +167,7 @@ class TopView:
                 removed_centroids.append(centroid)
 
         if verbose:
-            print(
-                f"Filtered out {len(centroids) - len(filtered_centroids)} centroids")
+            print(f"Filtered out {len(centroids) - len(filtered_centroids)} centroids")
 
         # Create a list of the centroid pixel of each connected component
         for i in range(len(filtered_centroids)):
@@ -163,10 +182,20 @@ class TopView:
         # plot also the removed_centroids in red and alpha=0.2
         if verbose:
             plt.imshow(cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB))
-            plt.scatter([centroid[0] - location[0] for centroid in filtered_centroids], [
-                        centroid[1] - location[1] for centroid in filtered_centroids], s=75, c="green", alpha=0.2)
-            plt.scatter([centroid[0] - location[0] for centroid in removed_centroids], [
-                        centroid[1] - location[1] for centroid in removed_centroids], s=75, c="red", alpha=0.2)
+            plt.scatter(
+                [centroid[0] - location[0] for centroid in filtered_centroids],
+                [centroid[1] - location[1] for centroid in filtered_centroids],
+                s=75,
+                c="green",
+                alpha=0.2,
+            )
+            plt.scatter(
+                [centroid[0] - location[0] for centroid in removed_centroids],
+                [centroid[1] - location[1] for centroid in removed_centroids],
+                s=75,
+                c="red",
+                alpha=0.2,
+            )
             plt.show()
 
         # print the filtered centroids
@@ -191,28 +220,31 @@ class TopView:
 
         # get the number of blocks in the x and y directions
 
-        where_blocking_index_starts_x = (
-            TL_x - padding_x) // scaled_focus_region_size
-        where_blocking_starts_x = where_blocking_index_starts_x * \
-            scaled_focus_region_size + padding_x
+        where_blocking_index_starts_x = (TL_x - padding_x) // scaled_focus_region_size
+        where_blocking_starts_x = (
+            where_blocking_index_starts_x * scaled_focus_region_size + padding_x
+        )
 
-        where_blocking_index_starts_y = (
-            TL_y - padding_y) // scaled_focus_region_size
-        where_blocking_starts_y = where_blocking_index_starts_y * \
-            scaled_focus_region_size + padding_y
+        where_blocking_index_starts_y = (TL_y - padding_y) // scaled_focus_region_size
+        where_blocking_starts_y = (
+            where_blocking_index_starts_y * scaled_focus_region_size + padding_y
+        )
 
-        num_blocks_x = int((BR_x - where_blocking_starts_x) //
-                           scaled_focus_region_size + 1)
-        num_blocks_y = int((BR_y - where_blocking_starts_y) //
-                           scaled_focus_region_size + 1)
+        num_blocks_x = int(
+            (BR_x - where_blocking_starts_x) // scaled_focus_region_size + 1
+        )
+        num_blocks_y = int(
+            (BR_y - where_blocking_starts_y) // scaled_focus_region_size + 1
+        )
 
         for i in range(num_blocks_x):
             for j in range(num_blocks_y):
-
-                block_TL_x = (where_blocking_index_starts_x + i) * \
-                    scaled_focus_region_size + padding_x
-                block_TL_y = (where_blocking_index_starts_y + j) * \
-                    scaled_focus_region_size + padding_y
+                block_TL_x = (
+                    where_blocking_index_starts_x + i
+                ) * scaled_focus_region_size + padding_x
+                block_TL_y = (
+                    where_blocking_index_starts_y + j
+                ) * scaled_focus_region_size + padding_y
 
                 block_BR_x = block_TL_x + scaled_focus_region_size
                 block_BR_y = block_TL_y + scaled_focus_region_size
@@ -222,26 +254,48 @@ class TopView:
                 block_centroid_y = (block_TL_y + block_BR_y) / 2
 
                 # check if the centroid is inside the region_crop
-                if TL_x <= block_centroid_x <= BR_x and TL_y <= block_centroid_y <= BR_y:
-
+                if (
+                    TL_x <= block_centroid_x <= BR_x
+                    and TL_y <= block_centroid_y <= BR_y
+                ):
                     # check if any of the filtered_centroids is inside the block
                     contain_good_stuff = False
                     for centroid in filtered_centroids:
-                        if block_TL_x <= centroid[0] <= block_BR_x and block_TL_y <= centroid[1] <= block_BR_y:
+                        if (
+                            block_TL_x <= centroid[0] <= block_BR_x
+                            and block_TL_y <= centroid[1] <= block_BR_y
+                        ):
                             contain_good_stuff = True
                             break
 
                     if contain_good_stuff:
-                        block_coords.append((int(block_TL_x * search_to_0_zoom_ratio),
-                                             int(block_TL_y *
-                                                 search_to_0_zoom_ratio),
-                                             int(block_BR_x *
-                                                 search_to_0_zoom_ratio),
-                                             int(block_BR_y * search_to_0_zoom_ratio)))
+                        block_coords.append(
+                            (
+                                int(block_TL_x * search_to_0_zoom_ratio),
+                                int(block_TL_y * search_to_0_zoom_ratio),
+                                int(block_BR_x * search_to_0_zoom_ratio),
+                                int(block_BR_y * search_to_0_zoom_ratio),
+                            )
+                        )
 
-        return block_coords
+        return block_coords, current_num_sds
 
 
 class SpecimenError(ValueError):
-    """ Exception raised when the specimen is not the correct type for the operation. """
+    """Exception raised when the specimen is not the correct type for the operation."""
+
     pass
+
+
+class RelativeBlueSignalTooWeakError(ValueError):
+    """Exception raised when the blue signal is too weak."""
+
+    def __init__(self, message):
+        """Initialize a BlueSignalTooWeakError object."""
+
+        super().__init__(message)
+
+    def __str__(self):
+        """Return the error message."""
+
+        return self.args[0]

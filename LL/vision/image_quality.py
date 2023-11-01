@@ -3,9 +3,10 @@
 ####################################################################################################
 
 # Outside imports ##################################################################################
-from PIL import Image, ImageOps
 import cv2
 import numpy as np
+from PIL import Image, ImageOps
+
 
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
@@ -13,8 +14,8 @@ from LL.vision.masking import otsu_white_mask
 
 
 def VoL(image, sds=2):
-    """ Compute the VoL of an image, the variance is computed after removing all data sds standard deviations away from the mean. 
-    The image must be a PIL RGB image. """
+    """Compute the VoL of an image, the variance is computed after removing all data sds standard deviations away from the mean.
+    The image must be a PIL RGB image."""
 
     # make sure that the image is from now on processed using cv2 so must be in BGR format
     image = np.array(image)
@@ -40,8 +41,8 @@ def VoL(image, sds=2):
 
 
 def WMP(image):
-    """ Compute the otsu white mask's white pixel proportion of an image.
-    The image must be a PIL RGB image. """
+    """Compute the otsu white mask's white pixel proportion of an image.
+    The image must be a PIL RGB image."""
 
     white_mask = otsu_white_mask(image)
     return np.sum(white_mask) / ((white_mask.shape[0] * white_mask.shape[1]) * 255)
