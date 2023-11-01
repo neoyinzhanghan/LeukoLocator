@@ -160,7 +160,7 @@ class PBCounter:
             num_sds -= 1
             if num_sds == 0:
                 raise RelativeBlueSignalTooWeakError(
-                    f"Relative blue signal is too weak. min_num_regions_within_foci_sd {min_num_regions_within_foci_sd} is not reached. Only {len(focus_region_coords)} regions found at num_sds=1. Check slide for potential poor staining/imaging.)"
+                    f"Relative blue signal is too weak. min_num_regions_within_foci_sd {min_num_regions_within_foci_sd} is not reached. Only {len(focus_regions_coords)} regions found at num_sds=1. Check slide for potential poor staining/imaging.)"
                 )
 
             focus_regions_coords = []
