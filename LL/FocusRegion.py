@@ -464,7 +464,7 @@ class FocusRegionsTracker:
         )
 
     def _save_yaml(self, save_dir):
-        """ Save the class attributes as a YAML file. """
+        """Save the class attributes as a YAML file."""
 
         # if save_dir/focus_regions does not exist, then create it
         if not os.path.exists(os.path.join(save_dir, "focus_regions")):
@@ -506,24 +506,38 @@ class FocusRegionsTracker:
         # if hoarding is True, then save the focus regions at the search view magnification sorted into folders
         if hoarding:
             # create some folders -- too_low_VoL, too_high_WMP, too_low_WMP, lm_ouliers
-            os.makedirs(os.path.join(save_dir, "focus_regions", "too_low_VoL"), exist_ok=True)
-            os.makedirs(os.path.join(save_dir, "focus_regions", "too_high_WMP"), exist_ok=True)
-            os.makedirs(os.path.join(save_dir, "focus_regions", "too_low_WMP"), exist_ok=True)
-            os.makedirs(os.path.join(save_dir, "focus_regions", "lm_ouliers"), exist_ok=True)
+            os.makedirs(
+                os.path.join(save_dir, "focus_regions", "too_low_VoL"), exist_ok=True
+            )
+            os.makedirs(
+                os.path.join(save_dir, "focus_regions", "too_high_WMP"), exist_ok=True
+            )
+            os.makedirs(
+                os.path.join(save_dir, "focus_regions", "too_low_WMP"), exist_ok=True
+            )
+            os.makedirs(
+                os.path.join(save_dir, "focus_regions", "lm_ouliers"), exist_ok=True
+            )
 
             for i, focus_region in self.focus_regions_dct.items():
-                if self.info_df.loc[self.info_df["focus_region_id"] == i, "rejected"].values[0] == 1:
+                if (
+                    self.info_df.loc[
+                        self.info_df["focus_region_id"] == i, "rejected"
+                    ].values[0]
+                    == 1
+                ):
                     # save the focus region image to the corresponding folder
                     focus_region.downsampled_image.save(
                         os.path.join(
                             save_dir,
                             "focus_regions",
-                            self.info_df.loc[self.info_df["focus_region_id"] == i, "reason_for_rejection"].values[0],
-                            f"focus_region_{i
-                            }.png",
+                            self.info_df.loc[
+                                self.info_df["focus_region_id"] == i,
+                                "reason_for_rejection",
+                            ].values[0],
+                            f"focus_region_{i}.png",
                         )
                     )
-
 
     def filter(self, hoarding=False):
         """Run through the filtering pipeline, and if hoarding is True, then save the focus regions
