@@ -20,7 +20,6 @@ from LL.FocusRegion import FocusRegion, FocusRegionsTracker
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
 from LL.Differential import Differential
-from LL.brain.statistics import focus_region_filtering
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
 
