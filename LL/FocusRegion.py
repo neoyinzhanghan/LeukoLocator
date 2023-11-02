@@ -221,7 +221,7 @@ class FocusRegionsTracker:
             "min_VoL_passed",
         ] = 1
         self.info_df.loc[
-            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
 
@@ -273,7 +273,7 @@ class FocusRegionsTracker:
             "max_WMP_passed",
         ] = 1
         self.info_df.loc[
-            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
 
@@ -321,7 +321,7 @@ class FocusRegionsTracker:
             "min_WMP_passed",
         ] = 1
         self.info_df.loc[
-            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
 
