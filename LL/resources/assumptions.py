@@ -25,12 +25,12 @@ do_zero_pad = False
 foci_sds = 6
 foci_sd_inc = 1
 
-min_VoL = 10  # 10
+min_VoL = 100  # 10
 search_view_downsample_rate = 8
 min_cell_VoL = 10
 
-min_WMP = 0.55  # it use to be
-max_WMP = 0.8  # it use to be 0.9, but I think we can start reducing this a bit as there are too many regions from the periphery of the smear
+min_WMP = 0.5  # it use to be
+max_WMP = 0.7  # it use to be 0.9, but I think we can start reducing this a bit as there are too many regions from the periphery of the smear
 
 focus_region_outlier_tolerance = 1
 
