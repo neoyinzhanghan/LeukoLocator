@@ -491,8 +491,6 @@ class FocusRegionsTracker:
 
         self.final_min_conf_thres = selected["confidence_score"].min()
 
-        print(f"LAALALALALALALALALALALALALALALALALALAL {selected['confidence_score'].isna().all()}")
-
         # update the rejected column of the info_df and the min_WMP_passed column
         self.info_df.loc[
             self.info_df["focus_region_id"].isin(selected_focus_region_ids),
@@ -797,6 +795,7 @@ class FocusRegionsTracker:
         )
 
         self._get_resnet_confidence_score()
+        self._resnet_conf_filtering()
 
         self.num_filtered = len(self.info_df[self.info_df["rejected"] == 0])
 
