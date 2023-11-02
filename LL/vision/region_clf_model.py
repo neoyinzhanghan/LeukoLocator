@@ -13,9 +13,7 @@ class ResNet50Classifier(pl.LightningModule):
     def __init__(self, learning_rate=0.001):
         super(ResNet50Classifier, self).__init__()
 
-        self.resnet50 = models.resnet50(
-            weights=models.resnet50.ResNet50_Weights.IMAGENET1K_V1
-        )
+        self.resnet50 = models.resnet50(pretrained=True)
         num_features = self.resnet50.fc.in_features
         self.resnet50.fc = torch.nn.Linear(num_features, 2)  # Binary classification
         self.loss_fn = torch.nn.CrossEntropyLoss()
