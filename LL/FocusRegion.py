@@ -162,14 +162,8 @@ def load_model_from_checkpoint(checkpoint_path):
     )  # This allows loading to CPU
     model.load_state_dict(checkpoint["state_dict"])
     model.eval()  # Set to evaluation mode
+
     return model
-
-
-# Load the model
-MODEL_PATH = (
-    "path_to_your_checkpoint.ckpt"  # Update this path to your checkpoint's path
-)
-model = load_model_from_checkpoint(MODEL_PATH)
 
 
 def predict(pil_image, model):
@@ -200,14 +194,6 @@ def predict(pil_image, model):
         confidence_score = probs[0][1].item()
 
     return confidence_score
-
-
-# Example usage
-test_image = Image.open(
-    "path_to_test_image.jpg"
-)  # Replace this with your test image path
-score = predict(test_image, model)
-print(f"Confidence score for class 1: {score}")
 
 
 class FocusRegionsTracker:
