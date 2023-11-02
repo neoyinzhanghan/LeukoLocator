@@ -207,6 +207,8 @@ class FocusRegionsTracker:
         else:
             selected = good_ones
 
+        print("Selected:", len(selected))
+
         # find the minimum VoL of the selected focus regions
         self.final_min_VoL = selected["VoL"].min()
 
