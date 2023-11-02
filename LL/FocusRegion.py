@@ -8,6 +8,9 @@ import numpy as np
 import pandas as pd
 import yaml
 import statsmodels.api as sm
+import torch
+from torchvision import transforms
+from PIL import Image
 from matplotlib import pyplot as plt
 from PIL import Image
 from tqdm import tqdm
@@ -16,6 +19,7 @@ from tqdm import tqdm
 from LL.resources.assumptions import *
 from LL.vision.image_quality import VoL, WMP
 from LL.communication.visualization import annotate_focus_region
+from LL.vision.region_clf_model import ResNet50Classifier
 
 
 class FocusRegion:
@@ -116,6 +120,7 @@ def _gather_focus_regions_and_metrics(
             "y": focus_region_coord[1],
             "VoL": focus_region.VoL,
             "WMP": focus_region.WMP,
+            "confidence_score": np.nan,
             "rejected": 0,
             "region_classification_passed": np.nan,
             "max_WMP_passed": np.nan,
@@ -140,6 +145,71 @@ def numpy_to_python(value):
         return value
 
 
+import torch
+from torchvision import transforms
+from PIL import Image
+
+# Assuming the ResNet50Classifier class definition is already loaded
+
+
+def load_model_from_checkpoint(checkpoint_path):
+    """
+    Load the model from a given checkpoint path.
+    """
+    model = ResNet50Classifier()
+    checkpoint = torch.load(
+        checkpoint_path, map_location=lambda storage, loc: storage
+    )  # This allows loading to CPU
+    model.load_state_dict(checkpoint["state_dict"])
+    model.eval()  # Set to evaluation mode
+    return model
+
+
+# Load the model
+MODEL_PATH = (
+    "path_to_your_checkpoint.ckpt"  # Update this path to your checkpoint's path
+)
+model = load_model_from_checkpoint(MODEL_PATH)
+
+
+def predict(pil_image, model):
+    """
+    Predict the confidence score for the given PIL image.
+
+    Parameters:
+    - pil_image (PIL.Image.Image): Input PIL Image object.
+    - model (torch.nn.Module): Trained model.
+
+    Returns:
+    - float: Confidence score for the class label `1`.
+    """
+    # Transform the input image to the format the model expects
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+    image = pil_image.convert("RGB")
+    image = transform(image).unsqueeze(0)  # Add batch dimension
+
+    with torch.no_grad():  # No need to compute gradients for inference
+        logits = model(image)
+        probs = torch.softmax(logits, dim=1)
+        confidence_score = probs[0][1].item()
+
+    return confidence_score
+
+
+# Example usage
+test_image = Image.open(
+    "path_to_test_image.jpg"
+)  # Replace this with your test image path
+score = predict(test_image, model)
+print(f"Confidence score for class 1: {score}")
+
+
 class FocusRegionsTracker:
     """A class representing a focus region tracker object that tracks the metrics, objects, files related to focus region filtering.
 
@@ -156,6 +226,8 @@ class FocusRegionsTracker:
     - lm_intercept : the intercept of the linear model
     - lm_slope : the slope of the linear model
     - lm_std_resid : the standard deviation of the residuals of the linear model
+
+    - region_clf_model : the region classifier
     """
 
     def __init__(self, search_view, focus_regions_coords) -> None:
@@ -176,6 +248,9 @@ class FocusRegionsTracker:
 
         self.lm_intercept = None
         self.lm_slope = None
+        self.lm_std_resid = None
+
+        self.final_min_conf_thresh = None
 
     def save_focus_regions_info(self, save_dir):
         """Save the information of the focus regions to a csv file."""
@@ -383,6 +458,70 @@ class FocusRegionsTracker:
             "reason_for_rejection",
         ] = "lm_outlier"
 
+    def _get_resnet_confidence_score(self, model_ckpt_path=region_clf_ckpt_path):
+        """For all the regions that haven't been rejected yet, get the confidence score from the resnet model."""
+
+        model = load_model_from_checkpoint(model_ckpt_path)
+        unrejected_df = self.info_df[self.info_df["rejected"] == 0]
+
+        for i, row in tqdm(
+            unrejected_df.iterrows(), desc="Getting ResNet confidence score"
+        ):
+            focus_region = self.focus_regions_dct[row["focus_region_id"]]
+
+            confidence_score = predict(focus_region.downsampled_image, model)
+
+            self.info_df.loc[i, "confidence_score"] = confidence_score
+
+    def _resnet_conf_filtering(self):
+        """Filter out the regions that do not satisfy the confidence score requirement."""
+
+        unrejected_df = self.info_df[self.info_df["rejected"] == 0]
+
+        # first filter out the focus regions that do not satisfy the confidence score requirement using self.info_df
+        good_ones = unrejected_df[
+            unrejected_df["confidence_score"] >= region_clf_conf_thres
+        ]
+        bad_ones = unrejected_df[
+            unrejected_df["confidence_score"] < region_clf_conf_thres
+        ]
+
+        if len(good_ones) < min_num_regions_after_region_clf:
+            # sort the bad ones by confidence score in descending order
+            bad_ones = bad_ones.sort_values(by=["confidence_score"], ascending=False)
+
+            # take the top ones just enough to have min_num_regions_after_region_clf focus regions left
+            okay_ones = bad_ones.iloc[
+                : min_num_regions_after_region_clf - len(good_ones)
+            ]
+
+            # concatenate the good ones and the bad ones
+            selected = pd.concat([good_ones, okay_ones])
+
+        else:
+            selected = good_ones
+
+        # get the focus_region_id of the selected focus regions
+        selected_focus_region_ids = selected["focus_region_id"].tolist()
+
+        self.final_min_conf_thres = selected["confidence_score"].min()
+
+        # update the rejected column of the info_df and the min_WMP_passed column
+        self.info_df.loc[
+            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            "region_classification_passed",
+        ] = 1
+        self.info_df.loc[
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            "rejected",
+        ] = 1
+        # update the reason_for_rejection column of the info_df
+        self.info_df.loc[
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids)
+            & self.info_df["reason_for_rejection"].isna(),
+            "reason_for_rejection",
+        ] = "resnet_conf_too_low"
+
     def _save_VoL_plot(self, save_dir, after_filtering=False):
         """Save the VoL plot, with the final_min_VoL as a vertical line."""
 
@@ -508,6 +647,39 @@ class FocusRegionsTracker:
             os.path.join(save_dir, "focus_regions", "lm_plot.png"),
         )
 
+    def _save_resnet_conf_plot(self, save_dir, after_filtering=False):
+        """Save the resnet confidence score plot."""
+
+        # if save_dir/focus_regions does not exist, then create it
+        if not os.path.exists(os.path.join(save_dir, "focus_regions")):
+            os.makedirs(os.path.join(save_dir, "focus_regions"))
+
+        # only pick things that passed the VoL and WMP tests
+        filtered = self.info_df[
+            (self.info_df["min_VoL_passed"] == 1)
+            & (self.info_df["min_WMP_passed"] == 1)
+            & (self.info_df["max_WMP_passed"] == 1)
+            & (self.info_df["lm_outier_removal_passed"] == 1)
+        ]
+
+        if after_filtering:
+            filtered = filtered[filtered["rejected"] == 0]
+
+        # after filtering, we can plot the resnet confidence score
+        plt.figure(figsize=(10, 10))
+        plt.hist(filtered["confidence_score"], bins=100, alpha=0.5)
+
+        plt.title("Unnormalized density of the resnet confidence score")
+        plt.xlabel("Confidence score")
+
+        plt.savefig(
+            os.path.join(
+                save_dir,
+                "focus_regions",
+                f"resnet_confidence_score_unnormalized_density_filtered_{after_filtering}.png",
+            )
+        )
+
     def _save_yaml(self, save_dir):
         """Save the class attributes as a YAML file."""
 
@@ -525,6 +697,7 @@ class FocusRegionsTracker:
             "lm_intercept": numpy_to_python(self.lm_intercept),
             "lm_slope": numpy_to_python(self.lm_slope),
             "lm_std_resid": numpy_to_python(self.lm_std_resid),
+            "final_min_conf_thres": numpy_to_python(self.final_min_conf_thres),
         }
 
         with open(
@@ -551,6 +724,9 @@ class FocusRegionsTracker:
         # save the lm plot
         self._save_lm_plot(save_dir)
 
+        # save the resnet confidence score plot
+        self._save_resnet_conf_plot(save_dir, after_filtering=False)
+
         # save the class attributes as a YAML file
         self._save_yaml(save_dir)
 
@@ -571,6 +747,10 @@ class FocusRegionsTracker:
             )
             os.makedirs(
                 os.path.join(save_dir, "focus_regions", "lm_outlier"), exist_ok=True
+            )
+            os.makedirs(
+                os.path.join(save_dir, "focus_regions", "resnet_conf_too_low"),
+                exist_ok=True,
             )
 
             for i, focus_region in tqdm(
@@ -614,6 +794,7 @@ class FocusRegionsTracker:
         self._filter_max_WMP()
         self._filter_min_WMP()
         self._lm_outlier_filtering()
+        self._get_resnet_confidence_score()
 
         self.num_filtered = len(self.info_df[self.info_df["rejected"] == 0])
 
