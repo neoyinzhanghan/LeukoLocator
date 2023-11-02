@@ -240,6 +240,9 @@ class FocusRegionsTracker:
         good_ones = unrejected_df[unrejected_df["WMP"] < max_WMP]
         bad_ones = unrejected_df[unrejected_df["WMP"] >= max_WMP]
 
+        print("Number of good ones:", len(good_ones))
+        print("Number of bad ones:", len(bad_ones))
+
         if len(good_ones) < min_num_regions_after_WMP_max_filter:
             # sort the bad ones by WMP in descending order
             bad_ones = bad_ones.sort_values(by=["WMP"], ascending=True)
