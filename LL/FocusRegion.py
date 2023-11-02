@@ -220,6 +220,12 @@ class FocusRegionsTracker:
             "rejected",
         ] = 1
 
+        # print how many focus regions are left
+        unrejected = self.info_df[self.info_df["rejected"] == 0]
+        print(
+            f"min_VoL: {len(unrejected)} focus regions are left after filtering"
+        )
+
     def _filter_max_WMP(self):
         """
         We start with the max_WMP parameter from assumption,
