@@ -370,7 +370,8 @@ class FocusRegionsTracker:
         ] = 1
         # update the reason_for_rejection column of the info_df
         self.info_df.loc[
-            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids)
+            & self.info_df["reason_for_rejection"].isna(),
             "reason_for_rejection",
         ] = "lm_outlier"
 
