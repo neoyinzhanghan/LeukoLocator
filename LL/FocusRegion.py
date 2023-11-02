@@ -314,6 +314,8 @@ class FocusRegionsTracker:
 
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
+        print(len(unrejected_df))
+
         X = unrejected_df["WMP"]
         X = sm.add_constant(X)
         y = unrejected_df["VoL/WMP"]
