@@ -489,6 +489,7 @@ class FocusRegionsTracker:
             "final_max_WMP": self.final_max_WMP,
             "lm_intercept": self.lm_intercept,
             "lm_slope": self.lm_slope,
+            "lm_std_resid": self.lm_std_resid,
         }
 
         with open(
