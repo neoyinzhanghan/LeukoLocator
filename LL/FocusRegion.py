@@ -201,6 +201,9 @@ class FocusRegionsTracker:
             # concatenate the good ones and the bad ones
             selected = pd.concat([good_ones, okay_ones])
 
+        else:
+            selected = good_ones
+
         # find the minimum VoL of the selected focus regions
         self.final_min_VoL = selected["VoL"].min()
 
@@ -242,6 +245,9 @@ class FocusRegionsTracker:
 
             # concatenate the good ones and the bad ones
             selected = pd.concat([good_ones, okay_ones])
+        
+        else:
+            selected = good_ones
 
         # find the minimum WMP of the selected focus regions
         self.final_max_WMP = selected["WMP"].max()
@@ -283,6 +289,9 @@ class FocusRegionsTracker:
 
             # concatenate the good ones and the bad ones
             selected = pd.concat([good_ones, okay_ones])
+        
+        else:
+            selected = good_ones
 
         # find the minimum WMP of the selected focus regions
         self.final_min_WMP = selected["WMP"].min()
