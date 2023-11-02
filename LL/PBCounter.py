@@ -6,7 +6,6 @@
 import os
 import ray
 import openslide
-
 from PIL import Image
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
@@ -199,6 +198,15 @@ class PBCounter:
         )
 
         fr_tracker.filter(save_dir=self.save_dir, hoarding=self.hoarding)
+
+        # add num_sds to the save_dir/focus_regions/focus_regions_filtering.yaml file using yaml
+        fr_filtering_yaml_path = os.path.join(
+            self.save_dir, "focus_regions", "focus_regions_filtering.yaml"
+        )
+
+        fr_filtering_yaml = open(fr_filtering_yaml_path, "a")
+        fr_filtering_yaml.write(f"num_sds: {num_sds}\n")
+        fr_filtering_yaml.close()
 
         #############################
         #############################
