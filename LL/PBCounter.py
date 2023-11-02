@@ -57,10 +57,10 @@ class PBCounter:
         # Initialize the manager
         self.file_name_manager = FileNameManager(wsi_path)
 
-        save_dir = os.path.join(dump_dir, self.file_name_manager.stem)
+        self.save_dir = os.path.join(dump_dir, self.file_name_manager.stem)
 
         # if the save_dir does not exist, create it
-        os.makedirs(save_dir, exist_ok=True)
+        os.makedirs(self.save_dir, exist_ok=True)
 
         # Processing the WSI
         try:
@@ -156,7 +156,9 @@ class PBCounter:
 
         print(f"{len(focus_regions_coords)} regions found at num_sds={num_sds}")
 
-        while len(focus_regions_coords) < min_num_regions_within_foci_sd and num_sds > 0:
+        while (
+            len(focus_regions_coords) < min_num_regions_within_foci_sd and num_sds > 0
+        ):
             num_sds -= 1
             if num_sds == 0:
                 raise RelativeBlueSignalTooWeakError(
@@ -164,7 +166,7 @@ class PBCounter:
                 )
 
             focus_regions_coords = []
-            
+
             for location in tqdm(
                 locations, desc=f"Finding focus regions at num_sds={num_sds}"
             ):
