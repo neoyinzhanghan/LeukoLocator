@@ -61,7 +61,7 @@ allowed_reading_time = 20  # in seconds
 
 region_clf_ckpt_path = "/home/greg/Documents/neo/LLCKPTS/LLRegionClf/V1/checkpoints/epoch=99-step=10300.ckpt"
 region_clf_conf_thres = (
-    0.5  # TODO need to do a conformal calibration and adjust this number accordingly
+    0.8  # TODO need to do a conformal calibration and adjust this number accordingly
 )
 
 YOLO_ckpt_path = "/media/hdd3/neo/resources/YOLO_checkpoint.pt"
