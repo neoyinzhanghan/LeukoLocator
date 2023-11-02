@@ -491,7 +491,7 @@ class FocusRegionsTracker:
 
         self.final_min_conf_thres = selected["confidence_score"].min()
 
-        print(selected["confidence_score"].isna().all())
+        print(f"LAALALALALALALALALALALALALALALALALALAL {selected['confidence_score'].isna().all()}")
 
         # update the rejected column of the info_df and the min_WMP_passed column
         self.info_df.loc[
