@@ -126,6 +126,8 @@ class PBCounter:
     def find_focus_regions(self):
         """Find the focus regions of the WSI."""
 
+        os.makedirs(os.path.join(self.save_dir, "focus_regions"), exist_ok=True)
+
         focus_regions_coords = []
         locations = self.search_view.get_locations()
 
