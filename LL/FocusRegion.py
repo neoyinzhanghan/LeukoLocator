@@ -132,6 +132,14 @@ def _gather_focus_regions_and_metrics(
     return focus_regions_dct, image_metrics_df
 
 
+def numpy_to_python(value):
+    """Converts numpy objects to Python native objects."""
+    if isinstance(value, (np.generic, np.ndarray)):
+        return value.item() if np.isscalar(value) else value.tolist()
+    else:
+        return value
+
+
 class FocusRegionsTracker:
     """A class representing a focus region tracker object that tracks the metrics, objects, files related to focus region filtering.
 
@@ -509,14 +517,14 @@ class FocusRegionsTracker:
 
         # the class attributes to save include num_unfiltered, num_filtered, final_min_VoL, final_min_WMP, final_max_WMP, lm_intercept, lm_slope
         yaml_dict = {
-            "num_unfiltered": self.num_unfiltered,
-            "num_filtered": self.num_filtered,
-            "final_min_VoL": self.final_min_VoL,
-            "final_min_WMP": self.final_min_WMP,
-            "final_max_WMP": self.final_max_WMP,
-            "lm_intercept": self.lm_intercept,
-            "lm_slope": self.lm_slope,
-            "lm_std_resid": self.lm_std_resid,
+            "num_unfiltered": numpy_to_python(self.num_unfiltered),
+            "num_filtered": numpy_to_python(self.num_filtered),
+            "final_min_VoL": numpy_to_python(self.final_min_VoL),
+            "final_min_WMP": numpy_to_python(self.final_min_WMP),
+            "final_max_WMP": numpy_to_python(self.final_max_WMP),
+            "lm_intercept": numpy_to_python(self.lm_intercept),
+            "lm_slope": numpy_to_python(self.lm_slope),
+            "lm_std_resid": numpy_to_python(self.lm_std_resid),
         }
 
         with open(
