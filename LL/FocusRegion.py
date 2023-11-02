@@ -676,6 +676,30 @@ class FocusRegionsTracker:
         # the class attributes to save include num_unfiltered, num_filtered, final_min_VoL, final_min_WMP, final_max_WMP, lm_intercept, lm_slope
         yaml_dict = {
             "num_unfiltered": numpy_to_python(self.num_unfiltered),
+            "num_unrejected_after_VoL_filter": numpy_to_python(
+                len(
+                    self.info_df[
+                        (self.info_df["rejected"] == 0)
+                        & (self.info_df["min_VoL_passed"] == 1)
+                    ]
+                )
+            ),
+            "num_unrejected_after_WMP_max_filter": numpy_to_python(
+                len(
+                    self.info_df[
+                        (self.info_df["rejected"] == 0)
+                        & (self.info_df["max_WMP_passed"] == 1)
+                    ]
+                )
+            ),
+            "num_unrejected_after_WMP_min_filter": numpy_to_python(
+                len(
+                    self.info_df[
+                        (self.info_df["rejected"] == 0)
+                        & (self.info_df["min_WMP_passed"] == 1)
+                    ]
+                )
+            ),
             "num_filtered": numpy_to_python(self.num_filtered),
             "final_min_VoL": numpy_to_python(self.final_min_VoL),
             "final_min_WMP": numpy_to_python(self.final_min_WMP),
@@ -780,6 +804,12 @@ class FocusRegionsTracker:
         self._filter_max_WMP()
         self._filter_min_WMP()
         self._lm_outlier_filtering()
+
+        # print the number of unrejected focus_regions before resnet confidence score filtering
+        print(
+            f"Number of unrejected focus regions before resnet confidence score filtering: {len(self.info_df[self.info_df['rejected'] == 0])}"
+        )
+
         self._get_resnet_confidence_score()
 
         self.num_filtered = len(self.info_df[self.info_df["rejected"] == 0])
