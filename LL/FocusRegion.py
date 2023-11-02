@@ -703,10 +703,10 @@ class FocusRegionsTracker:
             "final_min_VoL": numpy_to_python(self.final_min_VoL),
             "final_min_WMP": numpy_to_python(self.final_min_WMP),
             "final_max_WMP": numpy_to_python(self.final_max_WMP),
+            "final_min_conf_thres": numpy_to_python(self.final_min_conf_thres),
             "lm_intercept": numpy_to_python(self.lm_intercept),
             "lm_slope": numpy_to_python(self.lm_slope),
             "lm_std_resid": numpy_to_python(self.lm_std_resid),
-            "final_min_conf_thres": numpy_to_python(self.final_min_conf_thres),
         }
 
         with open(
