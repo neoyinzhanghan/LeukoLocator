@@ -189,9 +189,6 @@ class FocusRegionsTracker:
         good_ones = unrejected_df[unrejected_df["VoL"] >= min_VoL]
         bad_ones = unrejected_df[unrejected_df["VoL"] < min_VoL]
 
-        print("Good ones:", len(good_ones))
-        print("Bad ones:", len(bad_ones))
-
         if len(good_ones) < min_num_regions_after_VoL_filter:
             # sort the bad ones by VoL in descending order
             bad_ones = bad_ones.sort_values(by=["VoL"], ascending=False)
@@ -206,8 +203,6 @@ class FocusRegionsTracker:
 
         else:
             selected = good_ones
-
-        print("Selected:", len(selected))
 
         # find the minimum VoL of the selected focus regions
         self.final_min_VoL = selected["VoL"].min()
@@ -225,10 +220,6 @@ class FocusRegionsTracker:
             "rejected",
         ] = 1
 
-        # print how many focus regions are left
-        unrejected = self.info_df[self.info_df["rejected"] == 0]
-        print(f"min_VoL: {len(unrejected)} focus regions are left after filtering")
-
     def _filter_max_WMP(self):
         """
         We start with the max_WMP parameter from assumption,
@@ -242,9 +233,6 @@ class FocusRegionsTracker:
         # first filter out the focus regions that do not satisfy the max_WMP requirement using self.info_df
         good_ones = unrejected_df[unrejected_df["WMP"] < max_WMP]
         bad_ones = unrejected_df[unrejected_df["WMP"] >= max_WMP]
-
-        print("Number of good ones:", len(good_ones))
-        print("Number of bad ones:", len(bad_ones))
 
         if len(good_ones) < min_num_regions_after_WMP_max_filter:
             # sort the bad ones by WMP in descending order
@@ -276,10 +264,6 @@ class FocusRegionsTracker:
             ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
-
-        # print how many focus regions are left
-        unrejected = self.info_df[self.info_df["rejected"] == 0]
-        print(f"max_WMP: {len(unrejected)} focus regions are left after filtering")
 
     def _filter_min_WMP(self):
         """We start with the min_WMP parameter from assumption,
@@ -325,20 +309,10 @@ class FocusRegionsTracker:
             "rejected",
         ] = 1
 
-        # print how many focus regions are left
-        unrejected = self.info_df[self.info_df["rejected"] == 0]
-        print(f"min_WMP: {len(unrejected)} focus regions are left after filtering")
-
     def _lm_outlier_filtering(self):
         """Perform a linear model outlier removal using 1 SD."""
 
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
-
-        # print the columns of the unrejected_df
-        print(unrejected_df.columns)
-
-        # print the length of the unrejected_df
-        print(len(unrejected_df))
 
         X = unrejected_df["WMP"]
         X = sm.add_constant(X)
