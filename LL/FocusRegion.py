@@ -546,6 +546,9 @@ class FocusRegionsTracker:
         if hoarding:
             # create some folders -- too_low_VoL, too_high_WMP, too_low_WMP, lm_ouliers
             os.makedirs(
+                os.path.join(save_dir, "focus_regions", "passed"), exist_ok=True
+            )
+            os.makedirs(
                 os.path.join(save_dir, "focus_regions", "too_low_VoL"), exist_ok=True
             )
             os.makedirs(
@@ -558,7 +561,10 @@ class FocusRegionsTracker:
                 os.path.join(save_dir, "focus_regions", "lm_oulier"), exist_ok=True
             )
 
-            for i, focus_region in self.focus_regions_dct.items():
+            for i, focus_region in tqdm(
+                self.focus_regions_dct.items(),
+                desc="Hoarding",
+            ):
                 if (
                     self.info_df.loc[
                         self.info_df["focus_region_id"] == i, "rejected"
@@ -574,6 +580,16 @@ class FocusRegionsTracker:
                                 self.info_df["focus_region_id"] == i,
                                 "reason_for_rejection",
                             ].values[0],
+                            f"focus_region_{i}.png",
+                        )
+                    )
+                else:
+                    # save the focus region image to the passed folder
+                    focus_region.downsampled_image.save(
+                        os.path.join(
+                            save_dir,
+                            "focus_regions",
+                            "passed",
                             f"focus_region_{i}.png",
                         )
                     )
