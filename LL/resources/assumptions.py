@@ -32,7 +32,7 @@ min_cell_VoL = 10
 min_WMP = 0.5  # it use to be
 max_WMP = 0.7  # it use to be 0.9, but I think we can start reducing this a bit as there are too many regions from the periphery of the smear
 
-focus_region_outlier_tolerance = 1
+focus_region_outlier_tolerance = 3
 
 ########################
 ### Quantity Control ###
