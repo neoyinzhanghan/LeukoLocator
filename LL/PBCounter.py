@@ -205,7 +205,7 @@ class PBCounter:
         )
 
         fr_filtering_yaml = open(fr_filtering_yaml_path, "a")
-        fr_filtering_yaml.write(f"num_sds: {num_sds}\n")
+        fr_filtering_yaml.write(f"relative_blue_signal_num_sds_thres: {num_sds}\n")
         fr_filtering_yaml.close()
 
         #############################
