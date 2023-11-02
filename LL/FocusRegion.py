@@ -245,7 +245,7 @@ class FocusRegionsTracker:
 
             # concatenate the good ones and the bad ones
             selected = pd.concat([good_ones, okay_ones])
-        
+
         else:
             selected = good_ones
 
@@ -289,7 +289,7 @@ class FocusRegionsTracker:
 
             # concatenate the good ones and the bad ones
             selected = pd.concat([good_ones, okay_ones])
-        
+
         else:
             selected = good_ones
 
@@ -314,6 +314,10 @@ class FocusRegionsTracker:
 
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
+        # print the columns of the unrejected_df
+        print(unrejected_df.columns)
+
+        # print the length of the unrejected_df
         print(len(unrejected_df))
 
         X = unrejected_df["WMP"]
