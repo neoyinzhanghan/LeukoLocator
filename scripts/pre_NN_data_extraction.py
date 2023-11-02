@@ -22,6 +22,3 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
     pbc = PBCounter(wsi_path)
 
     pbc.find_focus_regions()
-    pbc.tally_differential()
-
-    i += 1
