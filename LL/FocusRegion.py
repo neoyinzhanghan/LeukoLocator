@@ -365,12 +365,12 @@ class FocusRegionsTracker:
             "lm_outier_removal_passed",
         ] = 1
         self.info_df.loc[
-            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
         # update the reason_for_rejection column of the info_df
         self.info_df.loc[
-            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "reason_for_rejection",
         ] = "lm_outlier"
 
