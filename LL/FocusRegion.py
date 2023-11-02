@@ -529,13 +529,13 @@ class FocusRegionsTracker:
             plt.axvline(
                 x=self.final_min_VoL, color="r", linestyle="-", label="final_min_VoL"
             )
+            plt.legend()
 
         plt.title(
             f"Unnormalized density of the VoL of the focus regions, filtered == {after_filtering}"
         )
         plt.xlabel("VoL")
         plt.ylabel("Count")
-        plt.legend()
         plt.savefig(
             os.path.join(
                 save_dir,
@@ -569,13 +569,14 @@ class FocusRegionsTracker:
             plt.axvline(
                 x=self.final_max_WMP, color="r", linestyle="-", label="final_max_WMP"
             )
+            plt.legend()
 
         plt.title(
             f"Unnormalized density of the WMP of the focus regions, filtered == {after_filtering}"
         )
         plt.xlabel("WMP")
         plt.ylabel("Count")
-        plt.legend()
+
         plt.savefig(
             os.path.join(
                 save_dir,
