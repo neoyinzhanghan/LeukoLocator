@@ -194,7 +194,7 @@ class PBCounter:
             search_view=self.search_view, focus_regions_coords=focus_regions_coords
         )
 
-        fr_tracker.filter()
+        fr_tracker.filter(save_dir=self.save_dir, hoarding=self.hoarding)
 
         #############################
         #############################

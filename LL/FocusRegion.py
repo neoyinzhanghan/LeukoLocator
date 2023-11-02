@@ -573,7 +573,7 @@ class FocusRegionsTracker:
                         )
                     )
 
-    def filter(self, hoarding=False):
+    def filter(self, save_dir, hoarding=False):
         """Run through the filtering pipeline, and if hoarding is True, then save the focus regions
         at the search view magnification sorted into folders."""
 
@@ -598,7 +598,7 @@ class FocusRegionsTracker:
             self.info_df["lm_outier_removal_passed"] == 0, "reason_for_rejection"
         ] = "lm_ouliers"
 
-        self.save_results(hoarding=hoarding)
+        self.save_results(save_dir=save_dir, hoarding=hoarding)
 
 
 class FocusRegionNotAnnotatedError(ValueError):
