@@ -147,6 +147,7 @@ class FocusRegionsTracker:
 
     - lm_intercept : the intercept of the linear model
     - lm_slope : the slope of the linear model
+    - lm_std_resid : the standard deviation of the residuals of the linear model
     """
 
     def __init__(self, search_view, focus_regions_coords) -> None:
@@ -326,6 +327,7 @@ class FocusRegionsTracker:
 
         self.lm_intercept = model.params[0]
         self.lm_slope = model.params[1]
+        self.lm_std_resid = std_resid
 
         # Define inliers based on residuals
         inlier_mask = (
@@ -452,14 +454,14 @@ class FocusRegionsTracker:
         plt.plot(
             filtered["WMP"],
             self.lm_intercept
-            + (self.lm_slope + focus_region_outlier_tolerance) * filtered["WMP"],
+            + (self.lm_slope + focus_region_outlier_tolerance * self.lm_std_resid) * filtered["WMP"],
             color="g",
         )
 
         plt.plot(
             filtered["WMP"],
             self.lm_intercept
-            + (self.lm_slope - focus_region_outlier_tolerance) * filtered["WMP"],
+            + (self.lm_slope - focus_region_outlier_tolerance * self.lm_std_resid) * filtered["WMP"],
             color="g",
         )
 
@@ -502,14 +504,19 @@ class FocusRegionsTracker:
         # save the info_df as a csv file in save_dir/focus_regions
         self.save_focus_regions_info(save_dir)
 
-        # save the VoL plot, with the final_min_VoL as a vertical line
+        # save the VoL plot, with the final_min_VoL as a vertical line then one after filtering
         self._save_VoL_plot(save_dir, after_filtering=False)
+        self._save_VoL_plot(save_dir, after_filtering=True)
 
-        # save the WMP plot, with the final_max_WMP and final_min_WMP as vertical lines
+        # save the WMP plot, with the final_max_WMP and final_min_WMP as vertical lines then one after filtering
         self._save_WMP_plot(save_dir, after_filtering=False)
+        self._save_WMP_plot(save_dir, after_filtering=True)
 
         # save the lm plot
         self._save_lm_plot(save_dir)
+
+        # save the class attributes as a YAML file
+        self._save_yaml(save_dir)
 
         # if hoarding is True, then save the focus regions at the search view magnification sorted into folders
         if hoarding:
