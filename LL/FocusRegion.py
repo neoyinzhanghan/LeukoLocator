@@ -558,7 +558,7 @@ class FocusRegionsTracker:
                 os.path.join(save_dir, "focus_regions", "too_low_WMP"), exist_ok=True
             )
             os.makedirs(
-                os.path.join(save_dir, "focus_regions", "lm_oulier"), exist_ok=True
+                os.path.join(save_dir, "focus_regions", "lm_outlier"), exist_ok=True
             )
 
             for i, focus_region in tqdm(
