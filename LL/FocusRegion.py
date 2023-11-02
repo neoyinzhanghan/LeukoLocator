@@ -221,6 +221,12 @@ class FocusRegionsTracker:
             "rejected",
         ] = 1
 
+        # update the reason_for_rejection column of the info_df
+        self.info_df.loc[
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            "reason_for_rejection",
+        ] = "too_low_VoL"
+
     def _filter_max_WMP(self):
         """
         We start with the max_WMP parameter from assumption,
@@ -265,6 +271,11 @@ class FocusRegionsTracker:
             ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
+        # update the reason_for_rejection column of the info_df
+        self.info_df.loc[
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            "reason_for_rejection",
+        ] = "too_high_WMP"
 
     def _filter_min_WMP(self):
         """We start with the min_WMP parameter from assumption,
@@ -309,6 +320,11 @@ class FocusRegionsTracker:
             ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
+        # update the reason_for_rejection column of the info_df
+        self.info_df.loc[
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            "reason_for_rejection",
+        ] = "too_low_WMP"
 
     def _lm_outlier_filtering(self):
         """Perform a linear model outlier removal using 1 SD."""
@@ -349,6 +365,11 @@ class FocusRegionsTracker:
             self.info_df["focus_region_id"].isin(selected_focus_region_ids),
             "rejected",
         ] = 1
+        # update the reason_for_rejection column of the info_df
+        self.info_df.loc[
+            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            "reason_for_rejection",
+        ] = "lm_outlier"
 
     def _save_VoL_plot(self, save_dir, after_filtering=False):
         """Save the VoL plot, with the final_min_VoL as a vertical line."""
@@ -454,14 +475,16 @@ class FocusRegionsTracker:
         plt.plot(
             filtered["WMP"],
             self.lm_intercept
-            + (self.lm_slope + focus_region_outlier_tolerance * self.lm_std_resid) * filtered["WMP"],
+            + (self.lm_slope + focus_region_outlier_tolerance * self.lm_std_resid)
+            * filtered["WMP"],
             color="g",
         )
 
         plt.plot(
             filtered["WMP"],
             self.lm_intercept
-            + (self.lm_slope - focus_region_outlier_tolerance * self.lm_std_resid) * filtered["WMP"],
+            + (self.lm_slope - focus_region_outlier_tolerance * self.lm_std_resid)
+            * filtered["WMP"],
             color="g",
         )
 
@@ -532,7 +555,7 @@ class FocusRegionsTracker:
                 os.path.join(save_dir, "focus_regions", "too_low_WMP"), exist_ok=True
             )
             os.makedirs(
-                os.path.join(save_dir, "focus_regions", "lm_ouliers"), exist_ok=True
+                os.path.join(save_dir, "focus_regions", "lm_oulier"), exist_ok=True
             )
 
             for i, focus_region in self.focus_regions_dct.items():
