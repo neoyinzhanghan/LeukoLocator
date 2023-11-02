@@ -236,7 +236,7 @@ class FocusRegionsTracker:
         self.lm_slope = None
         self.lm_std_resid = None
 
-        self.final_min_conf_thresh = None
+        self.final_min_conf_thres = None
 
     def save_focus_regions_info(self, save_dir):
         """Save the information of the focus regions to a csv file."""
