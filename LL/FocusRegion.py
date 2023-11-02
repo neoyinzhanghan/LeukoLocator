@@ -221,9 +221,10 @@ class FocusRegionsTracker:
             "rejected",
         ] = 1
 
-        # update the reason_for_rejection column of the info_df
+        # update the reason_for_rejection column of the info_df, only those reason for rejection is nan
         self.info_df.loc[
-            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids)
+            and self.info_df["reason_for_rejection"].isna(),
             "reason_for_rejection",
         ] = "too_low_VoL"
 
@@ -273,7 +274,8 @@ class FocusRegionsTracker:
         ] = 1
         # update the reason_for_rejection column of the info_df
         self.info_df.loc[
-            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids)
+            and self.info_df["reason_for_rejection"].isna(),
             "reason_for_rejection",
         ] = "too_high_WMP"
 
@@ -322,7 +324,8 @@ class FocusRegionsTracker:
         ] = 1
         # update the reason_for_rejection column of the info_df
         self.info_df.loc[
-            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids)
+            and self.info_df["reason_for_rejection"].isna(),
             "reason_for_rejection",
         ] = "too_low_WMP"
 
