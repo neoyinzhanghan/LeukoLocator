@@ -676,28 +676,13 @@ class FocusRegionsTracker:
         yaml_dict = {
             "num_unfiltered": numpy_to_python(self.num_unfiltered),
             "num_unrejected_after_VoL_filter": numpy_to_python(
-                len(
-                    self.info_df[
-                        (self.info_df["rejected"] == 0)
-                        & (self.info_df["min_VoL_passed"] == 1)
-                    ]
-                )
+                len(self.info_df[(self.info_df["min_VoL_passed"] == 1)])
             ),
             "num_unrejected_after_WMP_max_filter": numpy_to_python(
-                len(
-                    self.info_df[
-                        (self.info_df["rejected"] == 0)
-                        & (self.info_df["max_WMP_passed"] == 1)
-                    ]
-                )
+                len((self.info_df["max_WMP_passed"] == 1))
             ),
             "num_unrejected_after_WMP_min_filter": numpy_to_python(
-                len(
-                    self.info_df[
-                        (self.info_df["rejected"] == 0)
-                        & (self.info_df["min_WMP_passed"] == 1)
-                    ]
-                )
+                len(self.info_df[(self.info_df["min_WMP_passed"] == 1)])
             ),
             "num_filtered": numpy_to_python(self.num_filtered),
             "final_min_VoL": numpy_to_python(self.final_min_VoL),
