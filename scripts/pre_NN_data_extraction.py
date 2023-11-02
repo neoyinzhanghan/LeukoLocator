@@ -19,6 +19,6 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
     # get the wsi_path
     wsi_path = os.path.join(wsi_dir, wsi_fname)
 
-    pbc = PBCounter(wsi_path)
+    pbc = PBCounter(wsi_path, hoarding=True)
 
     pbc.find_focus_regions()
