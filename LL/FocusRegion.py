@@ -222,7 +222,7 @@ class FocusRegionsTracker:
             search_view, focus_regions_coords
         )
 
-        self.info_df["VoL/(1-WMP)"] = self.info_df["VoL"] / (1-self.info_df["WMP"])
+        self.info_df["VoL/(1-WMP)"] = self.info_df["VoL"] / (1 - self.info_df["WMP"])
 
         self.num_unfiltered = len(self.focus_regions_dct)
         self.num_filtered = self.num_unfiltered
@@ -402,7 +402,7 @@ class FocusRegionsTracker:
 
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
-        X = unrejected_df["WMP"]
+        X = 1 - unrejected_df["WMP"]
         X = sm.add_constant(X)
         y = unrejected_df["VoL/(1-WMP)"]
 
@@ -601,19 +601,19 @@ class FocusRegionsTracker:
 
         # use self.lm_intercept and self.lm_slope to plot the linear model
         plt.figure(figsize=(10, 10))
-        plt.scatter(filtered["WMP"], filtered["VoL/(1-WMP)"], alpha=0.5)
+        plt.scatter(1 - filtered["WMP"], filtered["VoL/(1-WMP)"], alpha=0.5)
         plt.plot(
-            filtered["WMP"],
-            self.lm_intercept + self.lm_slope * filtered["WMP"],
+            1 - filtered["WMP"],
+            self.lm_intercept + self.lm_slope * (1 - filtered["WMP"]),
             color="r",
         )
 
         # plot the outlier tolerance lines
         plt.plot(
-            filtered["WMP"],
+            1 - filtered["WMP"],
             self.lm_intercept
             + (self.lm_slope + focus_region_outlier_tolerance * self.lm_std_resid)
-            * filtered["WMP"],
+            * (1 - filtered["WMP"]),
             color="g",
         )
 
@@ -621,13 +621,13 @@ class FocusRegionsTracker:
             filtered["WMP"],
             self.lm_intercept
             + (self.lm_slope - focus_region_outlier_tolerance * self.lm_std_resid)
-            * filtered["WMP"],
+            * (1 - filtered["WMP"]),
             color="g",
         )
 
         plt.title("Linear model of WMP and VoL/(1-WMP)")
 
-        plt.xlabel("WMP")
+        plt.xlabel("1-WMP")
         plt.ylabel("VoL/(1-WMP)")
         plt.savefig(
             os.path.join(save_dir, "focus_regions", "lm_plot.png"),
