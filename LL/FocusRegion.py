@@ -776,9 +776,9 @@ class FocusRegionsTracker:
             "final_min_WMP": numpy_to_python(self.final_min_WMP),
             "final_max_WMP": numpy_to_python(self.final_max_WMP),
             "final_min_conf_thres": numpy_to_python(self.final_min_conf_thres),
-            "lm_intercept": numpy_to_python(self.lm_intercept),
-            "lm_slope": numpy_to_python(self.lm_slope),
-            "lm_std_resid": numpy_to_python(self.lm_std_resid),
+            # "lm_intercept": numpy_to_python(self.lm_intercept),
+            # "lm_slope": numpy_to_python(self.lm_slope),
+            # "lm_std_resid": numpy_to_python(self.lm_std_resid),
         }
 
         diagnostics = self._get_diagnostics(save_dir)
@@ -879,7 +879,7 @@ class FocusRegionsTracker:
         self._filter_min_VoL()
         self._filter_max_WMP()
         self._filter_min_WMP()
-        self._lm_outlier_filtering()
+        # self._lm_outlier_filtering()
 
         # print the number of unrejected focus_regions before resnet confidence score filtering
         print(
