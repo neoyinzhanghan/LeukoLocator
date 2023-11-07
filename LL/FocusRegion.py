@@ -748,6 +748,12 @@ class FocusRegionsTracker:
             "accepted_VoL_sd": numpy_to_python(accepted_VoL_sd),
             "total_VoL_mean": numpy_to_python(total_VoL_mean),
             "total_VoL_sd": numpy_to_python(total_VoL_sd),
+            "passed_WMP_mean": numpy_to_python(passed_df["WMP"].mean()),
+            "passed_WMP_sd": numpy_to_python(passed_df["WMP"].std()),
+            "accepted_WMP_mean": numpy_to_python(accepted_df["WMP"].mean()),
+            "accepted_WMP_sd": numpy_to_python(accepted_df["WMP"].std()),
+            "total_WMP_mean": numpy_to_python(total_df["WMP"].mean()),
+            "total_WMP_sd": numpy_to_python(total_df["WMP"].std()),
             "percentage_rejected_by_low_VoL": numpy_to_python(
                 percentage_rejected_by_low_VoL
             ),
