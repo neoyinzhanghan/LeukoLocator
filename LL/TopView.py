@@ -79,7 +79,7 @@ class TopView:
 
         # Create the green mask where the mask is not 0
         green_mask = np.zeros((*self.top_view_mask.shape, 4), dtype=np.uint8)
-        green_mask[self.top_view_mask != 0] = [0, 255, 0, 180]  # green color with alpha
+        green_mask[self.top_view_mask != 0] = [0, 255, 0, 100]  # green color with alpha
 
         # Convert the green mask to a PIL Image
         green_pil_mask = Image.fromarray(green_mask, mode="RGBA")
