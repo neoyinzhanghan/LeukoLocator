@@ -1,7 +1,7 @@
 import cv2
 from LL.vision.masking import otsu_white_mask
 
-img_path = "/Users/neo/Documents/Research/DeepHeme/LLResults/V2/H23-306;S14;MSK2 - 2023-06-15 19.11.48/focus_regions/passed/focus_region_436.png"
+img_path = "/Users/neo/Documents/Research/DeepHeme/LLResults/V2/H23-376;S16;MSK1 - 2023-06-12 14.10.18/focus_regions/too_low_WMP/focus_region_74.png"
 
 # first open the image using CV2 and display it until the user presses a key
 img = cv2.imread(img_path)
@@ -20,7 +20,7 @@ imgg = cv2.GaussianBlur(img, (5, 5), 0)
 laplacian = cv2.Laplacian(imgg, cv2.CV_64F)
 
 # normalize the laplacian
-# laplacian = cv2.normalize(laplacian, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+laplacian = cv2.normalize(laplacian, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 
 # display the laplacian
 cv2.imshow("laplacian", laplacian)

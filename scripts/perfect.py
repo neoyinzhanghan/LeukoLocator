@@ -28,3 +28,4 @@ laplacian = cv2.normalize(laplacian, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 # display the laplacian
 cv2.imshow("laplacian", laplacian)
 cv2.waitKey(0)
+
