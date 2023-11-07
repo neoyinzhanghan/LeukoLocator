@@ -483,6 +483,13 @@ class FocusRegionsTracker:
             # concatenate the good ones and the bad ones
             selected = pd.concat([good_ones, okay_ones])
 
+        elif len(good_ones) > max_num_regions_after_region_clf:
+            # sort the good ones by confidence score in descending order
+            good_ones = good_ones.sort_values(by=["confidence_score"], ascending=False)
+
+            # take the top ones just enough to have max_num_regions_after_region_clf focus regions left
+            selected = good_ones.iloc[:max_num_regions_after_region_clf]
+
         else:
             selected = good_ones
 
