@@ -63,7 +63,10 @@ class TopView:
         """Save the top view image and the top_view_mask in save_dir."""
 
         self.image.save(save_dir + "top_view_image.jpg")
-        self.top_view_mask.save(save_dir + "top_view_mask.jpg")
+
+        # the top_view_mask is a numpy array in grayscale, so we need to convert it to a PIL image
+        top_view_mask_image = Image.fromarray(self.top_view_mask)
+        top_view_mask_image.save(save_dir + "top_view_mask.jpg")
 
     def _crop_using_connected_components(
         self,
