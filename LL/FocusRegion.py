@@ -593,14 +593,14 @@ class FocusRegionsTracker:
 
         # if filtered is True, then filter out the focus regions that are rejected
         if filtered:
-            filtered = self.info_df[self.info_df["rejected"] == 0]
+            filtered_df = self.info_df[self.info_df["rejected"] == 0]
         else:
-            filtered = self.info_df
+            filtered_df = self.info_df
 
         # save the plot of the unnormalized density of the VoL and WMP of the focus regions and the max_WMP, min_WMP and min_VoL as vertical lines
         # use the info_df to plot the density
         plt.figure(figsize=(10, 10))
-        plt.scatter(filtered["WMP"], filtered["VoL"], alpha=0.5)
+        plt.scatter(filtered_df["WMP"], filtered_df["VoL"], alpha=0.5)
 
         plt.title(
             f"Scatter plot of the VoL and WMP of the focus regions, filtered == {filtered}"
