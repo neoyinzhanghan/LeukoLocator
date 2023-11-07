@@ -38,6 +38,7 @@ focus_region_outlier_tolerance = 3
 ### Quantity Control ###
 ########################
 
+min_top_view_mask_prop = 0.3
 max_num_candidates = 16384
 min_num_regions_within_foci_sd = 500
 min_num_regions_after_VoL_filter = 400
