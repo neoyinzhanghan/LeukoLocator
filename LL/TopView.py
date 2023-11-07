@@ -3,6 +3,7 @@
 ####################################################################################################
 
 # Outside imports ##################################################################################
+import os
 from PIL import Image
 
 # Within package imports ###########################################################################
@@ -63,7 +64,7 @@ class TopView:
         """Save the top view image and the top_view_mask in save_dir."""
 
         # Save the original image
-        self.image.save(save_dir + "top_view_image.jpg")
+        self.image.save(os.path.join(save_dir, "top_view_image.png"))
 
         # the top_view_mask is a numpy array in grayscale, so we need to convert it to a PIL image
         mask_image = Image.fromarray(self.top_view_mask)
@@ -87,7 +88,7 @@ class TopView:
         overlayed_image = Image.alpha_composite(overlay_image, green_pil_mask)
 
         # Save the overlayed image
-        overlayed_image.save(save_dir + "top_view_image_overlayed.png")
+        overlayed_image.save(os.path.join(save_dir, "top_view_overlayed_image.png"))
 
     def _crop_using_connected_components(
         self,
