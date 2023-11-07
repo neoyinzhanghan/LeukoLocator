@@ -59,6 +59,12 @@ class TopView:
         """Return True iff the top view is a peripheral blood top view."""
         return True
 
+    def save_images(self, save_dir):
+        """Save the top view image and the top_view_mask in save_dir."""
+
+        self.image.save(save_dir + "top_view_image.jpg")
+        self.top_view_mask.save(save_dir + "top_view_mask.jpg")
+
     def _crop_using_connected_components(
         self,
         blue_intensity,

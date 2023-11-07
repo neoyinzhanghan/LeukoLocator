@@ -93,6 +93,8 @@ class PBCounter:
             top_view, top_view_downsampling_rate, top_level, verbose=self.verbose
         )
 
+        self.top_view.save_images(self.save_dir)
+
         if self.verbose:
             print(f"Checking if the specimen is peripheral blood")
         if not self.top_view.is_peripheral_blood():
