@@ -709,16 +709,9 @@ class FocusRegionsTracker:
         if not os.path.exists(os.path.join(save_dir, "focus_regions")):
             os.makedirs(os.path.join(save_dir, "focus_regions"))
 
-        passed_df = self.info_df[self.info_df["rejected"] == 0]
+        rejected_df = self.info_df[self.info_df["rejected"] == 1]
         accepted_df = self.info_df[self.info_df["rejected"] == 0]
         total_df = self.info_df
-
-        passed_VoL_mean = passed_df["VoL"].mean()
-        passed_VoL_sd = passed_df["VoL"].std()
-        accepted_VoL_mean = accepted_df["VoL"].mean()
-        accepted_VoL_sd = accepted_df["VoL"].std()
-        total_VoL_mean = total_df["VoL"].mean()
-        total_VoL_sd = total_df["VoL"].std()
 
         percentage_rejected_by_low_VoL = (
             len(self.info_df[(self.info_df["reason_for_rejection"] == "too_low_VoL")])
@@ -742,14 +735,14 @@ class FocusRegionsTracker:
         )
 
         diagnostics = {
-            "passed_VoL_mean": numpy_to_python(passed_VoL_mean),
-            "passed_VoL_sd": numpy_to_python(passed_VoL_sd),
-            "accepted_VoL_mean": numpy_to_python(accepted_VoL_mean),
-            "accepted_VoL_sd": numpy_to_python(accepted_VoL_sd),
-            "total_VoL_mean": numpy_to_python(total_VoL_mean),
-            "total_VoL_sd": numpy_to_python(total_VoL_sd),
-            "passed_WMP_mean": numpy_to_python(passed_df["WMP"].mean()),
-            "passed_WMP_sd": numpy_to_python(passed_df["WMP"].std()),
+            "rejected_VoL_mean": numpy_to_python(rejected_df["VoL"].mean()),
+            "rejected_VoL_sd": numpy_to_python(rejected_df["VoL"].std()),
+            "accepted_VoL_mean": numpy_to_python(accepted_df["VoL"].mean()),
+            "accepted_VoL_sd": numpy_to_python(accepted_df["VoL"].std()),
+            "total_VoL_mean": numpy_to_python(total_df["VoL"].mean()),
+            "total_VoL_sd": numpy_to_python(total_df["VoL"].std()),
+            "passed_WMP_mean": numpy_to_python(rejected_df["WMP"].mean()),
+            "passed_WMP_sd": numpy_to_python(rejected_df["WMP"].std()),
             "accepted_WMP_mean": numpy_to_python(accepted_df["WMP"].mean()),
             "accepted_WMP_sd": numpy_to_python(accepted_df["WMP"].std()),
             "total_WMP_mean": numpy_to_python(total_df["WMP"].mean()),
