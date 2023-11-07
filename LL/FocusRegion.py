@@ -721,15 +721,15 @@ class FocusRegionsTracker:
         total_VoL_sd = total_df["VoL"].std()
 
         percentage_rejected_by_low_VoL = (
-            len(self.info_df[(self.info_df["min_VoL_passed"] == 0)])
+            len(self.info_df[(self.info_df["reason_for_rejection"] == "too_low_VoL")])
             / self.num_unfiltered
         )
         percentage_rejected_by_high_WMP = (
-            len(self.info_df[(self.info_df["max_WMP_passed"] == 0)])
+            len(self.info_df[(self.info_df["reason_for_rejection"] == "too_high_WMP")])
             / self.num_unfiltered
         )
         percentage_rejected_by_low_WMP = (
-            len(self.info_df[(self.info_df["min_WMP_passed"] == 0)])
+            len(self.info_df[(self.info_df["reason_for_rejection"] == "too_low_WMP")])
             / self.num_unfiltered
         )
         percentage_rejected_by_resnet_conf = (
@@ -744,10 +744,18 @@ class FocusRegionsTracker:
             "accepted_VoL_sd": numpy_to_python(accepted_VoL_sd),
             "total_VoL_mean": numpy_to_python(total_VoL_mean),
             "total_VoL_sd": numpy_to_python(total_VoL_sd),
-            "percentage_rejected_by_low_VoL": numpy_to_python(percentage_rejected_by_low_VoL),
-            "percentage_rejected_by_high_WMP": numpy_to_python(percentage_rejected_by_high_WMP),
-            "percentage_rejected_by_low_WMP": numpy_to_python(percentage_rejected_by_low_WMP),
-            "percentage_rejected_by_resnet_conf": numpy_to_python(percentage_rejected_by_resnet_conf),
+            "percentage_rejected_by_low_VoL": numpy_to_python(
+                percentage_rejected_by_low_VoL
+            ),
+            "percentage_rejected_by_high_WMP": numpy_to_python(
+                percentage_rejected_by_high_WMP
+            ),
+            "percentage_rejected_by_low_WMP": numpy_to_python(
+                percentage_rejected_by_low_WMP
+            ),
+            "percentage_rejected_by_resnet_conf": numpy_to_python(
+                percentage_rejected_by_resnet_conf
+            ),
         }
 
         return diagnostics
