@@ -733,7 +733,11 @@ class FocusRegionsTracker:
             / self.num_unfiltered
         )
         percentage_rejected_by_resnet_conf = (
-            len(self.info_df[(self.info_df["region_classification_passed"] == 0)])
+            len(
+                self.info_df[
+                    (self.info_df["reason_for_rejection"] == "resnet_conf_too_low")
+                ]
+            )
             / self.num_unfiltered
         )
 
