@@ -808,7 +808,7 @@ class FocusRegionsTracker:
         self._save_WMP_plot(save_dir, after_filtering=True)
 
         # save the lm plot
-        self._save_lm_plot(save_dir)
+        # self._save_lm_plot(save_dir)
 
         # save the resnet confidence score plot
         self._save_resnet_conf_plot(save_dir, after_filtering=False)
