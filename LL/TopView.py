@@ -62,11 +62,32 @@ class TopView:
     def save_images(self, save_dir):
         """Save the top view image and the top_view_mask in save_dir."""
 
+        # Save the original image
         self.image.save(save_dir + "top_view_image.jpg")
 
         # the top_view_mask is a numpy array in grayscale, so we need to convert it to a PIL image
-        top_view_mask_image = Image.fromarray(self.top_view_mask)
-        top_view_mask_image.save(save_dir + "top_view_mask.jpg")
+        mask_image = Image.fromarray(self.top_view_mask)
+
+        # If the mask is not in 'L' mode, convert it to 'L'
+        if mask_image.mode != "L":
+            mask_image = mask_image.convert("L")
+
+        # Create an RGBA version of the top view image
+        overlay_image = Image.new("RGBA", self.image.size)
+        overlay_image.paste(self.image.convert("RGBA"))  # Convert to RGBA and paste
+
+        # Create the green mask where the mask is not 0
+        green_mask = np.zeros((*self.top_view_mask.shape, 4), dtype=np.uint8)
+        green_mask[self.top_view_mask != 0] = [0, 255, 0, 180]  # green color with alpha
+
+        # Convert the green mask to a PIL Image
+        green_pil_mask = Image.fromarray(green_mask, mode="RGBA")
+
+        # Overlay the green mask onto the top view image
+        overlayed_image = Image.alpha_composite(overlay_image, green_pil_mask)
+
+        # Save the overlayed image
+        overlayed_image.save(save_dir + "top_view_image_overlayed.png")
 
     def _crop_using_connected_components(
         self,
