@@ -43,7 +43,7 @@ class PBCounter:
     def __init__(
         self,
         wsi_path: str,
-        verbose: bool = True,
+        verbose: bool = False,
         hoarding: bool = False,
     ):
         """Initialize a PBCounter object."""
