@@ -162,7 +162,7 @@ class PBCounter:
         while (
             len(focus_regions_coords) < min_num_regions_within_foci_sd and num_sds > 0
         ):
-            num_sds -= 1
+            num_sds -= foci_sd_inc
             if num_sds == 0:
                 raise RelativeBlueSignalTooWeakError(
                     f"Relative blue signal is too weak. min_num_regions_within_foci_sd {min_num_regions_within_foci_sd} is not reached. Only {len(focus_regions_coords)} regions found at num_sds=1. Check slide for potential poor staining/imaging.)"
@@ -175,7 +175,7 @@ class PBCounter:
             ):
                 crop = self.search_view[location]
 
-                more_focus_region_coords = list(
+                more_focus_regions_coords = list(
                     self.top_view.find_focus_regions(
                         crop,
                         location,

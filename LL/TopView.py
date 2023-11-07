@@ -59,19 +59,26 @@ class TopView:
             # the obstructor mask should be 1 everywhere
             # the white mask should be 0 everywhere
             # the top view mask should be 1 everywhere
-            self.obstructor_mask = np.ones(
-                (image.size[1], image.size[0]), dtype=np.uint8
+            self.obstructor_mask = (
+                np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
             )
             self.white_mask = np.zeros((image.size[1], image.size[0]), dtype=np.uint8)
-            self.top_view_mask = np.ones((image.size[1], image.size[0]), dtype=np.uint8)
+            self.top_view_mask = (
+                np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
+            )
 
         # if the proportion of white pixels in the top view mass is less than min_top_view_mask_prop, then change the top view mask to be 1 everywhere
-        if self.top_view_mask.sum() / self.top_view_mask.size < min_top_view_mask_prop:
-            self.obstructor_mask = np.ones(
-                (image.size[1], image.size[0]), dtype=np.uint8
+        if (
+            self.top_view_mask.sum() / (self.top_view_mask.size * 255)
+            < min_top_view_mask_prop
+        ):
+            self.obstructor_mask = (
+                np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
             )
             self.white_mask = np.zeros((image.size[1], image.size[0]), dtype=np.uint8)
-            self.top_view_mask = np.ones((image.size[1], image.size[0]), dtype=np.uint8)
+            self.top_view_mask = (
+                np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
+            )
 
         self.width = image.size[0]
         self.height = image.size[1]
