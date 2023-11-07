@@ -738,16 +738,16 @@ class FocusRegionsTracker:
         )
 
         diagnostics = {
-            "passed_VoL_mean": passed_VoL_mean,
-            "passed_VoL_sd": passed_VoL_sd,
-            "accepted_VoL_mean": accepted_VoL_mean,
-            "accepted_VoL_sd": accepted_VoL_sd,
-            "total_VoL_mean": total_VoL_mean,
-            "total_VoL_sd": total_VoL_sd,
-            "percentage_rejected_by_low_VoL": percentage_rejected_by_low_VoL,
-            "percentage_rejected_by_high_WMP": percentage_rejected_by_high_WMP,
-            "percentage_rejected_by_low_WMP": percentage_rejected_by_low_WMP,
-            "percentage_rejected_by_resnet_conf": percentage_rejected_by_resnet_conf,
+            "passed_VoL_mean": numpy_to_python(passed_VoL_mean),
+            "passed_VoL_sd": numpy_to_python(passed_VoL_sd),
+            "accepted_VoL_mean": numpy_to_python(accepted_VoL_mean),
+            "accepted_VoL_sd": numpy_to_python(accepted_VoL_sd),
+            "total_VoL_mean": numpy_to_python(total_VoL_mean),
+            "total_VoL_sd": numpy_to_python(total_VoL_sd),
+            "percentage_rejected_by_low_VoL": numpy_to_python(percentage_rejected_by_low_VoL),
+            "percentage_rejected_by_high_WMP": numpy_to_python(percentage_rejected_by_high_WMP),
+            "percentage_rejected_by_low_WMP": numpy_to_python(percentage_rejected_by_low_WMP),
+            "percentage_rejected_by_resnet_conf": numpy_to_python(percentage_rejected_by_resnet_conf),
         }
 
         return diagnostics
