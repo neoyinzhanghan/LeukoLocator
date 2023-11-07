@@ -676,7 +676,7 @@ class FocusRegionsTracker:
             (self.info_df["min_VoL_passed"] == 1)
             & (self.info_df["min_WMP_passed"] == 1)
             & (self.info_df["max_WMP_passed"] == 1)
-            & (self.info_df["lm_outier_removal_passed"] == 1)
+            # & (self.info_df["lm_outier_removal_passed"] == 1)
         ]
 
         if after_filtering:
@@ -831,9 +831,9 @@ class FocusRegionsTracker:
             os.makedirs(
                 os.path.join(save_dir, "focus_regions", "too_low_WMP"), exist_ok=True
             )
-            os.makedirs(
-                os.path.join(save_dir, "focus_regions", "lm_outlier"), exist_ok=True
-            )
+            # os.makedirs(
+            #     os.path.join(save_dir, "focus_regions", "lm_outlier"), exist_ok=True
+            # )
             os.makedirs(
                 os.path.join(save_dir, "focus_regions", "resnet_conf_too_low"),
                 exist_ok=True,
