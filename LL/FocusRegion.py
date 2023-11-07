@@ -589,7 +589,7 @@ class FocusRegionsTracker:
         """Save a scatter plot of VoL and WMP for all all the data if not filtered and for the filtered data if filtered."""
 
         # if save_dir/focus_regions does not exist, then create it
-        os.path.mkdir(os.path.join(save_dir, "focus_regions"), exist_ok=True)
+        os.makedirs(os.path.join(save_dir, "focus_regions"), exist_ok=True)
 
         # if filtered is True, then filter out the focus regions that are rejected
         if filtered:
