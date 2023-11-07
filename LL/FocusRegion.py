@@ -126,7 +126,7 @@ def _gather_focus_regions_and_metrics(
             "max_WMP_passed": np.nan,
             "min_WMP_passed": np.nan,
             "min_VoL_passed": np.nan,
-            "lm_outier_removal_passed": np.nan,
+            # "lm_outier_removal_passed": np.nan,
             "reason_for_rejection": np.nan,
         }
 
@@ -222,7 +222,7 @@ class FocusRegionsTracker:
             search_view, focus_regions_coords
         )
 
-        self.info_df["VoL/WMP"] = self.info_df["VoL"] / self.info_df["WMP"]
+        # self.info_df["VoL/WMP"] = self.info_df["VoL"] / self.info_df["WMP"]
 
         self.num_unfiltered = len(self.focus_regions_dct)
         self.num_filtered = self.num_unfiltered
@@ -397,51 +397,51 @@ class FocusRegionsTracker:
             "reason_for_rejection",
         ] = "too_low_WMP"
 
-    def _lm_outlier_filtering(self):
-        """Perform a linear model outlier removal using 1 SD."""
+    # def _lm_outlier_filtering(self): # TODO deprecated to remove by keeping now coz why not
+    #     """Perform a linear model outlier removal using 1 SD."""
 
-        unrejected_df = self.info_df[self.info_df["rejected"] == 0]
+    #     unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
-        X = unrejected_df["WMP"]
-        X = sm.add_constant(X)
-        y = unrejected_df["VoL/WMP"]
+    #     X = unrejected_df["WMP"]
+    #     X = sm.add_constant(X)
+    #     y = unrejected_df["VoL/WMP"]
 
-        model = sm.OLS(y, X).fit()
+    #     model = sm.OLS(y, X).fit()
 
-        residuals = y - model.predict(X)
-        std_resid = np.std(residuals)
-        mean_resid = np.mean(residuals)
+    #     residuals = y - model.predict(X)
+    #     std_resid = np.std(residuals)
+    #     mean_resid = np.mean(residuals)
 
-        self.lm_intercept = model.params[0]
-        self.lm_slope = model.params[1]
-        self.lm_std_resid = std_resid
+    #     self.lm_intercept = model.params[0]
+    #     self.lm_slope = model.params[1]
+    #     self.lm_std_resid = std_resid
 
-        # Define inliers based on residuals
-        inlier_mask = (
-            residuals >= mean_resid - focus_region_outlier_tolerance * std_resid
-        ) & (residuals <= mean_resid + focus_region_outlier_tolerance * std_resid)
+    #     # Define inliers based on residuals
+    #     inlier_mask = (
+    #         residuals >= mean_resid - focus_region_outlier_tolerance * std_resid
+    #     ) & (residuals <= mean_resid + focus_region_outlier_tolerance * std_resid)
 
-        # Filter out outliers
-        selected = unrejected_df[inlier_mask]
+    #     # Filter out outliers
+    #     selected = unrejected_df[inlier_mask]
 
-        # get the focus_region_id of the selected focus regions
-        selected_focus_region_ids = selected["focus_region_id"].tolist()
+    #     # get the focus_region_id of the selected focus regions
+    #     selected_focus_region_ids = selected["focus_region_id"].tolist()
 
-        # update the rejected column of the info_df and the min_WMP_passed column
-        self.info_df.loc[
-            self.info_df["focus_region_id"].isin(selected_focus_region_ids),
-            "lm_outier_removal_passed",
-        ] = 1
-        self.info_df.loc[
-            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
-            "rejected",
-        ] = 1
-        # update the reason_for_rejection column of the info_df
-        self.info_df.loc[
-            ~self.info_df["focus_region_id"].isin(selected_focus_region_ids)
-            & self.info_df["reason_for_rejection"].isna(),
-            "reason_for_rejection",
-        ] = "lm_outlier"
+    #     # update the rejected column of the info_df and the min_WMP_passed column
+    #     self.info_df.loc[
+    #         self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+    #         "lm_outier_removal_passed",
+    #     ] = 1
+    #     self.info_df.loc[
+    #         ~self.info_df["focus_region_id"].isin(selected_focus_region_ids),
+    #         "rejected",
+    #     ] = 1
+    #     # update the reason_for_rejection column of the info_df
+    #     self.info_df.loc[
+    #         ~self.info_df["focus_region_id"].isin(selected_focus_region_ids)
+    #         & self.info_df["reason_for_rejection"].isna(),
+    #         "reason_for_rejection",
+    #     ] = "lm_outlier"
 
     def _get_resnet_confidence_score(self, model_ckpt_path=region_clf_ckpt_path):
         """For all the regions that haven't been rejected yet, get the confidence score from the resnet model."""
@@ -585,53 +585,84 @@ class FocusRegionsTracker:
             )
         )
 
-    def _save_lm_plot(self, save_dir):
-        """Save the lm plot."""
+    def _save_VoL_WMP_scatter(self, save_dir, filtered=True):
+        """Save a scatter plot of VoL and WMP for all all the data if not filtered and for the filtered data if filtered."""
 
         # if save_dir/focus_regions does not exist, then create it
-        if not os.path.exists(os.path.join(save_dir, "focus_regions")):
-            os.makedirs(os.path.join(save_dir, "focus_regions"))
+        os.path.mkdir(os.path.join(save_dir, "focus_regions"), exist_ok=True)
 
-        # only pick things that passed the VoL and WMP tests
-        filtered = self.info_df[
-            (self.info_df["min_VoL_passed"] == 1)
-            & (self.info_df["min_WMP_passed"] == 1)
-            & (self.info_df["max_WMP_passed"] == 1)
-        ]
+        # if filtered is True, then filter out the focus regions that are rejected
+        if filtered:
+            filtered = self.info_df[self.info_df["rejected"] == 0]
+        else:
+            filtered = self.info_df
 
-        # use self.lm_intercept and self.lm_slope to plot the linear model
+        # save the plot of the unnormalized density of the VoL and WMP of the focus regions and the max_WMP, min_WMP and min_VoL as vertical lines
+        # use the info_df to plot the density
         plt.figure(figsize=(10, 10))
-        plt.scatter(filtered["WMP"], filtered["VoL/WMP"], alpha=0.5)
-        plt.plot(
-            filtered["WMP"],
-            self.lm_intercept + self.lm_slope * filtered["WMP"],
-            color="r",
+        plt.scatter(filtered["WMP"], filtered["VoL"], alpha=0.5)
+
+        plt.title(
+            f"Scatter plot of the VoL and WMP of the focus regions, filtered == {filtered}"
         )
-
-        # plot the outlier tolerance lines
-        plt.plot(
-            filtered["WMP"],
-            self.lm_intercept
-            + (self.lm_slope + focus_region_outlier_tolerance * self.lm_std_resid)
-            * filtered["WMP"],
-            color="g",
-        )
-
-        plt.plot(
-            filtered["WMP"],
-            self.lm_intercept
-            + (self.lm_slope - focus_region_outlier_tolerance * self.lm_std_resid)
-            * filtered["WMP"],
-            color="g",
-        )
-
-        plt.title("Linear model of WMP and VoL/WMP")
-
         plt.xlabel("WMP")
-        plt.ylabel("VoL/WMP")
+        plt.ylabel("VoL")
+
         plt.savefig(
-            os.path.join(save_dir, "focus_regions", "lm_plot.png"),
+            os.path.join(
+                save_dir,
+                "focus_regions",
+                f"VoL_WMP_scatter_filtered_{filtered}.png",
+            )
         )
+
+    # def _save_lm_plot(self, save_dir):
+    #     """Save the lm plot."""
+
+    #     # if save_dir/focus_regions does not exist, then create it
+    #     if not os.path.exists(os.path.join(save_dir, "focus_regions")):
+    #         os.makedirs(os.path.join(save_dir, "focus_regions"))
+
+    #     # only pick things that passed the VoL and WMP tests
+    #     filtered = self.info_df[
+    #         (self.info_df["min_VoL_passed"] == 1)
+    #         & (self.info_df["min_WMP_passed"] == 1)
+    #         & (self.info_df["max_WMP_passed"] == 1)
+    #     ]
+
+    #     # use self.lm_intercept and self.lm_slope to plot the linear model
+    #     plt.figure(figsize=(10, 10))
+    #     plt.scatter(filtered["WMP"], filtered["VoL/WMP"], alpha=0.5)
+    #     plt.plot(
+    #         filtered["WMP"],
+    #         self.lm_intercept + self.lm_slope * filtered["WMP"],
+    #         color="r",
+    #     )
+
+    #     # plot the outlier tolerance lines
+    #     plt.plot(
+    #         filtered["WMP"],
+    #         self.lm_intercept
+    #         + (self.lm_slope + focus_region_outlier_tolerance * self.lm_std_resid)
+    #         * filtered["WMP"],
+    #         color="g",
+    #     )
+
+    #     plt.plot(
+    #         filtered["WMP"],
+    #         self.lm_intercept
+    #         + (self.lm_slope - focus_region_outlier_tolerance * self.lm_std_resid)
+    #         * filtered["WMP"],
+    #         color="g",
+    #     )
+
+    #     plt.title("Linear model of WMP and VoL/WMP")
+
+    #     plt.xlabel("WMP")
+    #     plt.ylabel("VoL/WMP")
+    #     plt.savefig(
+    #         os.path.join(save_dir, "focus_regions", "lm_plot.png"),
+    #     )
 
     def _save_resnet_conf_plot(self, save_dir, after_filtering=False):
         """Save the resnet confidence score plot."""
@@ -666,6 +697,61 @@ class FocusRegionsTracker:
             )
         )
 
+    def _get_diagnostics(self, save_dir):
+        """Calculate the following diagnostics:
+        - mean and variance of VoL, WMP before and after filtering for both the passed and accepted
+        - percentage of focus regions rejected because of low VoL, high WMP, low WMP, and resnet confidence score
+
+        Return as a dictionary.
+        """
+
+        # if save_dir/focus_regions does not exist, then create it
+        if not os.path.exists(os.path.join(save_dir, "focus_regions")):
+            os.makedirs(os.path.join(save_dir, "focus_regions"))
+
+        passed_df = self.info_df[self.info_df["rejected"] == 0]
+        accepted_df = self.info_df[self.info_df["rejected"] == 0]
+        total_df = self.info_df
+
+        passed_VoL_mean = passed_df["VoL"].mean()
+        passed_VoL_sd = passed_df["VoL"].std()
+        accepted_VoL_mean = accepted_df["VoL"].mean()
+        accepted_VoL_sd = accepted_df["VoL"].std()
+        total_VoL_mean = total_df["VoL"].mean()
+        total_VoL_sd = total_df["VoL"].std()
+
+        percentage_rejected_by_low_VoL = (
+            len(self.info_df[(self.info_df["min_VoL_passed"] == 0)])
+            / self.num_unfiltered
+        )
+        percentage_rejected_by_high_WMP = (
+            len(self.info_df[(self.info_df["max_WMP_passed"] == 0)])
+            / self.num_unfiltered
+        )
+        percentage_rejected_by_low_WMP = (
+            len(self.info_df[(self.info_df["min_WMP_passed"] == 0)])
+            / self.num_unfiltered
+        )
+        percentage_rejected_by_resnet_conf = (
+            len(self.info_df[(self.info_df["region_classification_passed"] == 0)])
+            / self.num_unfiltered
+        )
+
+        diagnostics = {
+            "passed_VoL_mean": passed_VoL_mean,
+            "passed_VoL_sd": passed_VoL_sd,
+            "accepted_VoL_mean": accepted_VoL_mean,
+            "accepted_VoL_sd": accepted_VoL_sd,
+            "total_VoL_mean": total_VoL_mean,
+            "total_VoL_sd": total_VoL_sd,
+            "percentage_rejected_by_low_VoL": percentage_rejected_by_low_VoL,
+            "percentage_rejected_by_high_WMP": percentage_rejected_by_high_WMP,
+            "percentage_rejected_by_low_WMP": percentage_rejected_by_low_WMP,
+            "percentage_rejected_by_resnet_conf": percentage_rejected_by_resnet_conf,
+        }
+
+        return diagnostics
+
     def _save_yaml(self, save_dir):
         """Save the class attributes as a YAML file."""
 
@@ -694,6 +780,11 @@ class FocusRegionsTracker:
             "lm_slope": numpy_to_python(self.lm_slope),
             "lm_std_resid": numpy_to_python(self.lm_std_resid),
         }
+
+        diagnostics = self._get_diagnostics(save_dir)
+
+        # add the diagnostics to the yaml_dict
+        yaml_dict.update(diagnostics)
 
         with open(
             os.path.join(save_dir, "focus_regions", "focus_regions_filtering.yaml"), "w"
