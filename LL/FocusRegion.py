@@ -901,9 +901,9 @@ class FocusRegionsTracker:
         self.info_df.loc[
             self.info_df["min_WMP_passed"] == 0, "reason_for_rejection"
         ] = "too_low_WMP"
-        self.info_df.loc[
-            self.info_df["lm_outier_removal_passed"] == 0, "reason_for_rejection"
-        ] = "lm_ouliers"
+        # self.info_df.loc[
+        #     self.info_df["lm_outier_removal_passed"] == 0, "reason_for_rejection"
+        # ] = "lm_ouliers"
 
         self.save_results(save_dir=save_dir, hoarding=hoarding)
 
