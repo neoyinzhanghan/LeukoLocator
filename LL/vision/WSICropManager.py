@@ -56,7 +56,7 @@ class WSICropManager:
         if focus_region.image is None:
             image = self.crop(focus_region.coordinate)
 
-        # vol = VoL(image)
+        # vol = VoL(image) # TODO reconsidering whether the second VoL filtering is event necessary
         # if vol < min_VoL:
         #     return None
 
