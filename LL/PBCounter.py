@@ -213,7 +213,7 @@ class PBCounter:
         self.focus_regions = fr_tracker.get_filtered_focus_regions()
 
         if self.verbose:
-            print(f"Initializing {num_cpus} Ray workers")
+            print(f"Initializing {num_croppers} Ray workers")
 
         ray.shutdown()
         ray.init(num_cpus=num_cpus)
