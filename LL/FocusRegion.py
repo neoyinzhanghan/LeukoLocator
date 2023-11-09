@@ -35,7 +35,8 @@ class FocusRegion:
     - VoL : the variance of the laplacian of the focus region
     - WMP : the white mask proportion of the focus region
     - wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
-    - YOLO_df : should contain the 300 bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
+    - YOLO_df : should contain the good bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
+    - YOLO_df_unfiltered : should contain the 300 bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
     """
 
     def __init__(self, idx, coordinate, search_view_image, downsample_rate):
@@ -64,6 +65,7 @@ class FocusRegion:
 
         self.wbc_candidate_bboxes = None
         self.YOLO_df = None
+        self.YOLO_df_unfiltered = None
 
     def get_image(self, image):
         """Update the image of the focus region."""
@@ -106,6 +108,27 @@ class FocusRegion:
             self.YOLO_df.to_csv(
                 os.path.join(save_dir, "focus_regions", "YOLO_df", f"{self.idx}.csv")
             )
+
+    def _save_YOLO_df_unfiltered(self, save_dir):
+        """Save the YOLO_df_unfiltered as a csv file in save_dir/focus_regions/YOLO_df_unfiltered/self.idx.csv."""
+
+        if self.YOLO_df_unfiltered is None:
+            raise self.FocusRegionNotAnnotatedError
+
+        else:
+            self.YOLO_df_unfiltered.to_csv(
+                os.path.join(
+                    save_dir, "focus_regions", "YOLO_df_unfiltered", f"{self.idx}.csv"
+                )
+            )
+
+    class FocusRegionNotAnnotatedError(Exception):
+        """Raise when the focus region is not annotated yet."""
+
+        def __init__(self, message="The focus region is not annotated yet."):
+            """Initialize a FocusRegionNotAnnotatedError object."""
+
+            super().__init__(message)
 
 
 def _gather_focus_regions_and_metrics(

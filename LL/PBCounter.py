@@ -268,6 +268,12 @@ class PBCounter:
             os.path.join(self.save_dir, "focus_regions", "YOLO_df"), exist_ok=True
         )
 
+        # make the directory save_dir/focus_regions/YOLO_df_unfiltered
+        os.makedirs(
+            os.path.join(self.save_dir, "focus_regions", "YOLO_df_unfiltered"),
+            exist_ok=True,
+        )
+
         if self.verbose:
             print(f"Initializing {num_gpus} Ray workers")
 
