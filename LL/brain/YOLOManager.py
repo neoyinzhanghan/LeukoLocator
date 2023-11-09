@@ -157,7 +157,7 @@ class YOLOManager:
         wbc_candidate_bboxes = []
 
         # traverse through the df and create a list of WBCCandidate objects
-        for i in range(len(df)):
+        for i in range(len(df_passed)):
             # get the ith row of the df as a dictionary
             row = df.iloc[i].to_dict()
 
