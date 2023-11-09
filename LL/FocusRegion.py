@@ -34,6 +34,7 @@ class FocusRegion:
     - VoL : the variance of the laplacian of the focus region
     - WMP : the white mask proportion of the focus region
     - wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
+    - YOLO_df : should contain the 300 bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
     """
 
     def __init__(self, coordinate, search_view_image, downsample_rate):
@@ -60,6 +61,7 @@ class FocusRegion:
         self.WMP = WMP(self.downsampled_image)
 
         self.wbc_candidate_bboxes = None
+        self.YOLO_df = None
 
     def get_image(self, image):
         """Update the image of the focus region."""
@@ -740,6 +742,9 @@ class FocusRegionsTracker:
             )
             / self.num_unfiltered
         )
+        percentage_accepted = (
+            len(self.info_df[(self.info_df["rejected"] == 0)]) / self.num_unfiltered
+        )
 
         diagnostics = {
             "rejected_VoL_mean": numpy_to_python(rejected_df["VoL"].mean()),
@@ -766,6 +771,7 @@ class FocusRegionsTracker:
             "percentage_rejected_by_resnet_conf": numpy_to_python(
                 percentage_rejected_by_resnet_conf
             ),
+            "percentage_accepted": numpy_to_python(percentage_accepted),
         }
 
         return diagnostics
@@ -927,6 +933,23 @@ class FocusRegionsTracker:
         # ] = "lm_ouliers"
 
         self.save_results(save_dir=save_dir, hoarding=hoarding)
+
+    def get_filtered_focus_regions(self):
+        """Return a list of filtered focus regions."""
+
+        # filter out the focus regions that are rejected
+        filtered = self.info_df[self.info_df["rejected"] == 0]
+
+        # get the focus_region_id of the selected focus regions
+        selected_focus_region_ids = filtered["focus_region_id"].tolist()
+
+        # get the focus regions
+        filtered_focus_regions = [
+            self.focus_regions_dct[focus_region_id]
+            for focus_region_id in selected_focus_region_ids
+        ]
+
+        return filtered_focus_regions
 
 
 class FocusRegionNotAnnotatedError(ValueError):

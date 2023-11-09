@@ -210,62 +210,54 @@ class PBCounter:
         fr_filtering_yaml.write(f"relative_blue_signal_num_sds_thres: {num_sds}\n")
         fr_filtering_yaml.close()
 
-        #############################
-        #############################
-        #############################
-        #############################
-        #############################
-        #############################
-        ############################# TBC
+        self.focus_regions = fr_tracker.get_filtered_focus_regions()
 
-        # self.focus_regions = filtered_focus_regions  ###
+        if self.verbose:
+            print(f"Initializing {num_gpus} Ray workers")
 
-        # if self.verbose:
-        #     print(f"Initializing {num_gpus} Ray workers")
+        ray.shutdown()
+        ray.init(num_cpus=num_cpus)
 
-        # ray.shutdown()
-        # ray.init(num_cpus=num_cpus)
+        if self.verbose:
+            print("Initializing WSICropManager")
+        crop_managers = [
+            WSICropManager.remote(self.file_name_manager.wsi_path)
+            for _ in range(num_gpus)
+        ]
 
-        # if self.verbose:
-        #     print("Initializing WSICropManager")
-        # crop_managers = [
-        #     WSICropManager.remote(self.file_name_manager.wsi_path)
-        #     for _ in range(num_gpus)
-        # ]
+        tasks = {}
+        all_results = []
 
-        # tasks = {}
-        # all_results = []
+        for i, focus_region in enumerate(self.focus_regions):
+            manager = crop_managers[i % num_gpus]
+            task = manager.async_get_focus_region_image.remote(focus_region)
+            tasks[task] = focus_region
 
-        # for i, focus_region in enumerate(self.focus_regions):
-        #     manager = crop_managers[i % num_gpus]
-        #     task = manager.async_get_focus_region_image.remote(focus_region)
-        #     tasks[task] = focus_region
+        with tqdm(
+            total=len(self.focus_regions), desc="Getting focus region images"
+        ) as pbar:
+            while tasks:
+                done_ids, _ = ray.wait(list(tasks.keys()))
 
-        # with tqdm(
-        #     total=len(self.focus_regions), desc="Getting focus region images"
-        # ) as pbar:
-        #     while tasks:
-        #         done_ids, _ = ray.wait(list(tasks.keys()))
+                for done_id in done_ids:
+                    try:
+                        result = ray.get(done_id)
+                        if result is not None:
+                            all_results.append(result)
 
-        #         for done_id in done_ids:
-        #             try:
-        #                 result = ray.get(done_id)
-        #                 if result is not None:
-        #                     all_results.append(result)
+                    except RayTaskError as e:
+                        print(
+                            f"Task for focus region {tasks[done_id]} failed with error: {e}"
+                        )
 
-        #             except RayTaskError as e:
-        #                 print(
-        #                     f"Task for focus region {tasks[done_id]} failed with error: {e}"
-        #                 )
+                    pbar.update()
+                    del tasks[done_id]
 
-        #             pbar.update()
-        #             del tasks[done_id]
+        if self.verbose:
+            print(f"Shutting down Ray")
+        ray.shutdown()
 
-        # if self.verbose:
-        #     print(f"Shutting down Ray")
-        # ray.shutdown()
-
-        # self.focus_regions = all_results
+        self.focus_regions = all_results
 
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""
