@@ -2,7 +2,7 @@
 ### Logistics ###
 #################
 
-dump_dir = "/media/hdd3/neo/resultsv2"
+dump_dir = "/media/hdd3/neo/resultsv3"
 
 ############################
 ### WSI Image Parameters ###

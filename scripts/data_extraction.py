@@ -25,7 +25,10 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
 
         pbc.find_focus_regions()
 
+        pbc.find_wbc_candidates()
+
     except Exception as e:
+        raise e
         save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
 
         # if the save_dir does not exist, create it
