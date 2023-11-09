@@ -151,13 +151,11 @@ class YOLOManager:
         df["focus_region_TL_x"] = focus_region.coordinate[0]
         df["focus_region_TL_y"] = focus_region.coordinate[1]
 
-        df_passed = df[df["confidence"] > self.conf_thres]
-
         # wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
         wbc_candidate_bboxes = []
 
         # traverse through the df and create a list of WBCCandidate objects
-        for i in range(len(df_passed)):
+        for i in range(len(df)):
             # get the ith row of the df as a dictionary
             row = df.iloc[i].to_dict()
 
@@ -244,11 +242,9 @@ class YOLOManager:
             wbc_candidates.append(wbc_candidate)
 
         focus_region.wbc_candidate_bboxes = wbc_candidate_bboxes
-        focus_region.YOLO_df = df_passed
-        focus_region.YOLO_df_unfiltered = df
+        focus_region.YOLO_df = df
 
         # if self.hoarding:
         focus_region._save_YOLO_df(self.save_dir)
-        focus_region._save_YOLO_df_unfiltered(self.save_dir)    
 
         return wbc_candidates, focus_region
