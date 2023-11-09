@@ -257,6 +257,7 @@ class PBCounter:
             print(f"Shutting down Ray")
         ray.shutdown()
 
+        print(f"{len(all_results)} focus regions successfully processed.")
         self.focus_regions = all_results
 
     def find_wbc_candidates(self):
