@@ -12,7 +12,7 @@ from LL.resources.assumptions import *
 from LL.vision.image_quality import VoL
 
 
-@ray.remote(num_cpus=num_cpus_per_manager)
+@ray.remote(num_cpus=num_cpus)
 class WSICropManager:
     """ A class representing a manager that crops WSIs.
 

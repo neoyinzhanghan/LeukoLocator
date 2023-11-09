@@ -26,6 +26,7 @@ class FocusRegion:
     """A focus region class object representing all the information needed at the focus region of the WSI.
 
     === Class Attributes ===
+    - idx : the index of the focus region
     - coordinate : the coordinate of the focus region in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y)
     - image : the image of the focus region
     - annotated_image : the image of the focus region annotated with the WBC candidates
@@ -37,9 +38,10 @@ class FocusRegion:
     - YOLO_df : should contain the 300 bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
     """
 
-    def __init__(self, coordinate, search_view_image, downsample_rate):
+    def __init__(self, idx, coordinate, search_view_image, downsample_rate):
         """Initialize a FocusRegion object. The full resolution image is None at initialization."""
 
+        self.idx = idx
         self.coordinate = coordinate
         self.image = None
         self.annotated_image = None
@@ -94,6 +96,17 @@ class FocusRegion:
                 self.wbc_candidate_bboxes, columns=["TL_x", "TL_y", "BR_x", "BR_y"]
             )
 
+    def _save_YOLO_df(self, save_dir):
+        """Save the YOLO_df as a csv file in save_dir/focus_regions/YOLO_df/self.idx.csv."""
+
+        if self.YOLO_df is None:
+            raise self.FocusRegionNotAnnotatedError
+
+        else:
+            self.YOLO_df.to_csv(
+                os.path.join(save_dir, "focus_regions", "YOLO_df", f"{self.idx}.csv")
+            )
+
 
 def _gather_focus_regions_and_metrics(
     search_view, focus_regions_coords
@@ -110,6 +123,7 @@ def _gather_focus_regions_and_metrics(
         enumerate(focus_regions_coords), desc="Gathering focus regions and metrics"
     ):
         focus_region = FocusRegion(
+            idx=i,
             coordinate=focus_region_coord,
             search_view_image=search_view.image,
             downsample_rate=int(search_view.downsampling_rate),

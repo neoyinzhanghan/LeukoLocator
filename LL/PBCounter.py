@@ -213,7 +213,7 @@ class PBCounter:
         self.focus_regions = fr_tracker.get_filtered_focus_regions()
 
         if self.verbose:
-            print(f"Initializing {num_gpus} Ray workers")
+            print(f"Initializing {num_cpus} Ray workers")
 
         ray.shutdown()
         ray.init(num_cpus=num_cpus)
@@ -222,14 +222,14 @@ class PBCounter:
             print("Initializing WSICropManager")
         crop_managers = [
             WSICropManager.remote(self.file_name_manager.wsi_path)
-            for _ in range(num_gpus)
+            for _ in range(num_cpus)
         ]
 
         tasks = {}
         all_results = []
 
         for i, focus_region in enumerate(self.focus_regions):
-            manager = crop_managers[i % num_gpus]
+            manager = crop_managers[i % num_cpus]
             task = manager.async_get_focus_region_image.remote(focus_region)
             tasks[task] = focus_region
 
@@ -271,7 +271,13 @@ class PBCounter:
         if self.verbose:
             print("Initializing YOLOManager")
         task_managers = [
-            YOLOManager.remote(YOLO_ckpt_path, YOLO_conf_thres) for _ in range(num_gpus)
+            YOLOManager.remote(
+                YOLO_ckpt_path,
+                YOLO_conf_thres,
+                save_dir=self.save_dir,
+                hoarding=self.hoarding,
+            )
+            for _ in range(num_gpus)
         ]
 
         tasks = {}

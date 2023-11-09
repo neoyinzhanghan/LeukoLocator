@@ -52,7 +52,7 @@ max_num_regions_after_region_clf = 1000
 ###########################
 
 num_gpus = 3
-num_cpus = 12
+num_cpus = 24
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 allowed_reading_time = 20  # in seconds

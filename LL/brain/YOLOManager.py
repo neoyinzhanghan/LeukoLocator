@@ -127,14 +127,18 @@ class YOLOManager:
     - model : the YOLO model
     - ckpt_path : the path to the checkpoint of the YOLO model
     - conf_thres : the confidence threshold of the YOLO model
+    - save_dir : the directory to save the results
+    - hoarding : True of False, whether to hoard the results
     """
 
-    def __init__(self, ckpt_path, conf_thres):
+    def __init__(self, ckpt_path, conf_thres, save_dir, hoarding=False):
         """Initialize the YOLOManager object."""
 
         self.model = YOLO(ckpt_path)
         self.ckpt_path = ckpt_path
         self.conf_thres = conf_thres
+        self.save_dir = save_dir
+        self.hoarding = hoarding
 
     def async_find_wbc_candidates(self, focus_region):
         """Find WBC candidates in the image."""
@@ -146,10 +150,6 @@ class YOLOManager:
         # add the coordinate of the focus region to the df
         df["focus_region_TL_x"] = focus_region.coordinate[0]
         df["focus_region_TL_y"] = focus_region.coordinate[1]
-
-        print(df)
-
-        sys.exit()
 
         # wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
         wbc_candidate_bboxes = []
@@ -242,5 +242,9 @@ class YOLOManager:
             wbc_candidates.append(wbc_candidate)
 
         focus_region.wbc_candidate_bboxes = wbc_candidate_bboxes
+        focus_region.YOLO_df = df
+
+        # if self.hoarding:
+        focus_region._save_YOLO_df(self.save_dir)
 
         return wbc_candidates, focus_region
