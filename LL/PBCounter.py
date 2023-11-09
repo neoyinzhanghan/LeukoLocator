@@ -215,9 +215,6 @@ class PBCounter:
         if self.verbose:
             print(f"Initializing {num_croppers} Ray workers")
 
-        if self.verbose:
-            print(f"Initializing {num_gpus} Ray workers")
-
         ray.shutdown()
         ray.init(num_cpus=num_cpus)
 
@@ -225,14 +222,14 @@ class PBCounter:
             print("Initializing WSICropManager")
         crop_managers = [
             WSICropManager.remote(self.file_name_manager.wsi_path)
-            for _ in range(num_gpus)
+            for _ in range(num_croppers)
         ]
 
         tasks = {}
         all_results = []
 
         for i, focus_region in enumerate(self.focus_regions):
-            manager = crop_managers[i % num_gpus]
+            manager = crop_managers[i % num_croppers]
             task = manager.async_get_focus_region_image.remote(focus_region)
             tasks[task] = focus_region
 
@@ -260,6 +257,7 @@ class PBCounter:
             print(f"Shutting down Ray")
         ray.shutdown()
 
+        print(f"{len(all_results)} focus regions successfully processed.")
         self.focus_regions = all_results
 
     def find_wbc_candidates(self):
