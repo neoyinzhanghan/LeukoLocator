@@ -963,6 +963,8 @@ class FocusRegionsTracker:
             for focus_region_id in selected_focus_region_ids
         ]
 
+        print(f"Number of filtered focus regions: {len(filtered_focus_regions)}")
+
         return filtered_focus_regions
 
 
