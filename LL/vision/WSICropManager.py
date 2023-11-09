@@ -56,12 +56,16 @@ class WSICropManager:
         if focus_region.image is None:
             image = self.crop(focus_region.coordinate)
 
-        vol = VoL(image)
-        if vol < min_VoL:
-            return None
+        # vol = VoL(image)
+        # if vol < min_VoL:
+        #     return None
 
-        else:
-            focus_region.get_image(image)
-            focus_region.VoL = vol
+        # else:
+        #     focus_region.get_image(image)
+        #     focus_region.VoL = vol
 
-            return focus_region
+        #     return focus_region
+
+        focus_region.get_image(image)
+
+        return focus_region
