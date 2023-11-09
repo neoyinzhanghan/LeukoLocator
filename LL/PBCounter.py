@@ -222,14 +222,14 @@ class PBCounter:
             print("Initializing WSICropManager")
         crop_managers = [
             WSICropManager.remote(self.file_name_manager.wsi_path)
-            for _ in range(num_cpus)
+            for _ in range(num_croppers)
         ]
 
         tasks = {}
         all_results = []
 
         for i, focus_region in enumerate(self.focus_regions):
-            manager = crop_managers[i % num_cpus]
+            manager = crop_managers[i % num_croppers]
             task = manager.async_get_focus_region_image.remote(focus_region)
             tasks[task] = focus_region
 
