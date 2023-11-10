@@ -352,7 +352,7 @@ class PBCounter:
 
             # get the cell_info of the wbc_candidate as a dictionary
             cell_info = {
-                "local_idx": wbc_candidate.cell_idx,
+                "local_idx": wbc_candidate.local_idx,
                 "region_idx": wbc_candidate.focus_region_idx,
                 "confidence": wbc_candidate.confidence,
                 "VoL": wbc_candidate.VoL,
