@@ -351,7 +351,16 @@ class PBCounter:
             wbc_candidate = self.wbc_candidates[i]
 
             # get the cell_info of the wbc_candidate as a dictionary
-            cell_info = wbc_candidate.cell_info
+            cell_info = {
+                "local_idx": wbc_candidate.cell_idx,
+                "region_idx": wbc_candidate.focus_region_idx,
+                "confidence": wbc_candidate.confidence,
+                "VoL": wbc_candidate.VoL,
+                "TL_x": wbc_candidate.TL_x,
+                "TL_y": wbc_candidate.TL_y,
+                "BR_x": wbc_candidate.BR_x,
+                "BR_y": wbc_candidate.BR_y,
+            }
 
             # add the cell_info to the list
             big_cell_df_list.append(cell_info)
