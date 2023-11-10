@@ -6,6 +6,9 @@
 import os
 import ray
 import openslide
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from PIL import Image
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
@@ -21,6 +24,7 @@ from LL.brain.YOLOManager import YOLOManager
 from LL.Differential import Differential
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
+from LL.communication.write_config import numpy_to_python
 
 
 class PBCounter:
@@ -309,8 +313,8 @@ class PBCounter:
 
                 for done_id in done_ids:
                     try:
-                        result, new_focus_region = ray.get(done_id)
-                        for wbc_candidate in result:
+                        new_focus_region = ray.get(done_id)
+                        for wbc_candidate in new_focus_region.wbc_candidates:
                             all_results.append(wbc_candidate)
                         if len(all_results) > max_num_candidates:
                             raise TooManyCandidatesError(
@@ -324,12 +328,115 @@ class PBCounter:
                     pbar.update()
                     del tasks[done_id]
 
-        self.wbc_candidates = all_results
+        self.wbc_candidates = all_results  # the candidates here should be aliased with the candidates saved in focus_regions
         self.focus_regions = new_focus_regions
 
         if self.verbose:
             print(f"Shutting down Ray")
         ray.shutdown()
+
+        # Regardless of hoarding, save a plot of the distribution of confidence score for all the detected cells, the distribution of number of cells detected per region, and the mean and sd thereof.
+        # Plots should be saved at save_dir/focus_regions/YOLO_confidence.jpg and save_dir/focus_regions/num_cells_per_region.jpg
+        # Save a dataframe which trackers the number of cells detected for each region in save_dir/focus_regions/num_cells_per_region.csv
+        # Save a big cell dataframe which have the cell id, region_id, confidence, VoL, and coordinates in save_dir/cells/cells_info.csv
+        # The mean and sd should be saved as a part of the save_dir/cells/cell_detection.yaml file using yaml
+
+        # first compile the big cell dataframe
+        # traverse through the wbc_candidates and add their info
+        # create a list of dictionaries
+        big_cell_df_list = []
+
+        for i in range(len(self.wbc_candidates)):
+            # get the ith wbc_candidate
+            wbc_candidate = self.wbc_candidates[i]
+
+            # get the cell_info of the wbc_candidate as a dictionary
+            cell_info = wbc_candidate.cell_info
+
+            # add the cell_info to the list
+            big_cell_df_list.append(cell_info)
+
+        # create the big cell dataframe
+        big_cell_df = pd.DataFrame(big_cell_df_list)
+
+        # save the big cell dataframe
+        big_cell_df.to_csv(
+            os.path.join(self.save_dir, "cells", "cells_info.csv"), index=False
+        )
+
+        # second compile the num_cells_per_region dataframe which can be found from len(focus_region.wbc_candidate_bboxes) for each focus_region in self.focus_regions
+
+        # create a list of dictionaries
+        num_cells_per_region_df_list = []
+
+        for i in range(len(self.focus_regions)):
+            # get the ith focus_region
+            focus_region = self.focus_regions[i]
+
+            # get the number of cells detected in the focus_region
+            num_cells = len(focus_region.wbc_candidate_bboxes)
+
+            # add the num_cells to the list
+            num_cells_per_region_df_list.append(
+                {"focus_region_idx": focus_region.idx, "num_cells": num_cells}
+            )
+
+        # create the num_cells_per_region dataframe
+        num_cells_per_region_df = pd.DataFrame(num_cells_per_region_df_list)
+
+        # save the num_cells_per_region dataframe
+        num_cells_per_region_df.to_csv(
+            os.path.join(self.save_dir, "focus_regions", "num_cells_per_region.csv"),
+            index=False,
+        )
+
+        # plot the distribution of confidence score for all the detected cells
+        plt.hist(big_cell_df["confidence"], bins=100)
+
+        # save the plot
+        plt.savefig(
+            os.path.join(self.save_dir, "focus_regions", "YOLO_confidence.jpg"),
+            dpi=300,
+        )
+
+        # plot the distribution of number of cells detected per region
+        plt.hist(num_cells_per_region_df["num_cells"], bins=100)
+
+        # save the plot
+        plt.savefig(
+            os.path.join(self.save_dir, "focus_regions", "num_cells_per_region.jpg"),
+            dpi=300,
+        )
+
+        plt.close("all")
+
+        # grab the info for the yaml file as a dictionary
+        num_cells_per_region_mean = num_cells_per_region_df["num_cells"].mean()
+        num_cells_per_region_sd = num_cells_per_region_df["num_cells"].std()
+
+        YOLO_confidence_mean = big_cell_df["confidence"].mean()
+        YOLO_confidence_sd = big_cell_df["confidence"].std()
+
+        # add the mean and sd to the save_dir/cells/cell_detection.yaml file using yaml
+        cell_detection_yaml_path = os.path.join(
+            self.save_dir, "cells", "cell_detection.yaml"
+        )
+
+        cell_detection_yaml = open(cell_detection_yaml_path, "a")
+        cell_detection_yaml.write(
+            f"num_cells_per_region_mean: {numpy_to_python(num_cells_per_region_mean)}\n"
+        )
+        cell_detection_yaml.write(
+            f"num_cells_per_region_sd: {numpy_to_python(num_cells_per_region_sd)}\n"
+        )
+        cell_detection_yaml.write(
+            f"YOLO_confidence_mean: {numpy_to_python(YOLO_confidence_mean)}\n"
+        )
+        cell_detection_yaml.write(
+            f"YOLO_confidence_sd: {numpy_to_python(YOLO_confidence_sd)}\n"
+        )
+
+        cell_detection_yaml.close()
 
     def label_wbc_candidates(self):
         """Update the labels of the wbc_candidates of the PBCounter object."""

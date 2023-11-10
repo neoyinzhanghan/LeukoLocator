@@ -12,7 +12,7 @@ from LL.resources.assumptions import *
 
 
 class WBCCandidate:
-    """ A class representing a WBC candidate. 
+    """A class representing a WBC candidate.
 
     === Class Attributes ===
 
@@ -32,16 +32,24 @@ class WBCCandidate:
     - cell_df_row: a pandas dataframe row of the cell_df of the PBCounter object containing this candidate
         - the dataframe should have the following columns: [cell_id, name, coords, confidence, VoL, cellnames[0], ..., cellnames[num_classes - 1]
 
+    -idx : the cell idx, None when initialized and will be assigned eventually
     """
 
-    def __init__(self,
-                 snap_shot,
-                 YOLO_bbox_image,
-                 padded_YOLO_bbox_image,
-                 snap_shot_bbox,
-                 YOLO_bbox,
-                 confidence):
-        """ Initialize a WBCCandidate object. """
+    def __init__(
+        self,
+        snap_shot,
+        YOLO_bbox_image,
+        padded_YOLO_bbox_image,
+        snap_shot_bbox,
+        YOLO_bbox,
+        confidence,
+        local_idx,
+        focus_region_idx,
+    ):
+        """Initialize a WBCCandidate object."""
+
+        self.local_idx = local_idx
+        self.focus_region_idx = focus_region_idx
 
         self.snap_shot_bbox = snap_shot_bbox
         self.YOLO_bbox = YOLO_bbox
@@ -58,34 +66,47 @@ class WBCCandidate:
         self.cell_df_row = None
 
     def compute_cell_info(self, cell_id):
-        """ Return a pandas dataframe row of the cell_df of the PBCounter object containing this candidate. """
+        """Return a pandas dataframe row of the cell_df of the PBCounter object containing this candidate."""
 
         if self.softmax_vector is None:
-            raise CellNotClassifiedError(
-                "The softmax vector is not computed yet.")
-        
+            raise CellNotClassifiedError("The softmax vector is not computed yet.")
+
         elif self.cell_df_row is not None:
             return self.cell_df_row
 
         else:
             sofmax_vector_np = np.array(self.softmax_vector)
-            self.name = str(cell_id) + '-' + '-'.join([cellnames[i]
-                                                       for i in sofmax_vector_np.argsort()[-4:][::-1]]) + '.jpg'
+            self.name = (
+                str(cell_id)
+                + "-"
+                + "-".join(
+                    [cellnames[i] for i in sofmax_vector_np.argsort()[-4:][::-1]]
+                )
+                + ".jpg"
+            )
             self.cell_id = cell_id
-            cell_df_row = [self.cell_id, self.name, self.YOLO_bbox,
-                           self.confidence, self.VoL] + list(self.softmax_vector)
+            cell_df_row = [
+                self.cell_id,
+                self.name,
+                self.YOLO_bbox,
+                self.confidence,
+                self.VoL,
+            ] + list(self.softmax_vector)
 
             # convert the list to a pandas dataframe row
-            self.cell_df_row = pd.DataFrame([cell_df_row], columns=[
-                                            'cell_id', 'name', 'coords', 'confidence', 'VoL'] + [cellnames[i] for i in range(num_classes)])
+            self.cell_df_row = pd.DataFrame(
+                [cell_df_row],
+                columns=["cell_id", "name", "coords", "confidence", "VoL"]
+                + [cellnames[i] for i in range(num_classes)],
+            )
 
             return self.cell_df_row
 
 
 class CellNotClassifiedError(ValueError):
-    """ An error raised when the cell is not classified. """
+    """An error raised when the cell is not classified."""
 
     def __init__(self, message):
-        """ Initialize a CellNotClassifiedError object. """
+        """Initialize a CellNotClassifiedError object."""
 
         super().__init__(message)

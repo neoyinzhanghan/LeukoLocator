@@ -151,6 +151,10 @@ class YOLOManager:
         df["focus_region_TL_x"] = focus_region.coordinate[0]
         df["focus_region_TL_y"] = focus_region.coordinate[1]
 
+        # add two columns, one is the local_idx, and the other is the focus_region_idx
+        df["local_idx"] = np.arange(len(df))
+        df["focus_region_idx"] = focus_region.idx
+
         # wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
         wbc_candidate_bboxes = []
 
@@ -237,14 +241,16 @@ class YOLOManager:
                 snap_shot_bbox,
                 YOLO_bbox,
                 confidence,
+                local_idx=row["local_idx"],
+                focus_region_idx=focus_region.idx,
             )
 
             wbc_candidates.append(wbc_candidate)
 
         focus_region.wbc_candidate_bboxes = wbc_candidate_bboxes
+        focus_region.wbc_candidates = wbc_candidates
         focus_region.YOLO_df = df
 
-        # if self.hoarding:
         focus_region._save_YOLO_df(self.save_dir)
 
-        return wbc_candidates, focus_region
+        return focus_region

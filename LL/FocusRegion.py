@@ -19,6 +19,7 @@ from tqdm import tqdm
 from LL.resources.assumptions import *
 from LL.vision.image_quality import VoL, WMP
 from LL.communication.visualization import annotate_focus_region
+from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
 
 
@@ -35,6 +36,7 @@ class FocusRegion:
     - VoL : the variance of the laplacian of the focus region
     - WMP : the white mask proportion of the focus region
     - wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
+    - wbc_candidates : a list of wbc_candidates objects
     - YOLO_df : should contain the good bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
     """
 
@@ -63,6 +65,7 @@ class FocusRegion:
         self.WMP = WMP(self.downsampled_image)
 
         self.wbc_candidate_bboxes = None
+        self.wbc_candidates = None
         self.YOLO_df = None
 
     def get_image(self, image):
@@ -152,6 +155,7 @@ def _gather_focus_regions_and_metrics(
             "min_VoL_passed": np.nan,
             # "lm_outier_removal_passed": np.nan,
             "reason_for_rejection": np.nan,
+            "num_wbc_candidates": np.nan,
         }
 
         image_metrics.append(new_row)
@@ -159,14 +163,6 @@ def _gather_focus_regions_and_metrics(
     image_metrics_df = pd.DataFrame(image_metrics)
 
     return focus_regions_dct, image_metrics_df
-
-
-def numpy_to_python(value):
-    """Converts numpy objects to Python native objects."""
-    if isinstance(value, (np.generic, np.ndarray)):
-        return value.item() if np.isscalar(value) else value.tolist()
-    else:
-        return value
 
 
 import torch
