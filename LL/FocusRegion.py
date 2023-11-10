@@ -571,6 +571,9 @@ class FocusRegionsTracker:
             )
         )
 
+        # make sure to close
+        plt.close()
+
     def _save_WMP_plot(self, save_dir, after_filtering=False):
         """Save the WMP plot, with the final_max_WMP and final_min_WMP as vertical lines."""
 
@@ -612,6 +615,9 @@ class FocusRegionsTracker:
             )
         )
 
+        # make sure to close
+        plt.close()
+
     def _save_VoL_WMP_scatter(self, save_dir, filtered=True):
         """Save a scatter plot of VoL and WMP for all all the data if not filtered and for the filtered data if filtered."""
 
@@ -642,6 +648,9 @@ class FocusRegionsTracker:
                 f"VoL_WMP_scatter_filtered_{filtered}.png",
             )
         )
+
+        # make sure to close
+        plt.close()
 
     # def _save_lm_plot(self, save_dir):
     #     """Save the lm plot."""
@@ -723,6 +732,9 @@ class FocusRegionsTracker:
                 f"resnet_confidence_score_unnormalized_density_filtered_{after_filtering}.png",
             )
         )
+
+        # make sure to close
+        plt.close()
 
     def _get_diagnostics(self, save_dir):
         """Calculate the following diagnostics:

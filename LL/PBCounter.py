@@ -411,6 +411,8 @@ class PBCounter:
             dpi=300,
         )
 
+        plt.close("all")
+
         # plot the distribution of number of cells detected per region
         plt.hist(num_cells_per_region_df["num_cells"], bins=100)
 
