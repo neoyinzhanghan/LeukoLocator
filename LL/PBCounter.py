@@ -437,6 +437,22 @@ class PBCounter:
         # total number of focus regions scanned
         num_focus_regions_scanned = len(self.focus_regions)
 
+        VoL_passed = []
+        VoL_rejected = []
+        for candidate in tqdm(self.wbc_candidates, desc="Cell VoL Filtering"):
+            if candidate.VoL >= min_cell_VoL:
+                VoL_passed.append(candidate)
+            else:
+                VoL_rejected.append(candidate)
+
+        self.wbc_candidates = VoL_passed
+
+        # number of VoL passed cells
+        num_VoL_passed = len(VoL_passed)
+
+        # number of VoL rejected cells
+        num_VoL_rejected = len(VoL_rejected)
+
         # add the mean and sd to the save_dir/cells/cell_detection.yaml file using yaml
         cell_detection_yaml_path = os.path.join(
             self.save_dir, "cells", "cell_detection.yaml"
@@ -445,6 +461,8 @@ class PBCounter:
         # first create the dictionary
         cell_detection_dict = {
             "num_cells_detected": numpy_to_python(num_cells_detected),
+            "num_VoL_passed": numpy_to_python(num_VoL_passed),
+            "num_VoL_rejected": numpy_to_python(num_VoL_rejected),
             "num_focus_regions_scanned": numpy_to_python(num_focus_regions_scanned),
             "num_cells_per_region_mean": numpy_to_python(num_cells_per_region_mean),
             "num_cells_per_region_sd": numpy_to_python(num_cells_per_region_sd),
@@ -458,20 +476,12 @@ class PBCounter:
         cell_detection_yaml.close()
 
         if self.hoarding:
-            for focus_region in self.focus_regions:
+            for focus_region in tqdm(
+                self.focus_regions, desc="Saving focus regions high mag images"
+            ):
                 focus_region.save_high_mag_image(self.save_dir)
 
-            VoL_passed = []
-            VoL_rejected = []
-            for candidate in self.wbc_candidates:
-                if candidate.VoL >= min_cell_VoL:
-                    VoL_passed.append(candidate)
-                else:
-                    VoL_rejected.append(candidate)
-
-            self.wbc_candidates = VoL_passed
-
-            for candidate in VoL_rejected:
+            for candidate in tqdm(VoL_rejected, desc="Saving VoL rejected cell images"):
                 candidate._save_YOLO_bbox_image(self.save_dir)
 
     def label_wbc_candidates(self):
