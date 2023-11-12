@@ -3,6 +3,7 @@
 ####################################################################################################
 
 # Outside imports ##################################################################################
+import os
 import pandas as pd
 import numpy as np
 
@@ -101,6 +102,15 @@ class WBCCandidate:
             )
 
             return self.cell_df_row
+
+    def _save_YOLO_bbox_image(self, save_dir, subfolder="blurry"):
+        """Save the YOLO_bbox_image to the save_dir.
+        The file name should just be cell id since the cell may not be classified yet.
+        """
+
+        self.YOLO_bbox_image.save(
+            os.path.join(save_dir, subfolder, str(self.cell_id) + ".jpg")
+        )
 
 
 class CellNotClassifiedError(ValueError):

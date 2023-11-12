@@ -110,6 +110,30 @@ class FocusRegion:
                 os.path.join(save_dir, "focus_regions", "YOLO_df", f"{self.idx}.csv")
             )
 
+    def save_high_mag_image(self, save_dir, annotated=True):
+        """Save the high magnification image of the focus region."""
+
+        if self.image is None:
+            raise self.FocusRegionNotAnnotatedError
+
+        else:
+            if not annotated:
+                if self.image is None:
+                    raise ValueError(
+                        "This FocusRegion object does not possess a high magnification image attribute."
+                    )
+                self.image.save(
+                    os.path.join(
+                        save_dir, "focus_regions", "high_mag", f"{self.idx}.jpg"
+                    )
+                )
+            else:
+                self.get_annotated_image().save(
+                    os.path.join(
+                        save_dir, "focus_regions", "high_mag", f"{self.idx}.jpg"
+                    )
+                )
+
     class FocusRegionNotAnnotatedError(Exception):
         """Raise when the focus region is not annotated yet."""
 

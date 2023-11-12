@@ -9,6 +9,7 @@ import openslide
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import yaml
 from PIL import Image
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
@@ -431,26 +432,47 @@ class PBCounter:
         YOLO_confidence_mean = big_cell_df["confidence"].mean()
         YOLO_confidence_sd = big_cell_df["confidence"].std()
 
+        # total number of cells detected
+        num_cells_detected = len(big_cell_df)
+        # total number of focus regions scanned
+        num_focus_regions_scanned = len(self.focus_regions)
+
         # add the mean and sd to the save_dir/cells/cell_detection.yaml file using yaml
         cell_detection_yaml_path = os.path.join(
             self.save_dir, "cells", "cell_detection.yaml"
         )
 
-        cell_detection_yaml = open(cell_detection_yaml_path, "a")
-        cell_detection_yaml.write(
-            f"num_cells_per_region_mean: {numpy_to_python(num_cells_per_region_mean)}\n"
-        )
-        cell_detection_yaml.write(
-            f"num_cells_per_region_sd: {numpy_to_python(num_cells_per_region_sd)}\n"
-        )
-        cell_detection_yaml.write(
-            f"YOLO_confidence_mean: {numpy_to_python(YOLO_confidence_mean)}\n"
-        )
-        cell_detection_yaml.write(
-            f"YOLO_confidence_sd: {numpy_to_python(YOLO_confidence_sd)}\n"
-        )
+        # first create the dictionary
+        cell_detection_dict = {
+            "num_cells_detected": numpy_to_python(num_cells_detected),
+            "num_focus_regions_scanned": numpy_to_python(num_focus_regions_scanned),
+            "num_cells_per_region_mean": numpy_to_python(num_cells_per_region_mean),
+            "num_cells_per_region_sd": numpy_to_python(num_cells_per_region_sd),
+            "YOLO_confidence_mean": numpy_to_python(YOLO_confidence_mean),
+            "YOLO_confidence_sd": numpy_to_python(YOLO_confidence_sd),
+        }
 
+        # then write the dictionary to the yaml file
+        cell_detection_yaml = open(cell_detection_yaml_path, "w")
+        cell_detection_yaml.write(yaml.dump(cell_detection_dict))
         cell_detection_yaml.close()
+
+        if self.hoarding:
+            for focus_region in self.focus_regions:
+                focus_region.save_high_mag_image(self.save_dir)
+
+            VoL_passed = []
+            VoL_rejected = []
+            for candidate in self.wbc_candidates:
+                if candidate.VoL >= min_cell_VoL:
+                    VoL_passed.append(candidate)
+                else:
+                    VoL_rejected.append(candidate)
+
+            self.wbc_candidates = VoL_passed
+
+            for candidate in VoL_rejected:
+                candidate._save_YOLO_bbox_image(self.save_dir)
 
     def label_wbc_candidates(self):
         """Update the labels of the wbc_candidates of the PBCounter object."""
