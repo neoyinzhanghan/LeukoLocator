@@ -476,11 +476,16 @@ class PBCounter:
         cell_detection_yaml.close()
 
         if self.hoarding:
+            os.makedirs(
+                os.path.join(self.save_dir, "focus_regions", "high_mag"),
+                exist_ok=True,
+            )
             for focus_region in tqdm(
                 self.focus_regions, desc="Saving focus regions high mag images"
             ):
                 focus_region.save_high_mag_image(self.save_dir)
 
+            os.makedirs(os.path.join(self.save_dir, "cells", "blurry"), exist_ok=True)
             for candidate in tqdm(VoL_rejected, desc="Saving VoL rejected cell images"):
                 candidate._save_YOLO_bbox_image(self.save_dir)
 

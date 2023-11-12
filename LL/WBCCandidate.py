@@ -109,7 +109,7 @@ class WBCCandidate:
         """
 
         self.YOLO_bbox_image.save(
-            os.path.join(save_dir, subfolder, str(self.cell_id) + ".jpg")
+            os.path.join(save_dir, 'cells', subfolder, str(self.cell_id) + ".jpg")
         )
 
 
