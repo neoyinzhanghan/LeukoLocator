@@ -41,7 +41,7 @@ class Differential:
         # traverse through the list of WBCCandidate objects and add them to the dataframe
         for ind in range(len(wbc_candidates)):
             # use concat to avoid deprecation
-            new_df = wbc_candidates[ind].compute_cell_info(ind)
+            new_df = wbc_candidates[ind].compute_cell_info()
             df = pd.concat([df, new_df], ignore_index=True)
 
         self.wbc_candidate_df = df

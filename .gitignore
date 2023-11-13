@@ -19,3 +19,6 @@ build/lib/LL/resources
 LeukoLocator/build/lib/
 /LL/
 .vscode
+LL/resources/PB_annotations_filtered.csv
+LL/resources/H16-20230726.csv
+LL/resources/H16-20230726-reexported.csv
