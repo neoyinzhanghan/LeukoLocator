@@ -337,6 +337,7 @@ class PBCounter:
 
         if self.verbose:
             print(f"Shutting down Ray")
+
         ray.shutdown()
 
         # Regardless of hoarding, save a plot of the distribution of confidence score for all the detected cells, the distribution of number of cells detected per region, and the mean and sd thereof.

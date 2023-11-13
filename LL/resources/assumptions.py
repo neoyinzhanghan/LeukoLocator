@@ -51,7 +51,7 @@ max_num_regions_after_region_clf = 1000
 ### Parallel Processing ###
 ###########################
 
-num_gpus = 2
+num_gpus = 1
 num_cpus = 12
 num_croppers = 8
 num_gpus_per_manager = 1
