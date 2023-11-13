@@ -5,43 +5,48 @@ from tqdm import tqdm
 import pandas as pd
 import os
 
-PB_annotations_path = "/media/hdd3/neo/results/PB_annotations_filtered_processed.csv"
-wsi_dir = "/media/hdd3/neo/PB_slides"
+example_slide_path = "/media/ssd1/neo/PBSlides/LL_example_slide.ndpi"
+pbc = PBCounter(example_slide_path, hoarding=False)
 
-PB_annotations_df = pd.read_csv(PB_annotations_path)
+pbc.tally_differential()
 
-num_wsis = len(PB_annotations_df)
+# PB_annotations_path = "/media/hdd3/neo/results/PB_annotations_filtered_processed.csv"
+# wsi_dir = "/media/hdd3/neo/PB_slides"
 
-# traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
-for i in tqdm(range(num_wsis), desc="Processing WSIs"):
-    try:
-        # get the wsi_fname
-        wsi_fname = PB_annotations_df["wsi_fname"][i]
+# PB_annotations_df = pd.read_csv(PB_annotations_path)
 
-        # get the wsi_path
-        wsi_path = os.path.join(wsi_dir, wsi_fname)
+# num_wsis = len(PB_annotations_df)
 
-        pbc = PBCounter(wsi_path, hoarding=False)
+# # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
+# for i in tqdm(range(num_wsis), desc="Processing WSIs"):
+#     try:
+#         # get the wsi_fname
+#         wsi_fname = PB_annotations_df["wsi_fname"][i]
 
-        pbc.find_focus_regions()
+#         # get the wsi_path
+#         wsi_path = os.path.join(wsi_dir, wsi_fname)
 
-        pbc.find_wbc_candidates()
+#         pbc = PBCounter(wsi_path, hoarding=F)
 
-        pbc.label_wbc_candidates()
+#         pbc.find_focus_regions()
 
-        pbc.tally_differential()
+#         pbc.find_wbc_candidates()
 
-    except Exception as e:
-        raise e
-        save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
+#         pbc.label_wbc_candidates()
 
-        # if the save_dir does not exist, create it
-        os.makedirs(save_dir, exist_ok=True)
+#         pbc.tally_differential()
 
-        # save the exception in the save_dir as error.txt
+#     except Exception as e:
+#         raise e
+#         save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
 
-        with open(os.path.join(save_dir, "error.txt"), "w") as f:
-            f.write(str(e))
+#         # if the save_dir does not exist, create it
+#         os.makedirs(save_dir, exist_ok=True)
 
-        # rename the save_dir name to "ERROR_" + save_dir
-        os.rename(save_dir, os.path.join(dump_dir, "ERROR_" + Path(wsi_path).stem))
+#         # save the exception in the save_dir as error.txt
+
+#         with open(os.path.join(save_dir, "error.txt"), "w") as f:
+#             f.write(str(e))
+
+#         # rename the save_dir name to "ERROR_" + save_dir
+#         os.rename(save_dir, os.path.join(dump_dir, "ERROR_" + Path(wsi_path).stem))
