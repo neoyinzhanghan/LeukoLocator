@@ -594,7 +594,7 @@ class PBCounter:
         """Run all steps with time profiling and save the profiling data to YAML."""
         profiling_data = {}
         try:
-            self.save_selected_variables_to_yaml(
+            save_selected_variables_to_yaml(
                 selected_variable_names,
                 os.path.join(self.save_dir, "global_config.yaml"),
             )
