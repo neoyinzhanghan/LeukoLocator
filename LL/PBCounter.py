@@ -657,6 +657,9 @@ class PBCounter:
 
                 print(f"Error occurred and logged. Continuing to next WSI.")
 
+            else:
+                raise e
+
 
 class NoCellFoundError(ValueError):
     """An exception raised when no cell is found."""
