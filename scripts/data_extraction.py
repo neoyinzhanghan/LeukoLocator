@@ -27,6 +27,10 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
 
         pbc.find_wbc_candidates()
 
+        pbc.label_wbc_candidates()
+
+        pbc.tally_differential()
+
     except Exception as e:
         raise e
         save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
