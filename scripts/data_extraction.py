@@ -5,7 +5,7 @@ from tqdm import tqdm
 import pandas as pd
 import os
 
-example_slide_path = "/media/ssd1/neo/PBSlides/LL_example_slide.ndpi"
+example_slide_path = "/media/ssd1/neo/PBSlides/LL_test_example.ndpi"
 pbc = PBCounter(example_slide_path, hoarding=False)
 
 pbc.tally_differential()
