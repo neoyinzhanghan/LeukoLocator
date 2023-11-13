@@ -65,11 +65,13 @@ allowed_reading_time = 20  # in seconds
 
 region_clf_ckpt_path = "/home/greg/Documents/neo/LLCKPTS/LLRegionClf/V1/checkpoints/epoch=99-step=10300.ckpt"
 region_clf_conf_thres = (
-    0.8 # TODO need to do a rigorous calibration still, but for now we are skipping it
+    0.8  # TODO need to do a rigorous calibration still, but for now we are skipping it
 )
 
-YOLO_ckpt_path = "/home/greg/Documents/neo/LLCKPTS/YOLOv8/V1/detect/train/weights/best.pt"
-YOLO_conf_thres = 0.8 # The calibration says 0.89 to do a 3% FNR control with pvalue less than 0.05 but we can afford to be more aggressive
+YOLO_ckpt_path = (
+    "/home/greg/Documents/neo/LLCKPTS/YOLOv8/V1/detect/train/weights/best.pt"
+)
+YOLO_conf_thres = 0.8  # The calibration says 0.89 to do a 3% FNR control with pvalue less than 0.05 but we can afford to be more aggressive
 
 HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
 
@@ -186,6 +188,13 @@ PB_final_classes = [
 
 omitted_classes = ["ER5", "ER6", "U4"]
 removed_classes = ["U1", "PL2", "PL3"]
+
+# kept_cellnames are the cellnames that are not in omitted_classes and removed_classes
+kept_cellnames = [
+    cellname
+    for cellname in cellnames
+    if cellname not in omitted_classes and cellname not in removed_classes
+]
 
 translate = {
     "Mono": "Monocyte",

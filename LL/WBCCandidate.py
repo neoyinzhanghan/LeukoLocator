@@ -63,10 +63,9 @@ class WBCCandidate:
         self.confidence = confidence
         self.softmax_vector = None
         self.name = None
-        self.cell_id = None
         self.cell_df_row = None
 
-    def compute_cell_info(self, cell_id):
+    def compute_cell_info(self):
         """Return a pandas dataframe row of the cell_df of the PBCounter object containing this candidate."""
 
         if self.softmax_vector is None:
@@ -77,17 +76,20 @@ class WBCCandidate:
 
         else:
             sofmax_vector_np = np.array(self.softmax_vector)
+
+            # the cell classes should come first in the name, and then followed by the focus region idx and the local idx
             self.name = (
-                str(cell_id)
+                "-".join([cellnames[i] for i in sofmax_vector_np.argsort()[-4:][::-1]])
                 + "-"
-                + "-".join(
-                    [cellnames[i] for i in sofmax_vector_np.argsort()[-4:][::-1]]
-                )
+                + str(self.focus_region_idx)
+                + "-"
+                + str(self.local_idx)
                 + ".jpg"
             )
-            self.cell_id = cell_id
+
             cell_df_row = [
-                self.cell_id,
+                self.focus_region_idx,
+                self.local_idx,
                 self.name,
                 self.YOLO_bbox,
                 self.confidence,
@@ -97,7 +99,14 @@ class WBCCandidate:
             # convert the list to a pandas dataframe row
             self.cell_df_row = pd.DataFrame(
                 [cell_df_row],
-                columns=["cell_id", "name", "coords", "confidence", "VoL"]
+                columns=[
+                    "focus_region_idx",
+                    "local_idx",
+                    "name",
+                    "coords",
+                    "confidence",
+                    "VoL",
+                ]
                 + [cellnames[i] for i in range(num_classes)],
             )
 
@@ -106,11 +115,40 @@ class WBCCandidate:
     def _save_YOLO_bbox_image(self, save_dir, subfolder="blurry"):
         """Save the YOLO_bbox_image to the save_dir.
         The file name should just be cell id since the cell may not be classified yet.
+
+        Precondition: the cell is not classified yet.
         """
 
         self.YOLO_bbox_image.save(
-            os.path.join(save_dir, 'cells', subfolder, str(self.cell_id) + ".jpg")
+            os.path.join(
+                save_dir,
+                "cells",
+                subfolder,
+                str(self.focus_region_idx) + "_" + str(self.local_idx) + ".jpg",
+            )
         )
+
+    def _save_cell_image(self, save_dir):
+        """Save the snap_shot to the save_dir/cells/class where class is the class of the cell.
+
+        Precondition: the cell is classified.
+        """
+
+        if self.softmax_vector is None:
+            raise CellNotClassifiedError("The softmax vector is not computed yet.")
+
+        elif self.name is None:
+            raise CellNotClassifiedError("The name is not computed yet.")
+
+        else:
+            self.snap_shot.save(
+                os.path.join(
+                    save_dir,
+                    "cells",
+                    cellnames[np.argmax(self.softmax_vector)],
+                    self.name,
+                )
+            )
 
 
 class CellNotClassifiedError(ValueError):

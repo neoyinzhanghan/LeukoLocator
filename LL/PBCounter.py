@@ -543,6 +543,47 @@ class PBCounter:
         self.wbc_candidates = all_results
         self.differential = Differential(self.wbc_candidates)
 
+    def _save_results(self):
+        """Save the results of the PBCounter object."""
+
+        diff_class_dict = self.differential.tally_dict()
+        diff_dict = self.differential.compute_PB_differential()
+
+        # save the diff_class_dict as a YAML file called save_dir/class_differential.yaml
+        diff_class_yaml_path = os.path.join(self.save_dir, "class_differential.yaml")
+        diff_class_yaml = open(diff_class_yaml_path, "w")
+        diff_class_yaml.write(yaml.dump(diff_class_dict))
+
+        # save the diff_dict as a YAML file called save_dir/differential.yaml
+        diff_yaml_path = os.path.join(self.save_dir, "differential.yaml")
+        diff_yaml = open(diff_yaml_path, "w")
+        diff_yaml.write(yaml.dump(diff_dict))
+
+        # save a pie chart of the one-hot differential as save_dir/differential_one_hot.jpg
+        plt.pie(diff_dict.values(), labels=kept_cellnames, autopct="%1.2f%%")
+        plt.savefig(os.path.join(self.save_dir, "differential_one_hot.jpg"), dpi=300)
+        plt.close("all")
+
+        # save a pie chart of the proportion of each classes (just one hot) in save_dir/class_proportions_one_hot.jpg and save_dir/class_proportions_prob_stacked.jpg
+        plt.pie(diff_class_dict.values(), labels=kept_cellnames, autopct="%1.2f%%")
+        plt.savefig(
+            os.path.join(self.save_dir, "class_differential_one_hot.jpg"), dpi=300
+        )
+        plt.close("all")
+
+        # save a big dataframe of the cell info in save_dir/cells/cells_info.csv
+        self.differential.save_cells_info(self.save_dir)
+
+        # if hoarding, the save all cells images in save_dir/cells/class for each of the classes under the file name of the cell
+        if self.hoarding:
+            for cellname in kept_cellnames:
+                os.makedirs(
+                    os.path.join(self.save_dir, "cells", cellname), exist_ok=True
+                )
+
+            for wbc_candidate in tqdm(self.wbc_candidates, desc="Saving cell images"):
+                wbc_candidate._save_cell_image(self.save_dir)
+
     def tally_differential(self):
         """Just run everything."""
 
@@ -554,6 +595,8 @@ class PBCounter:
 
         if self.differential is None:
             self.label_wbc_candidates()
+
+        self._save_results()
 
 
 class NoCellFoundError(ValueError):
