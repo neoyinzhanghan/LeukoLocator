@@ -10,9 +10,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import yaml
+import time
 from PIL import Image
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
+from pathlib import Path
 
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
@@ -25,7 +27,7 @@ from LL.brain.YOLOManager import YOLOManager
 from LL.Differential import Differential
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
-from LL.communication.write_config import numpy_to_python
+from LL.communication.write_config import *
 
 
 class PBCounter:
@@ -43,6 +45,7 @@ class PBCounter:
 
     - verbose : whether to print out the progress of the PBCounter object
     - hoarding : whether to hoard regions and cell images processed into permanent storage
+    - continue_on_error : whether to continue processing the WSI if an error occurs
     """
 
     def __init__(
@@ -50,11 +53,13 @@ class PBCounter:
         wsi_path: str,
         verbose: bool = False,
         hoarding: bool = False,
+        continue_on_error: bool = False,
     ):
         """Initialize a PBCounter object."""
 
         self.verbose = verbose
         self.hoarding = hoarding
+        self.continue_on_error = continue_on_error
 
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
@@ -586,18 +591,71 @@ class PBCounter:
                 wbc_candidate._save_cell_image(self.save_dir)
 
     def tally_differential(self):
-        """Just run everything."""
+        """Run all steps with time profiling and save the profiling data to YAML."""
+        profiling_data = {}
+        try:
+            self.save_selected_variables_to_yaml(
+                selected_variable_names,
+                os.path.join(self.save_dir, "global_config.yaml"),
+            )
 
-        if self.focus_regions is None:
-            self.find_focus_regions()
+            if self.focus_regions is None:
+                start_time = time.time()
+                self.find_focus_regions()
+                profiling_data["time_taken_to_find_focus_regions"] = (
+                    time.time() - start_time
+                )
 
-        if self.wbc_candidates is None:
-            self.find_wbc_candidates()
+            if self.wbc_candidates is None:
+                start_time = time.time()
+                self.find_wbc_candidates()
+                profiling_data["time_taken_to_find_wbc_candidates"] = (
+                    time.time() - start_time
+                )
 
-        if self.differential is None:
-            self.label_wbc_candidates()
+            if self.differential is None:
+                start_time = time.time()
+                self.label_wbc_candidates()
+                profiling_data["time_taken_to_label_wbc_candidates"] = (
+                    time.time() - start_time
+                )
 
-        self._save_results()
+            start_time = time.time()
+            self._save_results()
+            profiling_data["time_taken_to_save_results"] = time.time() - start_time
+
+            # Save profiling data
+            with open(os.path.join(self.save_dir, "runtime_data.yaml"), "w") as file:
+                yaml.dump(
+                    profiling_data, file, default_flow_style=False, sort_keys=False
+                )
+
+        except Exception as e:
+            if self.continue_on_error:
+                # if the save_dir does not exist, create it
+                os.makedirs(self.save_dir, exist_ok=True)
+
+                # save the exception and profiling data
+                with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
+                    f.write(str(e))
+
+                # Save profiling data even in case of error
+                with open(
+                    os.path.join(self.save_dir, "runtime_data.yaml"), "w"
+                ) as file:
+                    yaml.dump(
+                        profiling_data, file, default_flow_style=False, sort_keys=False
+                    )
+
+                # rename the save_dir name to "ERROR_" + save_dir
+                os.rename(
+                    self.save_dir,
+                    os.path.join(
+                        dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                    ),
+                )
+
+                print(f"Error occurred and logged. Continuing to next WSI.")
 
 
 class NoCellFoundError(ValueError):
