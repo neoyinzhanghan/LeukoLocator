@@ -588,7 +588,7 @@ class PBCounter:
         )
 
         # Set the title with a futuristic font
-        plt.title('Differential One-Hot Distribution', color='lightgreen', fontsize=20, fontname='Verdana')
+        plt.title('Differential One-Hot Distribution', color='lightgreen', fontsize=20)
 
         # Save the figure with a higher resolution
         plt.savefig(os.path.join(self.save_dir, "differential_one_hot.jpg"), dpi=300, bbox_inches='tight')
@@ -626,7 +626,7 @@ class PBCounter:
         )
 
         # Set the title with a futuristic look
-        plt.title('Class Differential One-Hot Distribution', color='lightgreen', fontsize=20, fontname='Verdana')
+        plt.title('Class Differential One-Hot Distribution', color='lightgreen', fontsize=20)
 
         # Save the figure with a higher resolution
         save_path = os.path.join(self.save_dir, "class_differential_one_hot.jpg")
