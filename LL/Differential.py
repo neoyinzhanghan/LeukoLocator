@@ -189,7 +189,7 @@ class Differential:
 
         cell_name_idx = np.argmax(df[cellnames].values, axis=1)
 
-        print(cell_name_idx)
-        df["label"] = cellnames[cell_name_idx]
+        cellnames_array = np.array(cellnames)
+        df["label"] = cellnames_array[cell_name_idx]
 
         df.to_csv(os.path.join(save_dir, "cells", "cells_info.csv"), index=False)
