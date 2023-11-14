@@ -566,18 +566,74 @@ class PBCounter:
         diff_yaml.write(yaml.dump(diff_dict))
 
         # save a pie chart of the one-hot differential as save_dir/differential_one_hot.jpg
-        plt.pie(diff_dict.values(), labels=PB_final_classes, autopct="%1.2f%%")
-        plt.savefig(os.path.join(self.save_dir, "differential_one_hot.jpg"), dpi=300)
-        plt.close("all")
+        # Plotting the pie chart
+        plt.figure(figsize=(10, 8))  # Adjust the size as needed
+        wedges, texts, autotexts = plt.pie(
+            diff_dict.values(), 
+            autopct="%1.2f%%",
+            textprops=dict(color="w")  # Make autopct labels white
+        )
+
+        # Improve the aesthetics for the technofuturistic theme
+        for text in texts:
+            text.set_color('lightblue')  # Adjust the color to fit the theme
+
+        # Create a legend with a color box
+        plt.legend(
+            wedges, PB_final_classes,
+            title="Classes",
+            loc="center left",
+            bbox_to_anchor=(1, 0, 0.5, 1),
+            fontsize='small'
+        )
+
+        # Set the title with a futuristic font
+        plt.title('Differential One-Hot Distribution', color='lightgreen', fontsize=20, fontname='Futura')
+
+        # Save the figure with a higher resolution
+        plt.savefig(os.path.join(self.save_dir, "differential_one_hot.jpg"), dpi=300, bbox_inches='tight')
+
+        # Close the plot to prevent it from displaying in this script
+        plt.close('all')
 
         # save a pie chart of the proportion of each classes (just one hot) in save_dir/class_proportions_one_hot.jpg and save_dir/class_proportions_prob_stacked.jpg
-        plt.pie(
-            diff_class_dict.values(), labels=diff_class_dict.keys(), autopct="%1.2f%%"
+        # Plotting the pie chart
+        plt.figure(figsize=(10, 8))  # Adjust the size as needed
+        wedges, texts, autotexts = plt.pie(
+            diff_class_dict.values(), 
+            autopct="%1.2f%%",
+            textprops=dict(color="w")  # Make autopct labels white
         )
-        plt.savefig(
-            os.path.join(self.save_dir, "class_differential_one_hot.jpg"), dpi=300
+
+        # Customize colors for a medical theme
+        colors = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a']
+        for wedge, color in zip(wedges, colors):
+            wedge.set_edgecolor('white')
+            wedge.set_facecolor(color)
+
+        # Improve the aesthetics for the technofuturistic theme
+        for text in texts:
+            text.set_color('lightblue')  # Adjust the color to fit the theme
+
+        # Create a legend with a color box
+        plt.legend(
+            wedges, diff_class_dict.keys(),
+            title="Classes",
+            loc="center left",
+            bbox_to_anchor=(1, 0, 0.5, 1),
+            fontsize='small',
+            title_fontsize='medium'
         )
-        plt.close("all")
+
+        # Set the title with a futuristic look
+        plt.title('Class Differential One-Hot Distribution', color='lightgreen', fontsize=20)
+
+        # Save the figure with a higher resolution
+        save_path = os.path.join(self.save_dir, "class_differential_one_hot.jpg")
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+
+        # Close the plot to prevent it from displaying in this script
+        plt.close('all')
 
         # save a big dataframe of the cell info in save_dir/cells/cells_info.csv
         self.differential.save_cells_info(self.save_dir)
