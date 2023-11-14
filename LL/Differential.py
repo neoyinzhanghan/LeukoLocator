@@ -187,6 +187,9 @@ class Differential:
 
         df = self.wbc_candidate_df.copy()
 
-        df["label"] = cellnames[int(np.argmax(df[cellnames].values, axis=1))]
+        cell_name_idx = np.argmax(df[cellnames].values, axis=1)
+
+        print(cell_name_idx)
+        df["label"] = cellnames[cell_name_idx]
 
         df.to_csv(os.path.join(save_dir, "cells", "cells_info.csv"), index=False)
