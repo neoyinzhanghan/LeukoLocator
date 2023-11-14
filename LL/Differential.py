@@ -174,9 +174,9 @@ class Differential:
                 # add the value to the key
                 PB_tally[key] += tally[value]
 
-        # print the tally in console
+        print("Final PB differential:")
         for cellname in PB_tally:
-            print(f"{cellnames_dict[cellname]}: {PB_tally[cellname]}")
+            print(f"{cellname}: {PB_tally[cellname]}")
 
         self.diff_dict = PB_tally
 
