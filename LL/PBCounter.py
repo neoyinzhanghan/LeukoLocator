@@ -570,10 +570,10 @@ class PBCounter:
         plt.savefig(os.path.join(self.save_dir, "differential_one_hot.jpg"), dpi=300)
         plt.close("all")
 
-        print(diff_class_dict.values())
-        print(kept_cellnames)
         # save a pie chart of the proportion of each classes (just one hot) in save_dir/class_proportions_one_hot.jpg and save_dir/class_proportions_prob_stacked.jpg
-        plt.pie(diff_class_dict.values(), labels=kept_cellnames, autopct="%1.2f%%")
+        plt.pie(
+            diff_class_dict.values(), labels=diff_class_dict.keys(), autopct="%1.2f%%"
+        )
         plt.savefig(
             os.path.join(self.save_dir, "class_differential_one_hot.jpg"), dpi=300
         )
