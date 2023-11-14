@@ -584,11 +584,6 @@ class PBCounter:
 
         # if hoarding, the save all cells images in save_dir/cells/class for each of the classes under the file name of the cell
         if self.hoarding:
-            for cellname in kept_cellnames:
-                os.makedirs(
-                    os.path.join(self.save_dir, "cells", cellname), exist_ok=True
-                )
-
             for wbc_candidate in tqdm(self.wbc_candidates, desc="Saving cell images"):
                 wbc_candidate._save_cell_image(self.save_dir)
 

@@ -141,6 +141,12 @@ class WBCCandidate:
             raise CellNotClassifiedError("The name is not computed yet.")
 
         else:
+            os.makedirs(
+                os.path.join(
+                    save_dir, "cells", cellnames[np.argmax(self.softmax_vector)]
+                ),
+                exist_ok=True,
+            )
             self.snap_shot.save(
                 os.path.join(
                     save_dir,
