@@ -566,7 +566,7 @@ class PBCounter:
         diff_yaml.write(yaml.dump(diff_dict))
 
         # save a pie chart of the one-hot differential as save_dir/differential_one_hot.jpg
-        plt.pie(diff_dict.values(), labels=kept_cellnames, autopct="%1.2f%%")
+        plt.pie(diff_dict.values(), labels=PB_final_classes, autopct="%1.2f%%")
         plt.savefig(os.path.join(self.save_dir, "differential_one_hot.jpg"), dpi=300)
         plt.close("all")
 
