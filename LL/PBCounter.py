@@ -566,43 +566,72 @@ class PBCounter:
         diff_yaml.write(yaml.dump(diff_dict))
 
         # save a pie chart of the one-hot differential as save_dir/differential_one_hot.jpg
+
+        # Your diff_dict and PB_final_classes must be defined before this snippet.
+        # Here's an example of how they might be defined:
+        # diff_dict = {'Class 1': 10, 'Class 2': 20, 'Class 3': 30, 'Class 4': 40}
+        # PB_final_classes = list(diff_dict.keys())
+
+        # Calculate the total for percentage calculation
+        total = sum(diff_dict.values())
+        # Create legend labels with percentages
+        legend_labels = [f"{cls} - {val/total:.2%}" for cls, val in diff_dict.items()]
+
+        # Apply a dark theme
+        plt.style.use('dark_background')
+
         # Plotting the pie chart
         plt.figure(figsize=(10, 8))  # Adjust the size as needed
-        wedges, texts, autotexts = plt.pie(
+        wedges, texts = plt.pie(
             diff_dict.values(), 
-            autopct="%1.2f%%",
-            textprops=dict(color="w")  # Make autopct labels white
+            textprops=dict(color="w")  # Make text labels white
         )
 
-        # Improve the aesthetics for the technofuturistic theme
-        for text in texts:
-            text.set_color('lightblue')  # Adjust the color to fit the theme
+        # Customize colors for a medical theme
+        colors = ['#003f5c', '#58508d', '#bc5090', '#ff6361', '#ffa600', '#a5b9ed']
+        for wedge, color in zip(wedges, colors):
+            wedge.set_edgecolor('white')
+            wedge.set_facecolor(color)
 
-        # Create a legend with a color box
+        # Hide the original labels by setting them to an empty string
+        for text in texts:
+            text.set_text('')
+
+        # Create a legend with a color box and percentage labels
         plt.legend(
-            wedges, PB_final_classes,
+            wedges, legend_labels,
             title="Classes",
             loc="center left",
             bbox_to_anchor=(1, 0, 0.5, 1),
             fontsize='small'
         )
 
-        # Set the title with a futuristic font
+        # Set the title with a futuristic look
         plt.title('Differential One-Hot Distribution', color='lightgreen', fontsize=20)
 
         # Save the figure with a higher resolution
-        plt.savefig(os.path.join(self.save_dir, "differential_one_hot.jpg"), dpi=300, bbox_inches='tight')
+        save_path = os.path.join(self.save_dir, "differential_one_hot.jpg")
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
 
         # Close the plot to prevent it from displaying in this script
         plt.close('all')
 
         # save a pie chart of the proportion of each classes (just one hot) in save_dir/class_proportions_one_hot.jpg and save_dir/class_proportions_prob_stacked.jpg
+        # Ensure diff_class_dict is defined in your script as:
+        # diff_class_dict = {'Class A': value1, 'Class B': value2, ...}
+
+        # Calculate the percentages and create labels for the legend
+        total = sum(diff_class_dict.values())
+        legend_labels = [f'{key} - {value/total:.2%}' for key, value in diff_class_dict.items()]
+
+        # Apply a dark theme
+        plt.style.use('dark_background')
+
         # Plotting the pie chart
         plt.figure(figsize=(10, 8))  # Adjust the size as needed
-        wedges, texts, autotexts = plt.pie(
-            diff_class_dict.values(), 
-            autopct="%1.2f%%",
-            textprops=dict(color="w")  # Make autopct labels white
+        wedges, texts = plt.pie(
+            diff_class_dict.values(),
+            textprops=dict(color="w")  # Set text color to white for better contrast on a dark background
         )
 
         # Customize colors for a medical theme
@@ -611,13 +640,13 @@ class PBCounter:
             wedge.set_edgecolor('white')
             wedge.set_facecolor(color)
 
-        # Improve the aesthetics for the technofuturistic theme
+        # Hide the original labels by setting them to an empty string
         for text in texts:
-            text.set_color('lightblue')  # Adjust the color to fit the theme
+            text.set_text('')
 
-        # Create a legend with a color box
+        # Create a legend with the class names and percentages
         plt.legend(
-            wedges, diff_class_dict.keys(),
+            wedges, legend_labels,
             title="Classes",
             loc="center left",
             bbox_to_anchor=(1, 0, 0.5, 1),
