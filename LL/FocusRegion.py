@@ -70,16 +70,14 @@ class FocusRegion:
         # note that mask is a black and white binary image while the downsampled image is a color image
         # so we need to convert the mask to a color image
 
-        print(type(self.otsu_mask))
-        print(self.otsu_mask.shape)
-        self.image_mask_duo = Image.fromarray(
-            np.hstack(
-                (
-                    np.array(self.downsampled_image),
-                    np.array(self.otsu_mask.convert("RGB")),
-                )
-            )
-        )
+        # Assuming self.downsampled_image is a PIL image, convert it to a NumPy array
+        downsampled_array = np.array(self.downsampled_image)
+
+        # Convert the binary mask to a 3-channel RGB image
+        otsu_rgb = np.stack((self.otsu_mask,) * 3, axis=-1)
+
+        # Horizontally stack the two images
+        self.image_mask_duo = Image.fromarray(np.hstack((downsampled_array, otsu_rgb)))
 
         self.resnet_confidence_score = None
 
