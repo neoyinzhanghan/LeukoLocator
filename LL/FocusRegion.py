@@ -9,6 +9,7 @@ import pandas as pd
 import yaml
 import statsmodels.api as sm
 import torch
+import seaborn as sns
 from torchvision import transforms
 from PIL import Image
 from matplotlib import pyplot as plt
@@ -18,7 +19,7 @@ from tqdm import tqdm
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
 from LL.vision.image_quality import VoL, WMP
-from LL.communication.visualization import annotate_focus_region
+from LL.communication.visualization import annotate_focus_region, save_hist_KDE_rug_plot
 from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
 
@@ -609,33 +610,19 @@ class FocusRegionsTracker:
             filtered = self.info_df[self.info_df["rejected"] == 0]
         else:
             filtered = self.info_df
+            lines = [self.final_min_VoL]
 
-        # save the plot of the unnormalized density of the VoL and WMP of the focus regions and the max_WMP, min_WMP and min_VoL as vertical lines
-        # use the info_df to plot the density
-        plt.figure(figsize=(10, 10))
-        plt.hist(filtered["VoL"], bins=100, alpha=0.5)
-
-        if not after_filtering:  # no need to plot the vertical lines if after filtering
-            plt.axvline(
-                x=self.final_min_VoL, color="r", linestyle="-", label="final_min_VoL"
-            )
-            plt.legend()
-
-        plt.title(
-            f"Unnormalized density of the VoL of the focus regions, filtered == {after_filtering}"
-        )
-        plt.xlabel("VoL")
-        plt.ylabel("Count")
-        plt.savefig(
-            os.path.join(
+        save_hist_KDE_rug_plot(
+            df=filtered,
+            column_name="VoL",
+            save_path=os.path.join(
                 save_dir,
                 "focus_regions",
-                f"VoL_unnormalized_density_filtered_{after_filtering}.png",
-            )
+                f"VoL_plot_filtered_{after_filtering}.jpg",
+            ),
+            title=f"VoL plot, filtered == {after_filtering}",
+            lines=lines,
         )
-
-        # make sure to close
-        plt.close()
 
     def _save_WMP_plot(self, save_dir, after_filtering=False):
         """Save the WMP plot, with the final_max_WMP and final_min_WMP as vertical lines."""
@@ -649,40 +636,22 @@ class FocusRegionsTracker:
             filtered = self.info_df[self.info_df["rejected"] == 0]
         else:
             filtered = self.info_df
+            lines = [self.final_max_WMP, self.final_min_WMP]
 
-        # save the plot of the unnormalized density of the VoL and WMP of the focus regions and the max_WMP, min_WMP and min_VoL as vertical lines
-        # use the info_df to plot the density
-        plt.figure(figsize=(10, 10))
-        plt.hist(filtered["WMP"], bins=100, alpha=0.5)
-
-        if not after_filtering:  # no need to plot the vertical lines if after filtering
-            plt.axvline(
-                x=self.final_min_WMP, color="r", linestyle="-", label="final_min_WMP"
-            )
-            plt.axvline(
-                x=self.final_max_WMP, color="r", linestyle="-", label="final_max_WMP"
-            )
-            plt.legend()
-
-        plt.title(
-            f"Unnormalized density of the WMP of the focus regions, filtered == {after_filtering}"
-        )
-        plt.xlabel("WMP")
-        plt.ylabel("Count")
-
-        plt.savefig(
-            os.path.join(
+        save_hist_KDE_rug_plot(
+            df=filtered,
+            column_name="WMP",
+            save_path=os.path.join(
                 save_dir,
                 "focus_regions",
-                f"WMP_unnormalized_density_filtered_{after_filtering}.png",
-            )
+                f"WMP_plot_filtered_{after_filtering}.jpg",
+            ),
+            title=f"WMP plot, filtered == {after_filtering}",
+            lines=lines,
         )
 
-        # make sure to close
-        plt.close()
-
     def _save_VoL_WMP_scatter(self, save_dir, filtered=True):
-        """Save a scatter plot of VoL and WMP for all all the data if not filtered and for the filtered data if filtered."""
+        """Save a scatter plot of VoL and WMP for all the data if not filtered and for the filtered data if filtered."""
 
         # if save_dir/focus_regions does not exist, then create it
         os.makedirs(os.path.join(save_dir, "focus_regions"), exist_ok=True)
@@ -693,26 +662,50 @@ class FocusRegionsTracker:
         else:
             filtered_df = self.info_df
 
-        # save the plot of the unnormalized density of the VoL and WMP of the focus regions and the max_WMP, min_WMP and min_VoL as vertical lines
-        # use the info_df to plot the density
-        plt.figure(figsize=(10, 10))
-        plt.scatter(filtered_df["WMP"], filtered_df["VoL"], alpha=0.5)
+        # Set the dark theme with the brightest elements
+        sns.set_theme(style="darkgrid")
 
+        # Create the figure with a specific size and dark background
+        plt.figure(figsize=(10, 10), facecolor="#121212")
+
+        # Create the scatter plot with specific alpha value and color
+        plt.scatter(filtered_df["WMP"], filtered_df["VoL"], alpha=0.5, color="#00FF00")  # Neon green points
+
+        # Customize the plot to match a techno futuristic theme
         plt.title(
-            f"Scatter plot of the VoL and WMP of the focus regions, filtered == {filtered}"
+            f"Scatter plot of the VoL and WMP of the focus regions, filtered == {filtered}",
+            fontsize=15,
+            color="#00FF00"
         )
-        plt.xlabel("WMP")
-        plt.ylabel("VoL")
+        plt.xlabel("WMP", fontsize=12, color="#00FF00")
+        plt.ylabel("VoL", fontsize=12, color="#00FF00")
 
+        # Change the axis increment numbers to white
+        plt.tick_params(axis="x", colors="white")
+        plt.tick_params(axis="y", colors="white")
+
+        # Set the spines to a bright color
+        for spine in plt.gca().spines.values():
+            spine.set_edgecolor("#00FF00")
+
+        # Set the face color of the axes
+        plt.gca().set_facecolor("#121212")  # Dark background for contrast
+
+        # Set the grid to a brighter color
+        plt.grid(color="#777777")  # Brighter grey for the grid
+
+        # Save the plot with transparent background
         plt.savefig(
             os.path.join(
                 save_dir,
                 "focus_regions",
-                f"VoL_WMP_scatter_filtered_{filtered}.png",
-            )
+                f"VoL_WMP_scatter_filtered_{filtered}.png"
+            ),
+            transparent=True,
+            facecolor="#121212"
         )
 
-        # make sure to close
+        # Close the plot to free memory
         plt.close()
 
     # def _save_lm_plot(self, save_dir):
@@ -780,24 +773,19 @@ class FocusRegionsTracker:
 
         if after_filtering:
             filtered = filtered[filtered["rejected"] == 0]
+            lines = [self.final_min_conf_thres]
 
-        # after filtering, we can plot the resnet confidence score
-        plt.figure(figsize=(10, 10))
-        plt.hist(filtered["confidence_score"], bins=100, alpha=0.5)
-
-        plt.title("Unnormalized density of the resnet confidence score")
-        plt.xlabel("Confidence score")
-
-        plt.savefig(
-            os.path.join(
+        save_hist_KDE_rug_plot(
+            df=filtered,
+            column_name="confidence_score",
+            save_path=os.path.join(
                 save_dir,
                 "focus_regions",
-                f"resnet_confidence_score_unnormalized_density_filtered_{after_filtering}.png",
-            )
+                f"resnet_confidence_score_plot_filtered_{after_filtering}.jpg",
+            ),
+            title=f"ResNet confidence score plot, filtered == {after_filtering}",
+            lines=lines,
         )
-
-        # make sure to close
-        plt.close()
 
     def _get_diagnostics(self, save_dir):
         """Calculate the following diagnostics:
@@ -929,6 +917,7 @@ class FocusRegionsTracker:
         # self._save_lm_plot(save_dir)
 
         # save the resnet confidence score plot
+        self._save_resnet_conf_plot(save_dir, after_filtering=True)
         self._save_resnet_conf_plot(save_dir, after_filtering=False)
 
         # save the VoL and WMP scatter plot

@@ -32,7 +32,7 @@ def annotate_focus_region(image, bboxes):
     return image
 
 
-def save_hist_KDE_rug_plot(df, column_name, save_path, title):
+def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
     """
     This function takes a pandas DataFrame, the name of the column to plot,
     and a save path. It creates a histogram with a KDE overlay and rug plot for the specified
@@ -57,7 +57,7 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title):
 
     # Add rug plot
     sns.rugplot(
-        df[column_name], color="#00FF00", height=0.05
+        df[column_name], color="#00FF00", height=0.05, alpha=0.5
     )  # Neon green for futuristic feel
 
     # Customize the plot to match a techno futuristic theme
@@ -71,6 +71,13 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title):
     # Change the axis increment numbers to white
     plt.tick_params(axis="x", colors="white")
     plt.tick_params(axis="y", colors="white")
+
+    # Plotting vertical red lines at specified positions
+    for line in lines:
+        if isinstance(line, (int, float)):  # Ensure the line position is a number
+            plt.axvline(
+                x=line, color="red", linestyle="--"
+            )  # Add a dashed red line at each specified position
 
     # Set the spines to a bright color
     for spine in plt.gca().spines.values():
