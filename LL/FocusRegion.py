@@ -608,6 +608,7 @@ class FocusRegionsTracker:
         # if after_filtering is True, then filter out the focus regions that are rejected
         if after_filtering:
             filtered = self.info_df[self.info_df["rejected"] == 0]
+            lines = []
         else:
             filtered = self.info_df
             lines = [self.final_min_VoL]
@@ -634,6 +635,7 @@ class FocusRegionsTracker:
         # if after_filtering is True, then filter out the focus regions that are rejected
         if after_filtering:
             filtered = self.info_df[self.info_df["rejected"] == 0]
+            lines = []
         else:
             filtered = self.info_df
             lines = [self.final_max_WMP, self.final_min_WMP]
@@ -669,13 +671,15 @@ class FocusRegionsTracker:
         plt.figure(figsize=(10, 10), facecolor="#121212")
 
         # Create the scatter plot with specific alpha value and color
-        plt.scatter(filtered_df["WMP"], filtered_df["VoL"], alpha=0.5, color="#00FF00")  # Neon green points
+        plt.scatter(
+            filtered_df["WMP"], filtered_df["VoL"], alpha=0.5, color="#00FF00"
+        )  # Neon green points
 
         # Customize the plot to match a techno futuristic theme
         plt.title(
             f"Scatter plot of the VoL and WMP of the focus regions, filtered == {filtered}",
             fontsize=15,
-            color="#00FF00"
+            color="#00FF00",
         )
         plt.xlabel("WMP", fontsize=12, color="#00FF00")
         plt.ylabel("VoL", fontsize=12, color="#00FF00")
@@ -697,12 +701,10 @@ class FocusRegionsTracker:
         # Save the plot with transparent background
         plt.savefig(
             os.path.join(
-                save_dir,
-                "focus_regions",
-                f"VoL_WMP_scatter_filtered_{filtered}.png"
+                save_dir, "focus_regions", f"VoL_WMP_scatter_filtered_{filtered}.png"
             ),
             transparent=True,
-            facecolor="#121212"
+            facecolor="#121212",
         )
 
         # Close the plot to free memory
@@ -773,6 +775,8 @@ class FocusRegionsTracker:
 
         if after_filtering:
             filtered = filtered[filtered["rejected"] == 0]
+            lines = []
+        else:
             lines = [self.final_min_conf_thres]
 
         save_hist_KDE_rug_plot(
