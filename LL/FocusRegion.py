@@ -69,6 +69,8 @@ class FocusRegion:
         # image_mask_duo is one image where the downsampled image and mask are put side by side
         # note that mask is a black and white binary image while the downsampled image is a color image
         # so we need to convert the mask to a color image
+
+        print(type(self.otsu_mask))
         self.image_mask_duo = Image.fromarray(
             np.hstack(
                 (
