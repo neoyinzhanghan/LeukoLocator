@@ -80,7 +80,7 @@ class WBCCandidate:
             # the cell classes should come first in the name, and then followed by the focus region idx and the local idx
             self.name = (
                 "-".join([cellnames[i] for i in sofmax_vector_np.argsort()[-4:][::-1]])
-                + "-"
+                + "_"
                 + str(self.focus_region_idx)
                 + "-"
                 + str(self.local_idx)
@@ -91,7 +91,10 @@ class WBCCandidate:
                 self.focus_region_idx,
                 self.local_idx,
                 self.name,
-                self.YOLO_bbox,
+                self.YOLO_bbox[0],
+                self.YOLO_bbox[1],
+                self.YOLO_bbox[2],
+                self.YOLO_bbox[3],
                 self.confidence,
                 self.VoL,
             ] + list(self.softmax_vector)
@@ -103,7 +106,10 @@ class WBCCandidate:
                     "focus_region_idx",
                     "local_idx",
                     "name",
-                    "coords",
+                    "TL_x",
+                    "TL_y",
+                    "BR_x",
+                    "BR_y",
                     "confidence",
                     "VoL",
                 ]
@@ -124,7 +130,12 @@ class WBCCandidate:
                 save_dir,
                 "cells",
                 subfolder,
-                str(self.focus_region_idx) + "_" + str(self.local_idx) + ".jpg",
+                "VoL"
+                + str(round(self.VoL))
+                + str(self.focus_region_idx)
+                + "-"
+                + str(self.local_idx)
+                + ".jpg",
             )
         )
 

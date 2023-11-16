@@ -106,7 +106,7 @@ cellnames = [
     "PL3",
     "U1",
     "U4",
-]  # the last element would never be indexed
+]
 
 what_to_ignore = "class"  # 'class' or 'instance' if ignore class, then the softmax probability of ignored classes will be set to -np.inf, if ignore instance, then instances of ignored classes will be removed
 

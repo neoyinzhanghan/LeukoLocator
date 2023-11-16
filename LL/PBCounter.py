@@ -24,10 +24,11 @@ from LL.SearchView import SearchView
 from LL.FocusRegion import FocusRegion, FocusRegionsTracker
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
-from LL.Differential import Differential
+from LL.Differential import Differential, to_count_dict
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
 from LL.communication.write_config import *
+from LL.communication.visualization import *
 
 
 class PBCounter:
@@ -409,29 +410,23 @@ class PBCounter:
             index=False,
         )
 
-        # plot the distribution of confidence score for all the detected cells
-        plt.hist(big_cell_df["confidence"], bins=100)
-
-        # save the plot
-        plt.savefig(
-            os.path.join(self.save_dir, "focus_regions", "YOLO_confidence.jpg"),
-            dpi=300,
+        save_hist_KDE_rug_plot(
+            df=big_cell_df,
+            column_name="confidence",
+            save_path=os.path.join(self.save_dir, "cells", "YOLO_confidence.jpg"),
+            title="YOLO Confidence Distribution of Selected Cells",
         )
 
-        plt.close("all")
-
-        # plot the distribution of number of cells detected per region
-        plt.hist(num_cells_per_region_df["num_cells"], bins=100)
-
-        # save the plot
-        plt.savefig(
-            os.path.join(self.save_dir, "focus_regions", "num_cells_per_region.jpg"),
-            dpi=300,
+        save_hist_KDE_rug_plot(
+            df=num_cells_per_region_df,
+            column_name="num_cells",
+            save_path=os.path.join(
+                self.save_dir, "focus_regions", "num_cells_per_region.jpg"
+            ),
+            title="Number of Cells Detected in Selected Focus Regions",
         )
 
-        plt.close("all")
-
-        # grab the info for the yaml file as a dictionary
+        # grab the info for the csv file as a dictionary
         num_cells_per_region_mean = num_cells_per_region_df["num_cells"].mean()
         num_cells_per_region_sd = num_cells_per_region_df["num_cells"].std()
 
@@ -460,8 +455,8 @@ class PBCounter:
         num_VoL_rejected = len(VoL_rejected)
 
         # add the mean and sd to the save_dir/cells/cell_detection.yaml file using yaml
-        cell_detection_yaml_path = os.path.join(
-            self.save_dir, "cells", "cell_detection.yaml"
+        cell_detection_csv_path = os.path.join(
+            self.save_dir, "cells", "cell_detection.csv"
         )
 
         # first create the dictionary
@@ -476,15 +471,17 @@ class PBCounter:
             "YOLO_confidence_sd": numpy_to_python(YOLO_confidence_sd),
         }
 
-        # then write the dictionary to the yaml file
-        cell_detection_yaml = open(cell_detection_yaml_path, "w")
-        cell_detection_yaml.write(yaml.dump(cell_detection_dict))
-        cell_detection_yaml.close()
+        # then write the dictionary to the csv file with keys as the first row and values as the second row use panda
+        cell_detection_df = pd.DataFrame.from_dict(cell_detection_dict, orient="index")
+        cell_detection_df.to_csv(cell_detection_csv_path, header=False)
 
         if self.hoarding:
             os.makedirs(
-                os.path.join(self.save_dir, "focus_regions", "high_mag"),
+                os.path.join(self.save_dir, "focus_regions", "high_mag_annotated"),
                 exist_ok=True,
+            )
+            os.makedirs(
+                os.path.join(self.save_dir, "focus_regions", "high_mag_unannotated"),
             )
             for focus_region in tqdm(
                 self.focus_regions, desc="Saving focus regions high mag images"
@@ -551,118 +548,108 @@ class PBCounter:
 
     def _save_results(self):
         """Save the results of the PBCounter object."""
-
+        diff_full_class_dict = self.differential.tally_diff_full_class_dict()
         diff_class_dict = self.differential.tally_dict()
         diff_dict = self.differential.compute_PB_differential()
 
-        # save the diff_class_dict as a YAML file called save_dir/class_differential.yaml
-        diff_class_yaml_path = os.path.join(self.save_dir, "class_differential.yaml")
-        diff_class_yaml = open(diff_class_yaml_path, "w")
-        diff_class_yaml.write(yaml.dump(diff_class_dict))
+        # save the diff_full_class_dict as a csv file called save_dir/differential_full.csv, where the first row is the class and the second row is the value
+        diff_full_csv_path = os.path.join(self.save_dir, "differential_full_class.csv")
+        diff_full_df = pd.DataFrame.from_dict(diff_full_class_dict, orient="index")
+        diff_full_df.to_csv(diff_full_csv_path, header=False)
 
-        # save the diff_dict as a YAML file called save_dir/differential.yaml
-        diff_yaml_path = os.path.join(self.save_dir, "differential.yaml")
-        diff_yaml = open(diff_yaml_path, "w")
-        diff_yaml.write(yaml.dump(diff_dict))
+        # save the diff_class_dict as a csv file called save_dir/differential_class.csv, where the first row is the class and the second row is the value
+        diff_class_csv_path = os.path.join(self.save_dir, "differential_class.csv")
+        diff_class_df = pd.DataFrame.from_dict(diff_class_dict, orient="index")
+        diff_class_df.to_csv(diff_class_csv_path, header=False)
 
-        # save a pie chart of the one-hot differential as save_dir/differential_one_hot.jpg
+        # save the diff_dict as a csv file called save_dir/differential.csv, where the first row is the class and the second row is the value
+        diff_csv_path = os.path.join(self.save_dir, "differential.csv")
+        diff_df = pd.DataFrame.from_dict(diff_dict, orient="index")
+        diff_df.to_csv(diff_csv_path, header=False)
 
-        # Your diff_dict and PB_final_classes must be defined before this snippet.
-        # Here's an example of how they might be defined:
-        # diff_dict = {'Class 1': 10, 'Class 2': 20, 'Class 3': 30, 'Class 4': 40}
-        # PB_final_classes = list(diff_dict.keys())
+        # total number of cells detected
+        num_cells_detected = len(self.wbc_candidates)
 
-        # Calculate the total for percentage calculation
-        total = sum(diff_dict.values())
-        # Create legend labels with percentages
-        legend_labels = [f"{cls} - {val/total:.2%}" for cls, val in diff_dict.items()]
+        diff_full_class_count_dict = to_count_dict(
+            diff_full_class_dict, num_cells_detected
+        )
+        diff_class_count_dict = to_count_dict(
+            dct=diff_class_dict, num_cells=num_cells_detected
+        )
+        diff_count_dict = to_count_dict(dct=diff_dict, num_cells=num_cells_detected)
 
-        # Apply a dark theme
-        plt.style.use('dark_background')
+        # save the diff_full_class_count_dict as a csv file called save_dir/differential_full_class_count.csv, where the first row is the class and the second row is the value
+        diff_full_count_csv_path = os.path.join(
+            self.save_dir, "differential_full_class_count.csv"
+        )
+        diff_full_count_df = pd.DataFrame.from_dict(diff_full_class_count_dict)
+        diff_full_count_df.to_csv(diff_full_count_csv_path, header=False)
 
-        # Plotting the pie chart
-        plt.figure(figsize=(10, 8))  # Adjust the size as needed
-        wedges, texts = plt.pie(
-            diff_dict.values(), 
-            textprops=dict(color="w")  # Make text labels white
+        # save the diff_class_count_dict as a csv file called save_dir/differential_class_count.csv, where the first row is the class and the second row is the value
+        diff_class_count_csv_path = os.path.join(
+            self.save_dir, "differential_class_count.csv"
+        )
+        diff_class_count_df = pd.DataFrame.from_dict(diff_class_count_dict)
+        diff_class_count_df.to_csv(diff_class_count_csv_path, header=False)
+
+        # save the diff_count_dict as a csv file called save_dir/differential_count.csv, where the first row is the class and the second row is the value
+        diff_count_csv_path = os.path.join(self.save_dir, "differential_count.csv")
+        diff_count_df = pd.DataFrame.from_dict(diff_count_dict)
+        diff_count_df.to_csv(diff_count_csv_path, header=False)
+
+        # save a bar chart of the differential_full_class_count_dict as save_dir/differential_full_class_count.jpg
+        save_bar_chart(
+            data_dict=diff_full_class_count_dict,
+            save_path=os.path.join(self.save_dir, "differential_full_class_count.jpg"),
+            title="Differential Count of Full Classes",
+            xaxis_name="Class",
+            yaxis_name="Count",
         )
 
-        # Customize colors for a medical theme
-        colors = ['#003f5c', '#58508d', '#bc5090', '#ff6361', '#ffa600', '#a5b9ed']
-        for wedge, color in zip(wedges, colors):
-            wedge.set_edgecolor('white')
-            wedge.set_facecolor(color)
-
-        # Hide the original labels by setting them to an empty string
-        for text in texts:
-            text.set_text('')
-
-        # Create a legend with a color box and percentage labels
-        plt.legend(
-            wedges, legend_labels,
-            title="Classes",
-            loc="center left",
-            bbox_to_anchor=(1, 0, 0.5, 1),
-            fontsize='small'
+        # save a bar chart of the diff_class_count_dict as save_dir/differential_class_count.jpg
+        save_bar_chart(
+            data_dict=diff_class_count_dict,
+            save_path=os.path.join(self.save_dir, "differential_class_count.jpg"),
+            title="Differential Count of Selected Classes",
+            xaxis_name="Class",
+            yaxis_name="Count",
         )
 
-        # Set the title with a futuristic look
-        plt.title('Differential One-Hot Distribution', color='lightgreen', fontsize=20)
-
-        # Save the figure with a higher resolution
-        save_path = os.path.join(self.save_dir, "differential_one_hot.jpg")
-        plt.savefig(save_path, dpi=300, bbox_inches='tight')
-
-        # Close the plot to prevent it from displaying in this script
-        plt.close('all')
-
-        # save a pie chart of the proportion of each classes (just one hot) in save_dir/class_proportions_one_hot.jpg and save_dir/class_proportions_prob_stacked.jpg
-        # Ensure diff_class_dict is defined in your script as:
-        # diff_class_dict = {'Class A': value1, 'Class B': value2, ...}
-
-        # Calculate the percentages and create labels for the legend
-        total = sum(diff_class_dict.values())
-        legend_labels = [f'{key} - {value/total:.2%}' for key, value in diff_class_dict.items()]
-
-        # Apply a dark theme
-        plt.style.use('dark_background')
-
-        # Plotting the pie chart
-        plt.figure(figsize=(10, 8))  # Adjust the size as needed
-        wedges, texts = plt.pie(
-            diff_class_dict.values(),
-            textprops=dict(color="w")  # Set text color to white for better contrast on a dark background
+        # save a bar chart of the diff_count_dict as save_dir/differential_count.jpg
+        save_bar_chart(
+            data_dict=diff_count_dict,
+            save_path=os.path.join(self.save_dir, "differential_count.jpg"),
+            title="Differential Count",
+            xaxis_name="Class",
+            yaxis_name="Count",
         )
 
-        # Customize colors for a medical theme
-        colors = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a']
-        for wedge, color in zip(wedges, colors):
-            wedge.set_edgecolor('white')
-            wedge.set_facecolor(color)
-
-        # Hide the original labels by setting them to an empty string
-        for text in texts:
-            text.set_text('')
-
-        # Create a legend with the class names and percentages
-        plt.legend(
-            wedges, legend_labels,
-            title="Classes",
-            loc="center left",
-            bbox_to_anchor=(1, 0, 0.5, 1),
-            fontsize='small',
-            title_fontsize='medium'
+        # save a bar chart of the diff_full_class_dict as save_dir/differential_full_class.jpg
+        save_bar_chart(
+            data_dict=diff_full_class_dict,
+            save_path=os.path.join(self.save_dir, "differential_full_class.jpg"),
+            title="Differential of Full Classes",
+            xaxis_name="Class",
+            yaxis_name="Differential",
         )
 
-        # Set the title with a futuristic look
-        plt.title('Class Differential One-Hot Distribution', color='lightgreen', fontsize=20)
+        # save a bar chart of the diff_class_dict as save_dir/differential_class.jpg
+        save_bar_chart(
+            data_dict=diff_class_dict,
+            save_path=os.path.join(self.save_dir, "differential_class.jpg"),
+            title="Differential of Selected Classes",
+            xaxis_name="Class",
+            yaxis_name="Differential",
+        )
 
-        # Save the figure with a higher resolution
-        save_path = os.path.join(self.save_dir, "class_differential_one_hot.jpg")
-        plt.savefig(save_path, dpi=300, bbox_inches='tight')
-
-        # Close the plot to prevent it from displaying in this script
-        plt.close('all')
+        # save a bar chart of the diff_dict as save_dir/differential.jpg
+        save_bar_chart(
+            data_dict=diff_dict,
+            save_path=os.path.join(self.save_dir, "differential.jpg"),
+            title="Differential",
+            xaxis_name="Class",
+            yaxis_name="Differential",
+        )
 
         # save a big dataframe of the cell info in save_dir/cells/cells_info.csv
         self.differential.save_cells_info(self.save_dir)
@@ -706,11 +693,33 @@ class PBCounter:
             self._save_results()
             profiling_data["time_taken_to_save_results"] = time.time() - start_time
 
-            # Save profiling data
-            with open(os.path.join(self.save_dir, "runtime_data.yaml"), "w") as file:
-                yaml.dump(
-                    profiling_data, file, default_flow_style=False, sort_keys=False
-                )
+            # Save profiling data as a csv file
+            runtime_dct = {
+                "find_focus_regions": profiling_data.get(
+                    "time_taken_to_find_focus_regions", None
+                ),
+                "find_wbc_candidates": profiling_data.get(
+                    "time_taken_to_find_wbc_candidates", None
+                ),
+                "label_wbc_candidates": profiling_data.get(
+                    "time_taken_to_label_wbc_candidates", None
+                ),
+                "save_results": profiling_data.get("time_taken_to_save_results", None),
+                "total_runtime": sum(
+                    [
+                        profiling_data.get("time_taken_to_find_focus_regions", 0),
+                        profiling_data.get("time_taken_to_find_wbc_candidates", 0),
+                        profiling_data.get("time_taken_to_label_wbc_candidates", 0),
+                        profiling_data.get("time_taken_to_save_results", 0),
+                    ]
+                ),
+            }
+
+            # save runtime_dct as a csv file, first row is the keys and second row is the values
+            runtime_df = pd.DataFrame.from_dict(runtime_dct, orient="index")
+            runtime_df.to_csv(
+                os.path.join(self.save_dir, "runtime_data.csv"), header=False
+            )
 
         except Exception as e:
             if self.continue_on_error:

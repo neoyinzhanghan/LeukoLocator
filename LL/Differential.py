@@ -49,6 +49,7 @@ class Differential:
         self.class_diff_dict = None
         self.diff_dict = None
         self.class_diff_string = None
+        self.full_class_diff_dict = None
 
     def __len__(self):
         """Return the number of cells in the differential."""
@@ -61,11 +62,36 @@ class Differential:
 
         return self.wbc_candidate_df.iloc[key].to_dict()
 
+    def tally_diff_full_class_dict(self, print_results=False):
+        """Return a dictionary of the tally of the differential, no omitted nor removed class."""
+
+        if self.full_class_diff_dict is not None:
+            return self.full_class_diff_dict
+
+        # clone the dataframe
+        df = self.wbc_candidate_df.copy()
+
+        # create a new column which is the label computed as the argmax of the softmax vector
+        # the label should be an element of cellnames
+        df["label"] = df[cellnames].idxmax(axis=1)
+
+        # tally the dataframe, create a dictionary, key is a cellname, and value is the proportion of that cellname in the dataframe
+        tally = df["label"].value_counts(normalize=True).to_dict()
+
+        # print the tally if print_results is True
+        if print_results:
+            for cellname in tally:
+                print(f"{cellnames_dict[cellname]}: {tally[cellname]}")
+
+        self.class_diff_dict = tally
+
+        return tally
+
     def tally_dict(
         self,
         omitted_classes=omitted_classes,
         removed_classes=removed_classes,
-        print_results=True,
+        print_results=False,
     ):
         """Return a dictionary of the tally of the differential.
         First make a clone of the dataframe. Set all omitted classes to -np.inf.
@@ -121,7 +147,7 @@ class Differential:
         self,
         omitted_classes=omitted_classes,
         removed_classes=removed_classes,
-        print_results=True,
+        print_results=False,
     ):
         """First get the tally dictionary, and then convert it to a string as how it would be printed."""
 
@@ -193,3 +219,8 @@ class Differential:
         df["label"] = cellnames_array[cell_name_idx]
 
         df.to_csv(os.path.join(save_dir, "cells", "cells_info.csv"), index=False)
+
+
+def to_count_dict(dct, num_cells):
+    """Multiply the values of the dictionary by num_cells and round to the nearest integer."""
+    return {key: round(dct[key] * num_cells) for key in dct}

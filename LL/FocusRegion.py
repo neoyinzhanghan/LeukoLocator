@@ -35,6 +35,8 @@ class FocusRegion:
     - downsampled_image : the downsampled image of the focus region corresponding to the search view magnification
     - VoL : the variance of the laplacian of the focus region
     - WMP : the white mask proportion of the focus region
+    - otsu_mask : the otsu mask of the focus region
+    - image_mask_duo : the image of the focus region and the otsu mask of the focus region put side by side
     - wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
     - wbc_candidates : a list of wbc_candidates objects
     - YOLO_df : should contain the good bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
@@ -62,7 +64,21 @@ class FocusRegion:
 
         # Calculate the VoL and WMP
         self.VoL = VoL(self.downsampled_image)
-        self.WMP = WMP(self.downsampled_image)
+        self.WMP, self.otsu_mask = WMP(self.downsampled_image)
+
+        # image_mask_duo is one image where the downsampled image and mask are put side by side
+        # note that mask is a black and white binary image while the downsampled image is a color image
+        # so we need to convert the mask to a color image
+        self.image_mask_duo = Image.fromarray(
+            np.hstack(
+                (
+                    np.array(self.downsampled_image),
+                    np.array(self.otsu_mask.convert("RGB")),
+                )
+            )
+        )
+
+        self.resnet_confidence_score = None
 
         self.wbc_candidate_bboxes = None
         self.wbc_candidates = None
@@ -124,13 +140,27 @@ class FocusRegion:
                     )
                 self.image.save(
                     os.path.join(
-                        save_dir, "focus_regions", "high_mag", f"{self.idx}.jpg"
+                        save_dir,
+                        "focus_regions",
+                        "high_mag_unannotated",
+                        f"{self.idx}.jpg",
                     )
                 )
             else:
                 self.get_annotated_image().save(
                     os.path.join(
-                        save_dir, "focus_regions", "high_mag", f"{self.idx}.jpg"
+                        save_dir,
+                        "focus_regions",
+                        "high_mag_annotated",
+                        f"{self.idx}.jpg",
+                    )
+                )
+                self.image.save(
+                    os.path.join(
+                        save_dir,
+                        "focus_regions",
+                        "high_mag_unannotated",
+                        f"{self.idx}.jpg",
                     )
                 )
 
@@ -502,6 +532,8 @@ class FocusRegionsTracker:
 
             self.info_df.loc[i, "confidence_score"] = confidence_score
 
+            focus_region.resnet_confidence_score = confidence_score
+
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""
 
@@ -830,8 +862,8 @@ class FocusRegionsTracker:
 
         return diagnostics
 
-    def _save_yaml(self, save_dir):
-        """Save the class attributes as a YAML file."""
+    def _save_csv(self, save_dir):
+        """Save the class attributes as a CSV file."""
 
         # if save_dir/focus_regions does not exist, then create it
         if not os.path.exists(os.path.join(save_dir, "focus_regions")):
@@ -861,13 +893,14 @@ class FocusRegionsTracker:
 
         diagnostics = self._get_diagnostics(save_dir)
 
-        # add the diagnostics to the yaml_dict
-        yaml_dict.update(diagnostics)
+        dict_to_save = {**yaml_dict, **diagnostics}
 
-        with open(
-            os.path.join(save_dir, "focus_regions", "focus_regions_filtering.yaml"), "w"
-        ) as file:
-            yaml.dump(yaml_dict, file)
+        # save the dictioanry as a CSV file where the top row is the keys and the second row is the values, use Panda
+        df = pd.DataFrame.from_dict(dict_to_save, orient="index")
+        df.to_csv(
+            os.path.join(save_dir, "focus_regions", "focus_regions_filtering.csv"),
+            header=False,
+        )
 
     def save_results(self, save_dir, hoarding=False):
         """Save the csv files and diagnostic plots.
@@ -895,7 +928,7 @@ class FocusRegionsTracker:
         self._save_VoL_WMP_scatter(save_dir, filtered=False)
 
         # save the class attributes as a YAML file
-        self._save_yaml(save_dir)
+        self._save_csv(save_dir)
 
         # if hoarding is True, then save the focus regions at the search view magnification sorted into folders
         if hoarding:
@@ -931,25 +964,90 @@ class FocusRegionsTracker:
                     == 1
                 ):
                     # save the focus region image to the corresponding folder
-                    focus_region.downsampled_image.save(
-                        os.path.join(
-                            save_dir,
-                            "focus_regions",
-                            self.info_df.loc[
-                                self.info_df["focus_region_id"] == i,
-                                "reason_for_rejection",
-                            ].values[0],
-                            f"focus_region_{i}.png",
+                    # the file name depend on the reason for rejection
+                    # if VoL is the reason the file name should be VoL-XXXX_idx.jog where XXXX is the rounded VoL and idx is the focus_region_id
+                    if (
+                        self.info_df.loc[
+                            self.info_df["focus_region_id"] == i,
+                            "reason_for_rejection",
+                        ].values[0]
+                        == "too_low_VoL"
+                    ):
+                        focus_region.image_mask_duo.save(
+                            os.path.join(
+                                save_dir,
+                                "focus_regions",
+                                self.info_df.loc[
+                                    self.info_df["focus_region_id"] == i,
+                                    "reason_for_rejection",
+                                ].values[0],
+                                f"VoL{round(focus_region.VoL)}_{i}.png",
+                            )
                         )
-                    )
+                    elif (
+                        self.info_df.loc[
+                            self.info_df["focus_region_id"] == i,
+                            "reason_for_rejection",
+                        ].values[0]
+                        == "too_high_WMP"
+                    ):
+                        focus_region.image_mask_duo.save(
+                            os.path.join(
+                                save_dir,
+                                "focus_regions",
+                                self.info_df.loc[
+                                    self.info_df["focus_region_id"] == i,
+                                    "reason_for_rejection",
+                                ].values[0],
+                                f"WMP{round(focus_region.WMP * 100)}_{i}.png",
+                            )
+                        )
+
+                    elif (
+                        self.info_df.loc[
+                            self.info_df["focus_region_id"] == i,
+                            "reason_for_rejection",
+                        ].values[0]
+                        == "too_low_WMP"
+                    ):
+                        focus_region.image_mask_duo.save(
+                            os.path.join(
+                                save_dir,
+                                "focus_regions",
+                                self.info_df.loc[
+                                    self.info_df["focus_region_id"] == i,
+                                    "reason_for_rejection",
+                                ].values[0],
+                                f"WMP{round(focus_region.WMP * 100)}_{i}.png",
+                            )
+                        )
+
+                    elif (
+                        self.info_df.loc[
+                            self.info_df["focus_region_id"] == i,
+                            "reason_for_rejection",
+                        ].values[0]
+                        == "resnet_conf_too_low"
+                    ):
+                        focus_region.image_mask_duo.save(
+                            os.path.join(
+                                save_dir,
+                                "focus_regions",
+                                self.info_df.loc[
+                                    self.info_df["focus_region_id"] == i,
+                                    "reason_for_rejection",
+                                ].values[0],
+                                f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png",
+                            )
+                        )
                 else:
-                    # save the focus region image to the passed folder
-                    focus_region.downsampled_image.save(
+                    # save the focus region image to the passed folder, will save the resnet conf score for this one
+                    focus_region.image_mask_duo.save(
                         os.path.join(
                             save_dir,
                             "focus_regions",
                             "passed",
-                            f"focus_region_{i}.png",
+                            f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png",
                         )
                     )
 

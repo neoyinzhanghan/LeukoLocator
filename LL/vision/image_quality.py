@@ -45,4 +45,7 @@ def WMP(image):
     The image must be a PIL RGB image."""
 
     white_mask = otsu_white_mask(image)
-    return np.sum(white_mask) / ((white_mask.shape[0] * white_mask.shape[1]) * 255)
+    return (
+        np.sum(white_mask) / ((white_mask.shape[0] * white_mask.shape[1]) * 255),
+        white_mask,
+    )
