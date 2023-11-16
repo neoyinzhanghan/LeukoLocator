@@ -71,6 +71,7 @@ class FocusRegion:
         # so we need to convert the mask to a color image
 
         print(type(self.otsu_mask))
+        print(self.otsu_mask.shape)
         self.image_mask_duo = Image.fromarray(
             np.hstack(
                 (
