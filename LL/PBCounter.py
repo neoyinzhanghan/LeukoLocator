@@ -212,14 +212,18 @@ class PBCounter:
 
         fr_tracker.filter(save_dir=self.save_dir, hoarding=self.hoarding)
 
-        # add num_sds to the save_dir/focus_regions/focus_regions_filtering.yaml file using yaml
-        fr_filtering_yaml_path = os.path.join(
-            self.save_dir, "focus_regions", "focus_regions_filtering.yaml"
+        # add num_sds to the save_dir/focus_regions/focus_regions_filtering.csv file as a column
+        # first read the csv file as a dataframe
+        focus_regions_filtering_csv_path = os.path.join(
+            self.save_dir, "focus_regions", "focus_regions_filtering.csv"
         )
+        focus_regions_filtering_df = pd.read_csv(focus_regions_filtering_csv_path)
 
-        fr_filtering_yaml = open(fr_filtering_yaml_path, "a")
-        fr_filtering_yaml.write(f"relative_blue_signal_num_sds_thres: {num_sds}\n")
-        fr_filtering_yaml.close()
+        # add the num_sds column
+        focus_regions_filtering_df["num_sds"] = num_sds
+
+        # save the dataframe
+        focus_regions_filtering_df.to_csv(focus_regions_filtering_csv_path, index=False)
 
         self.focus_regions = fr_tracker.get_filtered_focus_regions()
 

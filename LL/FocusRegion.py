@@ -923,7 +923,7 @@ class FocusRegionsTracker:
         # save the VoL and WMP scatter plot
         self._save_VoL_WMP_scatter(save_dir, filtered=False)
 
-        # save the class attributes as a YAML file
+        # save the class attributes as a csv file
         self._save_csv(save_dir)
 
         # if hoarding is True, then save the focus regions at the search view magnification sorted into folders
