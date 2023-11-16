@@ -582,19 +582,23 @@ class PBCounter:
         diff_full_count_csv_path = os.path.join(
             self.save_dir, "differential_full_class_count.csv"
         )
-        diff_full_count_df = pd.DataFrame.from_dict(diff_full_class_count_dict)
+        diff_full_count_df = pd.DataFrame.from_dict(
+            diff_full_class_count_dict, orient="index"
+        )
         diff_full_count_df.to_csv(diff_full_count_csv_path, header=False)
 
         # save the diff_class_count_dict as a csv file called save_dir/differential_class_count.csv, where the first row is the class and the second row is the value
         diff_class_count_csv_path = os.path.join(
             self.save_dir, "differential_class_count.csv"
         )
-        diff_class_count_df = pd.DataFrame.from_dict(diff_class_count_dict)
+        diff_class_count_df = pd.DataFrame.from_dict(
+            diff_class_count_dict, orient="index"
+        )
         diff_class_count_df.to_csv(diff_class_count_csv_path, header=False)
 
         # save the diff_count_dict as a csv file called save_dir/differential_count.csv, where the first row is the class and the second row is the value
         diff_count_csv_path = os.path.join(self.save_dir, "differential_count.csv")
-        diff_count_df = pd.DataFrame.from_dict(diff_count_dict)
+        diff_count_df = pd.DataFrame.from_dict(diff_count_dict, orient="index")
         diff_count_df.to_csv(diff_count_csv_path, header=False)
 
         # save a bar chart of the differential_full_class_count_dict as save_dir/differential_full_class_count.jpg
