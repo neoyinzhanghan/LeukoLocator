@@ -2,7 +2,7 @@
 ### Logistics ###
 #################
 
-dump_dir = "/media/ssd1/neo/LLResults/V1"
+dump_dir = "/media/ssd1/neo/LLResults/V2"
 
 ############################
 ### WSI Image Parameters ###
