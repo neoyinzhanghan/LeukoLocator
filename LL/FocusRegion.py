@@ -73,6 +73,12 @@ class FocusRegion:
         # Assuming self.downsampled_image is a PIL image, convert it to a NumPy array
         downsampled_array = np.array(self.downsampled_image)
 
+        # Convert RGBA to RGB if the alpha channel is not necessary
+        if downsampled_array.shape[2] == 4:
+            downsampled_array = downsampled_array[
+                :, :, :3
+            ]  # This keeps the R, G, B channels and discards the alpha channel
+
         # Convert the binary mask to a 3-channel RGB image
         otsu_rgb = np.stack((self.otsu_mask,) * 3, axis=-1)
 
