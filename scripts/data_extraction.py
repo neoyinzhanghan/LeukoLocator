@@ -17,6 +17,21 @@ PB_annotations_df = pd.read_csv(PB_annotations_path)
 
 num_wsis = len(PB_annotations_df)
 
+# get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
+# because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
+# only the folders
+processed_wsi_fnames_stem = [
+    fname for fname in os.listdir(dump_dir) if os.path.isdir(fname)
+]
+
+if len(processed_wsi_fnames_stem) == 0:
+    to_process = True
+else:
+    to_process = False
+
+    # get the name of the last processed WSI
+    last_processed_wsi_fname_stem = processed_wsi_fnames_stem[-1]
+
 # traverse through the rows of the dataframe of the column 'wsi_fname', which is the filename of the WSI
 for i in tqdm(range(num_wsis), desc="Processing WSIs"):
     try:
@@ -26,15 +41,37 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
         # get the wsi_path
         wsi_path = os.path.join(wsi_dir, wsi_fname)
 
-        pbc = PBCounter(wsi_path, hoarding=True)
+        wsi_fname_stem = Path(wsi_fname).stem
 
-        pbc.find_focus_regions()
+        save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
 
-        pbc.find_wbc_candidates()
+        if to_process:
+            pbc = PBCounter(wsi_path, hoarding=True)
 
-        pbc.label_wbc_candidates()
+            pbc.find_focus_regions()
 
-        pbc.tally_differential()
+            pbc.find_wbc_candidates()
+
+            pbc.label_wbc_candidates()
+
+            pbc.tally_differential()
+
+        else:
+            if wsi_fname_stem == last_processed_wsi_fname_stem:
+                to_process = True
+
+                pbc = PBCounter(wsi_path, hoarding=True)
+
+                pbc.find_focus_regions()
+
+                pbc.find_wbc_candidates()
+
+                pbc.label_wbc_candidates()
+
+                pbc.tally_differential()
+
+            else:
+                continue
 
     except Exception as e:
         save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
