@@ -38,6 +38,10 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
     current_idx += 1
     try:
         if current_idx < num_processed_wsi_fnames_stem:
+            # make sure to update the tqdm progress bar
+            tqdm.write(
+                f"Skipping {PB_annotations_df['wsi_fname'][i]} because it has been processed"
+            )
             continue
         # get the wsi_fname
         wsi_fname = PB_annotations_df["wsi_fname"][i]
