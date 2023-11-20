@@ -26,7 +26,7 @@ processed_wsi_fnames_stem = [
 
 # get the length of the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
-num_processed_wsi_fnames_stem = 20
+num_processed_wsi_fnames_stem = len(processed_wsi_fnames_stem)
 
 current_idx = 0
 
