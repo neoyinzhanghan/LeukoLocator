@@ -53,6 +53,8 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
 
         save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
 
+        print(f"Processing {wsi_fname_stem}...")
+
         pbc = PBCounter(wsi_path, hoarding=True)
 
         pbc.find_focus_regions()
