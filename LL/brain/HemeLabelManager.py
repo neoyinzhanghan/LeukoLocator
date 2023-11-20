@@ -95,7 +95,7 @@ class HemeLabelManager:
             image = wbc_candidate.snap_shot
 
         self.model.eval()
-        # self.model.to("cuda") # commented for debugging #TODO we need GPU implementation
+        # self.model.to("cuda") # commented for debugging # TODO we need GPU implementation
 
         image = image_transforms(image).float().unsqueeze(0)
 
@@ -110,7 +110,7 @@ class HemeLabelManager:
         # # image = np.transpose(image, (2, 0, 1))
         # image = torch.from_numpy(image).float().unsqueeze(0)
 
-        # image = image.to("cuda") # commented for debugging #TODO we need GPU implementation
+        # image = image.to("cuda") # commented for debugging # TODO we need GPU implementation
         output = self.model(image)
         output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
 
