@@ -21,8 +21,11 @@ num_wsis = len(PB_annotations_df)
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
 # only the folders
 processed_wsi_fnames_stem = [
-    fname for fname in os.listdir(dump_dir) if os.path.isdir(fname)
+    fname
+    for fname in os.listdir(dump_dir)
+    if os.path.isdir(os.path.join(dump_dir, fname))
 ]
+
 
 # get the length of the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
