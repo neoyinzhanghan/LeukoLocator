@@ -95,6 +95,7 @@ class HemeLabelManager:
             image = wbc_candidate.snap_shot
 
         self.model.eval()
+        self.model.to("cpu")
         # self.model.to("cuda") # commented for debugging # TODO we need GPU implementation
 
         image = image_transforms(image).float().unsqueeze(0)
