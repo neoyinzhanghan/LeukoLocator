@@ -17,6 +17,8 @@ PB_annotations_df = pd.read_csv(PB_annotations_path)
 
 num_wsis = len(PB_annotations_df)
 
+exception_list = ["H23-894;S17;MSK7 - 2023-06-15 19.18.03"]
+
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
 # only the folders
@@ -43,6 +45,7 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
                 f"Skipping {PB_annotations_df['wsi_fname'][i]} because it has been processed"
             )
             continue
+
         # get the wsi_fname
         wsi_fname = PB_annotations_df["wsi_fname"][i]
 
@@ -50,6 +53,10 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
         wsi_path = os.path.join(wsi_dir, wsi_fname)
 
         wsi_fname_stem = Path(wsi_fname).stem
+
+        if wsi_fname_stem in exception_list:
+            tqdm.write(f"Skipping {wsi_fname_stem} because it is in the exception list")
+            continue
 
         save_dir = os.path.join(dump_dir, Path(wsi_path).stem)
 
