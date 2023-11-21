@@ -20,6 +20,7 @@ num_wsis = len(PB_annotations_df)
 exception_list = [
     "H23-894;S17;MSK7 - 2023-06-15 19.18.03",
     "H22-5721;S12;MSKV - 2023-04-14 16.13.00",
+    "H22-10246;S15;MSK6 - 2023-06-15 12.37.37",
 ]
 
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
