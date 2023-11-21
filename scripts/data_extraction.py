@@ -22,6 +22,7 @@ exception_list = [
     "H22-5721;S12;MSKV - 2023-04-14 16.13.00",
     "H22-10246;S15;MSK6 - 2023-06-15 12.37.37",
     "H22-7118;S11;MSKW - 2023-06-15 17.23.30",
+    "H22-10935;S16;MSKB - 2023-06-15 10.44.43"
 ]
 
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
