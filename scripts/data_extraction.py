@@ -45,6 +45,8 @@ exception_list = [
     "H18-6286;S2;MSK6 - 2023-04-19 16.08.29",
 ]
 
+exception_list.append("H18-9860;S11;MSKG - 2023-05-12 11.22.26")
+
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
 # only the folders
