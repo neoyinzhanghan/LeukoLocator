@@ -17,4 +17,4 @@ def read_and_transpose_as_df(fname):
     if process_sds:
         df["num_sds"] = num_sds
 
-    return df
+    return df # TODO WE NEED TO DEBUG THE EXTRACTION SCRIPT SO THIS CAN BE SIMPLIFIED - no need for transposing and no need for num_sds handling
