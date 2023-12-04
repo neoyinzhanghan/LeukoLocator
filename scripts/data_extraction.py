@@ -214,6 +214,9 @@ for wsi_fname_stem in tqdm(
     print(PB_results_df)
     print(len(PB_results_df))
 
+    import sys
+    sys.exit()
+
     # add the column wsi_fname_stem as the first column
     PB_results_df.insert(0, "wsi_fname_stem", wsi_fname_stem)
 
