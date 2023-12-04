@@ -145,13 +145,9 @@ for wsi_fname_stem in tqdm(
         os.path.join(dump_dir, wsi_fname_stem, "differential.csv")
     )
 
-    print(differential_df)
-    # print the number of rows
-    print(len(differential_df))
-
-    import sys
-
-    sys.exit()
+    # print(differential_df)
+    # # print the number of rows
+    # print(len(differential_df))
 
     # open the differential_full_class.csv
     differential_full_class_df = read_and_transpose_as_df(
@@ -203,11 +199,21 @@ for wsi_fname_stem in tqdm(
     # all these dataframes only have one row
     # create a dictionary mapping the column names to the values
 
+    dct = {
+        **differential_df,
+        **differential_full_class_df,
+        **differential_count_df,
+        **differential_full_class_count_df,
+        **runtime_data_df,
+        **focus_regions_filtering_df,
+        **cell_detection_df,
+    }
 
-print(rows[0])
+    dct["wsi_fname_stem"] = wsi_fname_stem
 
-# concatenate the rows into a dataframe
-PB_results_df = pd.concat(rows)
+    rows.append(dct)
+
+PB_results_df = pd.DataFrame(rows)
 
 # save the dataframe as a csv file in the dump_dir
 PB_results_df.to_csv(os.path.join(dump_dir, "PB_results.csv"), index=False)
