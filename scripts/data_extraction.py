@@ -198,27 +198,26 @@ for wsi_fname_stem in tqdm(
 
     # create a dataframe called PB_results_df by joining the columns of the above dataframes
     # Reset the index of each dataframe
-    differential_df = differential_df.reset_index(drop=True)
-    differential_full_class_df = differential_full_class_df.reset_index(drop=True)
-    differential_count_df = differential_count_df.reset_index(drop=True)
-    differential_full_class_count_df = differential_full_class_count_df.reset_index(drop=True)
-    runtime_data_df = runtime_data_df.reset_index(drop=True)
-    focus_regions_filtering_df = focus_regions_filtering_df.reset_index(drop=True)
-    cell_detection_df = cell_detection_df.reset_index(drop=True)
+    # differential_df = differential_df.reset_index(drop=True)
+    # differential_full_class_df = differential_full_class_df.reset_index(drop=True)
+    # differential_count_df = differential_count_df.reset_index(drop=True)
+    # differential_full_class_count_df = differential_full_class_count_df.reset_index(drop=True)
+    # runtime_data_df = runtime_data_df.reset_index(drop=True)
+    # focus_regions_filtering_df = focus_regions_filtering_df.reset_index(drop=True)
+    # cell_detection_df = cell_detection_df.reset_index(drop=True)
 
     # Concatenate the dataframes
-    PB_results_df = pd.concat(
-        [
-            differential_df,
-            differential_full_class_df,
-            differential_count_df,
-            differential_full_class_count_df,
-            runtime_data_df,
-            focus_regions_filtering_df,
-            cell_detection_df,
-        ],
-        axis=1,
-    )
+    # Reset the index of each dataframe to ensure unique indices
+    dataframes = [differential_df, differential_full_class_df, differential_count_df, 
+                differential_full_class_count_df, runtime_data_df, focus_regions_filtering_df, 
+                cell_detection_df]
+
+    for df in dataframes:
+        df.reset_index(drop=True, inplace=True)
+
+    # Concatenate the dataframes
+    PB_results_df = pd.concat(dataframes, axis=1)
+
 
     # print(PB_results_df)
     # print(len(PB_results_df))
