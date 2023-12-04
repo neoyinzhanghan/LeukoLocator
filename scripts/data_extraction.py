@@ -53,6 +53,10 @@ exception_list.append(
     "H20-2113;S11;MSKU - 2023-04-25 22.14.51"
 )  # this one is problematic during the result pooling
 
+exception_list.append(
+    "cartridges"
+)  # this one is problematic during the result pooling
+
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
 # only the folders
