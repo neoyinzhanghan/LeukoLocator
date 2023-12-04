@@ -143,25 +143,35 @@ for wsi_fname_stem in tqdm(
         os.path.join(dump_dir, wsi_fname_stem, "differential.csv")
     )
 
+    print(differential_df)
+
     # open the differential_full_class.csv
     differential_full_class_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "differential_full_class.csv")
     )
+
+    print(differential_full_class_df)
 
     # open the differential_count.csv
     differential_count_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "differential_count.csv")
     )
 
+    print(differential_count_df)
+
     # open the differential_full_class_count.csv
     differential_full_class_count_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "differential_full_class_count.csv")
     )
 
+    print(differential_full_class_count_df)
+
     # open the runtime_data.csv
     runtime_data_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "runtime_data.csv")
     )
+
+    print(runtime_data_df)
 
     # open the focus_regions/focus_regions_filtering.csv
     focus_regions_filtering_df = read_and_transpose_as_df(
@@ -169,6 +179,8 @@ for wsi_fname_stem in tqdm(
             dump_dir, wsi_fname_stem, "focus_regions", "focus_regions_filtering.csv"
         )
     )
+
+    print(focus_regions_filtering_df)
 
     # open the cells/cell_detection.csv
     cell_detection_df = read_and_transpose_as_df(
@@ -188,6 +200,8 @@ for wsi_fname_stem in tqdm(
         ],
         axis=1,
     )
+
+    print(PB_results_df)
 
     # add the column wsi_fname_stem as the first column
     PB_results_df.insert(0, "wsi_fname_stem", wsi_fname_stem)
