@@ -145,9 +145,13 @@ for wsi_fname_stem in tqdm(
         os.path.join(dump_dir, wsi_fname_stem, "differential.csv")
     )
 
-    # print(differential_df)
-    # # print the number of rows
-    # print(len(differential_df))
+    print(differential_df)
+    # print the number of rows
+    print(len(differential_df))
+
+    import sys
+
+    sys.exit()
 
     # open the differential_full_class.csv
     differential_full_class_df = read_and_transpose_as_df(
@@ -196,40 +200,9 @@ for wsi_fname_stem in tqdm(
         os.path.join(dump_dir, wsi_fname_stem, "cells", "cell_detection.csv")
     )
 
-    # create a dataframe called PB_results_df by joining the columns of the above dataframes
-    # Reset the index of each dataframe
-    # differential_df = differential_df.reset_index(drop=True)
-    # differential_full_class_df = differential_full_class_df.reset_index(drop=True)
-    # differential_count_df = differential_count_df.reset_index(drop=True)
-    # differential_full_class_count_df = differential_full_class_count_df.reset_index(drop=True)
-    # runtime_data_df = runtime_data_df.reset_index(drop=True)
-    # focus_regions_filtering_df = focus_regions_filtering_df.reset_index(drop=True)
-    # cell_detection_df = cell_detection_df.reset_index(drop=True)
+    # all these dataframes only have one row
+    # create a dictionary mapping the column names to the values
 
-    # Concatenate the dataframes
-    # Reset the index of each dataframe to ensure unique indices
-    dataframes = [differential_df, differential_full_class_df, differential_count_df, 
-                differential_full_class_count_df, runtime_data_df, focus_regions_filtering_df, 
-                cell_detection_df]
-
-    for df in dataframes:
-        df.reset_index(drop=True, inplace=True)
-
-    # Concatenate the dataframes
-    PB_results_df = pd.concat(dataframes, axis=1)
-
-
-    # print(PB_results_df)
-    # print(len(PB_results_df))
-
-    # import sys
-    # sys.exit()
-
-    # add the column wsi_fname_stem as the first column
-    PB_results_df.insert(0, "wsi_fname_stem", wsi_fname_stem)
-
-    # append the dataframe to the list rows
-    rows.append(PB_results_df)
 
 print(rows[0])
 
