@@ -259,7 +259,7 @@ def get_a_cell(wsi_result_dir: str):
     # traverse through all the jpg files in the cells/label folder
     for fname in os.listdir(os.path.join(wsi_result_dir, "cells", label)):
         # if the fname contains the focus_region_idx and local_idx, then this is the cell image
-        if focus_region_idx + "-" + local_idx in fname:
+        if focus_region_idx + "-" + local_idx in str(fname):
             # open the image
             cell_image = Image.open(os.path.join(wsi_result_dir, "cells", label, fname))
 
