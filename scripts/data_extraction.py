@@ -108,3 +108,54 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
 
         # rename the save_dir name to "ERROR_" + save_dir
         os.rename(save_dir, os.path.join(dump_dir, "ERROR_" + Path(wsi_path).stem))
+
+# create a list of all the WSIs not in the exception list and did not encounter ERROR
+processed_wsi_fnames_stem_good = [
+    fname
+    for fname in os.listdir(dump_dir)
+    if os.path.isdir(os.path.join(dump_dir, fname))
+    and fname not in exception_list
+    and not fname.startswith("ERROR_")
+]
+
+# create a dataframe called PB_results_df
+# the columns should be combined from the following csv files
+# differential.csv
+# differential_full_class.csv
+# differential_count.csv
+# differential_full_class_count.csv
+# runtime_data.csv
+# focus_regions/focus_regions_filtering.csv
+# cells/cell_detection.csv
+# the first column should be the wsi_fname_stem
+
+for wsi_fname_stem in processed_wsi_fnames_stem_good:
+    # open the differential.csv
+    differential_df = pd.read_csv(
+        os.path.join(dump_dir, wsi_fname_stem, "differential.csv")
+    )
+    # you need to transpose the differential_df currently the column names are rows 
+    differential_df = differential_df.transpose()
+    # the first row is the column names
+    differential_df.columns = differential_df.iloc[0]
+
+    # open the differential_full_class.csv
+    differential_full_class_df = pd.read_csv(
+        os.path.join(dump_dir, wsi_fname_stem, "differential_full_class.csv")
+    )
+    # you need to transpose the differential_full_class_df currently the column names are rows
+    differential_full_class_df = differential_full_class_df.transpose()
+    # the first row is the column names
+    differential_full_class_df.columns = differential_full_class_df.iloc[0]
+
+    # open the differential_count.csv
+    differential_count_df = pd.read_csv(
+        os.path.join(dump_dir, wsi_fname_stem, "differential_count.csv")
+    )
+    # you need to transpose the differential_count_df currently the column names are rows
+    differential_count_df = differential_count_df.transpose()
+    # the first row is the column names
+    differential_count_df.columns = differential_count_df.iloc[0]
+
+    # open the differential_full_class_count.csv
+    
