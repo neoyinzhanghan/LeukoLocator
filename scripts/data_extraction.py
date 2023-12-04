@@ -45,7 +45,7 @@ exception_list = [
     "H18-6286;S2;MSK6 - 2023-04-19 16.08.29",
 ]
 
-exception_list.append("H18-9860;S11;MSKG - 2023-05-12 11.22.26")
+exception_list.append("H18-9860;S11;MSKG - 2023-05-12 11.22.26") # this one is not actually problematic
 
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
@@ -194,6 +194,8 @@ for wsi_fname_stem in tqdm(
 
     # append the dataframe to the list rows
     rows.append(PB_results_df)
+
+print(rows[0])
 
 # concatenate the rows into a dataframe
 PB_results_df = pd.concat(rows)
