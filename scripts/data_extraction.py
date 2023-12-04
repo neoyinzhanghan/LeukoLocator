@@ -1,9 +1,12 @@
-from LL.resources.assumptions import *
-from LL.PBCounter import PBCounter
-from pathlib import Path
-from tqdm import tqdm
 import pandas as pd
 import os
+
+from LL.resources.assumptions import *
+from LL.PBCounter import PBCounter
+from LL.brain.TextParser import read_and_transpose_as_df
+from pathlib import Path
+from tqdm import tqdm
+from PIL import Image
 
 # example_slide_path = "/media/ssd1/neo/PBSlides/LL_test_example.ndpi"
 # pbc = PBCounter(example_slide_path, hoarding=True)
@@ -129,33 +132,144 @@ processed_wsi_fnames_stem_good = [
 # cells/cell_detection.csv
 # the first column should be the wsi_fname_stem
 
-for wsi_fname_stem in processed_wsi_fnames_stem_good:
+rows = []
+for wsi_fname_stem in tqdm(
+    processed_wsi_fnames_stem_good, desc="Creating pooled results dataframe: "
+):
     # open the differential.csv
-    differential_df = pd.read_csv(
+    differential_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "differential.csv")
     )
-    # you need to transpose the differential_df currently the column names are rows 
-    differential_df = differential_df.transpose()
-    # the first row is the column names
-    differential_df.columns = differential_df.iloc[0]
 
     # open the differential_full_class.csv
-    differential_full_class_df = pd.read_csv(
+    differential_full_class_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "differential_full_class.csv")
     )
-    # you need to transpose the differential_full_class_df currently the column names are rows
-    differential_full_class_df = differential_full_class_df.transpose()
-    # the first row is the column names
-    differential_full_class_df.columns = differential_full_class_df.iloc[0]
 
     # open the differential_count.csv
-    differential_count_df = pd.read_csv(
+    differential_count_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "differential_count.csv")
     )
-    # you need to transpose the differential_count_df currently the column names are rows
-    differential_count_df = differential_count_df.transpose()
-    # the first row is the column names
-    differential_count_df.columns = differential_count_df.iloc[0]
 
     # open the differential_full_class_count.csv
-    
+    differential_full_class_count_df = read_and_transpose_as_df(
+        os.path.join(dump_dir, wsi_fname_stem, "differential_full_class_count.csv")
+    )
+
+    # open the runtime_data.csv
+    runtime_data_df = read_and_transpose_as_df(
+        os.path.join(dump_dir, wsi_fname_stem, "runtime_data.csv")
+    )
+
+    # open the focus_regions/focus_regions_filtering.csv
+    focus_regions_filtering_df = read_and_transpose_as_df(
+        os.path.join(
+            dump_dir, wsi_fname_stem, "focus_regions", "focus_regions_filtering.csv"
+        )
+    )
+
+    # open the cells/cell_detection.csv
+    cell_detection_df = read_and_transpose_as_df(
+        os.path.join(dump_dir, wsi_fname_stem, "cells", "cell_detection.csv")
+    )
+
+    # create a dataframe called PB_results_df by concatenating columns-wise the above dataframes
+    PB_results_df = pd.concat(
+        [
+            differential_df,
+            differential_full_class_df,
+            differential_count_df,
+            differential_full_class_count_df,
+            runtime_data_df,
+            focus_regions_filtering_df,
+            cell_detection_df,
+        ],
+        axis=1,
+    )
+
+    # add the column wsi_fname_stem as the first column
+    PB_results_df.insert(0, "wsi_fname_stem", wsi_fname_stem)
+
+    # append the dataframe to the list rows
+    rows.append(PB_results_df)
+
+# concatenate the rows into a dataframe
+PB_results_df = pd.concat(rows)
+
+# save the dataframe as a csv file in the dump_dir
+PB_results_df.to_csv(os.path.join(dump_dir, "PB_results.csv"), index=False)
+
+# Now we are going to create a folder called "cartridges" in the dump_dir
+os.makedirs(os.path.join(dump_dir, "cartridges"), exist_ok=True)
+
+
+def get_a_cell(wsi_result_dir: str):
+    """Look at the cells/cells_info.csv file. Randomly select a cell. Return the corresponding row of the dataframe.
+    Also return the cell image which is contained in the cells/label folder where label is given by the label column of the dataframe.
+    Use the part of the cell name after _ delimitor, that part of the name should be exactly 'region_id-cell_id' where region_id is the region id and cell_id is the cell id.
+    They are saved as the columns region_id and cell_id in the dataframe. Also return the cell name stem.
+    """
+
+    # open the cells/cells_info.csv file
+    cells_info_df = pd.read_csv(os.path.join(wsi_result_dir, "cells", "cells_info.csv"))
+
+    # randomly select a cell
+    cell = cells_info_df.sample(n=1)
+
+    # get the label of the cell
+    label = cell["label"].values[0]
+
+    # get the region_id of the cell
+    region_id = cell["region_id"].values[0]
+
+    # get the cell_id of the cell
+    cell_id = cell["cell_id"].values[0]
+
+    # traverse through all the jpg files in the cells/label folder
+    for fname in os.listdir(os.path.join(wsi_result_dir, "cells", label)):
+        # if the fname contains the region_id and cell_id, then this is the cell image
+        if region_id + "-" + cell_id in fname:
+            # open the image
+            cell_image = Image.open(os.path.join(wsi_result_dir, "cells", label, fname))
+
+            # get the cell_name which is the stem of the fname wihout the extension
+            cell_name = Path(fname).stem
+
+            # get the cell_label which is the label
+            cell_label = label
+
+            # return the cell and the cell_image
+            return cell, cell_image, cell_name, cell_label
+
+    raise Exception("Cell image not found")
+
+
+num_cartridges = 10
+
+for i in tqdm(range(num_cartridges), desc="Creating cartridges"):
+    # create a folder called cartridge_i
+    cartridge_dir = os.path.join(dump_dir, "cartridges", f"cartridge_{i}")
+
+    # if the folder exists, skip
+    if os.path.exists(cartridge_dir):
+        continue
+
+    # create the folder
+    os.makedirs(cartridge_dir)
+
+    for wsi_fname_stem in tqdm(
+        processed_wsi_fnames_stem_good, desc="Creating cartridge: "
+    ):
+        # create a folder called wsi_fname_stem
+        wsi_result_dir = os.path.join(dump_dir, wsi_fname_stem)
+
+        # get a cell
+        cell, cell_image, cell_name, cell_label = get_a_cell(wsi_result_dir)
+
+        # save the cell image in the cartridge_dir under the corresponding label
+        os.makedirs(os.path.join(cartridge_dir, cell_label), exist_ok=True)
+        cell_image.save(
+            os.path.join(
+                cartridge_dir, cell_label, cell_name + "_" + wsi_fname_stem + ".jpg"
+            )
+        )
