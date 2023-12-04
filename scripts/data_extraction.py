@@ -233,8 +233,8 @@ os.makedirs(os.path.join(dump_dir, "cartridges"), exist_ok=True)
 def get_a_cell(wsi_result_dir: str):
     """Look at the cells/cells_info.csv file. Randomly select a cell. Return the corresponding row of the dataframe.
     Also return the cell image which is contained in the cells/label folder where label is given by the label column of the dataframe.
-    Use the part of the cell name after _ delimitor, that part of the name should be exactly 'region_id-cell_id' where region_id is the region id and cell_id is the cell id.
-    They are saved as the columns region_id and cell_id in the dataframe. Also return the cell name stem.
+    Use the part of the cell name after _ delimitor, that part of the name should be exactly 'focus_region_idx-local_idx' where focus_region_idx is the region id and local_idx is the cell id.
+    They are saved as the columns focus_region_idx and local_idx in the dataframe. Also return the cell name stem.
     """
 
     # open the cells/cells_info.csv file
@@ -246,16 +246,16 @@ def get_a_cell(wsi_result_dir: str):
     # get the label of the cell
     label = cell["label"].values[0]
 
-    # get the region_id of the cell
-    region_id = cell["region_id"].values[0]
+    # get the focus_region_idx of the cell
+    focus_region_idx = cell["focus_region_idx"].values[0]
 
     # get the cell_id of the cell
-    cell_id = cell["cell_id"].values[0]
+    local_idx = cell["local_idx"].values[0]
 
     # traverse through all the jpg files in the cells/label folder
     for fname in os.listdir(os.path.join(wsi_result_dir, "cells", label)):
-        # if the fname contains the region_id and cell_id, then this is the cell image
-        if region_id + "-" + cell_id in fname:
+        # if the fname contains the focus_region_idx and local_idx, then this is the cell image
+        if focus_region_idx + "-" + local_idx in fname:
             # open the image
             cell_image = Image.open(os.path.join(wsi_result_dir, "cells", label, fname))
 
