@@ -45,7 +45,9 @@ exception_list = [
     "H18-6286;S2;MSK6 - 2023-04-19 16.08.29",
 ]
 
-exception_list.append("H18-9860;S11;MSKG - 2023-05-12 11.22.26") # this one is not actually problematic
+exception_list.append(
+    "H18-9860;S11;MSKG - 2023-05-12 11.22.26"
+)  # this one is not actually problematic
 
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
@@ -144,6 +146,8 @@ for wsi_fname_stem in tqdm(
     )
 
     print(differential_df)
+    # print the number of rows
+    print(len(differential_df))
 
     # open the differential_full_class.csv
     differential_full_class_df = read_and_transpose_as_df(
@@ -151,6 +155,7 @@ for wsi_fname_stem in tqdm(
     )
 
     print(differential_full_class_df)
+    print(len(differential_full_class_df))
 
     # open the differential_count.csv
     differential_count_df = read_and_transpose_as_df(
@@ -158,6 +163,7 @@ for wsi_fname_stem in tqdm(
     )
 
     print(differential_count_df)
+    print(len(differential_count_df))
 
     # open the differential_full_class_count.csv
     differential_full_class_count_df = read_and_transpose_as_df(
@@ -165,6 +171,7 @@ for wsi_fname_stem in tqdm(
     )
 
     print(differential_full_class_count_df)
+    print(len(differential_full_class_count_df))
 
     # open the runtime_data.csv
     runtime_data_df = read_and_transpose_as_df(
@@ -172,6 +179,7 @@ for wsi_fname_stem in tqdm(
     )
 
     print(runtime_data_df)
+    print(len(runtime_data_df))
 
     # open the focus_regions/focus_regions_filtering.csv
     focus_regions_filtering_df = read_and_transpose_as_df(
@@ -181,13 +189,15 @@ for wsi_fname_stem in tqdm(
     )
 
     print(focus_regions_filtering_df)
+    print(len(focus_regions_filtering_df))
 
     # open the cells/cell_detection.csv
     cell_detection_df = read_and_transpose_as_df(
         os.path.join(dump_dir, wsi_fname_stem, "cells", "cell_detection.csv")
     )
 
-    # create a dataframe called PB_results_df by concatenating columns-wise the above dataframes
+    # create a dataframe called PB_results_df by joining the columns of the above dataframes
+    # they should occupy the same row
     PB_results_df = pd.concat(
         [
             differential_df,
@@ -202,6 +212,7 @@ for wsi_fname_stem in tqdm(
     )
 
     print(PB_results_df)
+    print(len(PB_results_df))
 
     # add the column wsi_fname_stem as the first column
     PB_results_df.insert(0, "wsi_fname_stem", wsi_fname_stem)
