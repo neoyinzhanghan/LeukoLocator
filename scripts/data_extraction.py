@@ -305,12 +305,13 @@ def get_diagnosis_str(
     diagnosis_df = pd.read_csv(diagnosis_file_path)
 
     # get the row of the dataframe where the column 'wsi_fname_stem' is equal to wsi_fname_stem if not found return "NA" as a string
-    if (
-        get_accession_number(wsi_fname_stem)
-        not in diagnosis_df["Accession Number"].values
-    ):
+    if get_accession_number(wsi_fname_stem) not in diagnosis_df[
+        "Accession Number"
+    ].values.astype(str):
         print("Unable to find diagnosis for " + wsi_fname_stem)
-        print("Accession Number: " + get_accession_number(wsi_fname_stem) + " not found")
+        print(
+            "Accession Number: " + get_accession_number(wsi_fname_stem) + " not found"
+        )
         return "NA"
     else:
         row = diagnosis_df[
