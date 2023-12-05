@@ -310,6 +310,7 @@ def get_diagnosis_str(
         not in diagnosis_df["Accession Number"].values
     ):
         print("Unable to find diagnosis for " + wsi_fname_stem)
+        print("Accession Number: " + get_accession_number(wsi_fname_stem) + "not found")
         return "NA"
     else:
         row = diagnosis_df[
