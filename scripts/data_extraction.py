@@ -53,9 +53,7 @@ exception_list.append(
     "H20-2113;S11;MSKU - 2023-04-25 22.14.51"
 )  # this one is problematic during the result pooling
 
-exception_list.append(
-    "cartridges"
-)  # this one is problematic during the result pooling
+exception_list.append("cartridges")  # this one is problematic during the result pooling
 
 # get the list of folder names in the dump_dir, these are the names of the WSIs that have been processed, the last one may or may not have been fully processed
 # because the script may have been interrupted at the last one, so we need to reprocess the last one just in case
@@ -266,13 +264,66 @@ def get_a_cell(wsi_result_dir: str):
             # get the cell_name which is the stem of the fname wihout the extension
             cell_name = Path(fname).stem
 
+            # four_classes is the string before the _ delimitor in cell_name
+            four_classes = cell_name.split("_")[0]
+
             # get the cell_label which is the label
             cell_label = label
 
             # return the cell and the cell_image
-            return cell, cell_image, cell_name, cell_label
+            return (
+                cell,
+                cell_image,
+                four_classes,
+                cell_label,
+                focus_region_idx,
+                local_idx,
+            )
 
     raise Exception("Cell image not found")
+
+
+def get_accession_number(wsifname: str):
+    """Get the accession number from the wsi_fname_stem."""
+
+    # the patient id is the first string before the first ; delimitor
+    accession_number = wsifname.split(";")[0]
+
+    return accession_number
+
+
+def get_diagnosis_str(
+    wsi_fname_stem: str,
+    diagnosis_file_path: str = "/media/hdd3/neo/resultsv4/diagnoses.csv",
+):
+    """Get the diagnosis string from the diagnosis_file_path given the wsi_fname_stem."""
+
+    # open the diagnosis_file_path
+    diagnosis_df = pd.read_csv(diagnosis_file_path)
+
+    # get the row of the dataframe where the column 'wsi_fname_stem' is equal to wsi_fname_stem if not found return "NA" as a string
+    if (
+        get_accession_number(wsi_fname_stem)
+        not in diagnosis_df["Accession Number"].values
+    ):
+        print("Unable to find diagnosis for " + wsi_fname_stem)
+        return "NA"
+    else:
+        row = diagnosis_df[
+            diagnosis_df["Accession Number"] == get_accession_number(wsi_fname_stem)
+        ]
+
+    # get the General Dx column and the Sub Dx columns
+    general_dx = str(row["General Dx"].values[0])
+    sub_dx = str(row["Sub Dx"].values[0])
+
+    # replace spaces in the general_dx and sub_dx with +
+    general_dx = general_dx.replace(" ", "+")
+    sub_dx = sub_dx.replace(" ", "+")
+
+    diagnosis_str = general_dx + "-" + sub_dx
+
+    return diagnosis_str
 
 
 num_cartridges = 10
@@ -294,13 +345,32 @@ for i in tqdm(range(num_cartridges), desc="Creating cartridges"):
         # create a folder called wsi_fname_stem
         wsi_result_dir = os.path.join(dump_dir, wsi_fname_stem)
 
+        diagnosis_str = get_diagnosis_str(wsi_fname_stem)
+
         # get a cell
-        cell, cell_image, cell_name, cell_label = get_a_cell(wsi_result_dir)
+        (
+            cell,
+            cell_image,
+            four_classes,
+            cell_label,
+            focus_region_idx,
+            local_idx,
+        ) = get_a_cell(wsi_result_dir)
 
         # save the cell image in the cartridge_dir under the corresponding label
         os.makedirs(os.path.join(cartridge_dir, cell_label), exist_ok=True)
         cell_image.save(
             os.path.join(
-                cartridge_dir, cell_label, cell_name + "_" + wsi_fname_stem + ".jpg"
+                cartridge_dir,
+                cell_label,
+                four_classes
+                + "_"
+                + diagnosis_str
+                + "_"
+                + str(focus_region_idx)
+                + "-"
+                + str(local_idx)
+                + wsi_fname_stem
+                + ".jpg",
             )
         )
