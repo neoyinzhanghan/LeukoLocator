@@ -321,6 +321,10 @@ def get_diagnosis_str(
     general_dx = general_dx.replace(" ", "+")
     sub_dx = sub_dx.replace(" ", "+")
 
+    # replace / in the general_dx and sub_dx with +
+    general_dx = general_dx.replace("/", "+")
+    sub_dx = sub_dx.replace("/", "+")
+
     diagnosis_str = general_dx + "-" + sub_dx
 
     return diagnosis_str
