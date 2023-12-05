@@ -304,6 +304,11 @@ def get_diagnosis_str(
     # open the diagnosis_file_path
     diagnosis_df = pd.read_csv(diagnosis_file_path)
 
+    # apply stripping to all the entries in the column 'Accession Number'
+    diagnosis_df["Accession Number"] = diagnosis_df["Accession Number"].apply(
+        lambda x: x.strip()
+    )
+
     # get the row of the dataframe where the column 'wsi_fname_stem' is equal to wsi_fname_stem if not found return "NA" as a string
     if get_accession_number(wsi_fname_stem) not in diagnosis_df[
         "Accession Number"
