@@ -289,6 +289,9 @@ def get_accession_number(wsifname: str):
     # the patient id is the first string before the first ; delimitor
     accession_number = wsifname.split(";")[0]
 
+    # strip the leading and trailing spaces
+    accession_number = accession_number.strip()
+
     return accession_number
 
 
