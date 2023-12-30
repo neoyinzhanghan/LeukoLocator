@@ -103,6 +103,56 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
     plt.close()
 
 
+# def save_bar_chart(
+#     data_dict,
+#     save_path,
+#     title,
+#     xaxis_name,
+#     yaxis_name,
+#     color="green",
+#     edge_color="white",
+# ):
+#     """
+#     Plots a bar chart with a specific theme from a given dictionary.
+#     The keys of the dictionary are used as labels, and the values are used as the heights of the bars.
+
+#     Args:
+#     data_dict (dict): A dictionary where the keys are strings and the values are numbers (int or float).
+#     color (str): Color of the bars.
+#     edge_color (str): Color of the edges of the bars.
+#     """
+
+#     # Extracting keys and values from the dictionary
+#     keys = list(data_dict.keys())
+#     values = list(data_dict.values())
+
+#     # Creating the bar chart with a specific theme
+#     plt.figure(figsize=(12, 7))
+#     bars = plt.bar(keys, values, color=color, edgecolor=edge_color)
+
+#     # Setting the background color
+#     plt.gca().set_facecolor("black")
+#     plt.gcf().set_facecolor("black")
+
+#     # Changing the color of the axes and axes labels
+#     plt.gca().spines["bottom"].set_color(edge_color)
+#     plt.gca().spines["left"].set_color(edge_color)
+#     plt.tick_params(axis="x", colors=edge_color)
+#     plt.tick_params(axis="y", colors=edge_color)
+
+#     # Setting the title and labels with a specific font color
+#     plt.title(title, color=edge_color)
+#     plt.xlabel(xaxis_name, color=edge_color)
+#     plt.ylabel(yaxis_name, color=edge_color)
+
+#     # save the plot to save_path
+#     plt.savefig(save_path, transparent=True, facecolor="black")
+
+#     # close the plot to free memory
+#     plt.close()
+
+# import matplotlib.pyplot as plt
+
 def save_bar_chart(
     data_dict,
     save_path,
@@ -139,6 +189,15 @@ def save_bar_chart(
     plt.gca().spines["left"].set_color(edge_color)
     plt.tick_params(axis="x", colors=edge_color)
     plt.tick_params(axis="y", colors=edge_color)
+
+    # Rotating the bar text labels to 45 degrees
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2), 
+                 horizontalalignment='center', 
+                 verticalalignment='bottom', 
+                 color=edge_color, 
+                 rotation=45)
 
     # Setting the title and labels with a specific font color
     plt.title(title, color=edge_color)

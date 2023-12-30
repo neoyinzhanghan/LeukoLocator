@@ -1,6 +1,7 @@
 from LL.resources.assumptions import exception_list, dump_dir
 from LL.PBCounter import PBCounter
 import os
+import sys
 
 os.makedirs(dump_dir, exist_ok=True)
 
@@ -13,3 +14,5 @@ for slide_name_stem in exception_list:
 
     pbc = PBCounter(slide_path, hoarding=False)
     pbc.tally_differential()
+
+    sys.exit()
