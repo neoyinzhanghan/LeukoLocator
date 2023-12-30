@@ -55,7 +55,7 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
     print(df[column_name].isnull().any())
     print(df[column_name].dtype)
 
-    df['confidence_score'] = df['confidence_score'].round(3)
+    df[column_name] = df[column_name].round(3)
 
     # Create the histogram with KDE plot, changing 'stat' from 'density' to 'count' for mass
     sns.histplot(
