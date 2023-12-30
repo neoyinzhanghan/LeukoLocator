@@ -212,6 +212,8 @@ class PBCounter:
 
         fr_tracker.filter(save_dir=self.save_dir, hoarding=self.hoarding)
 
+        print('Finished filtering...')
+
         # add num_sds to the save_dir/focus_regions/focus_regions_filtering.csv file as a column
         # first read the csv file as a dataframe
         focus_regions_filtering_csv_path = os.path.join(
@@ -232,6 +234,9 @@ class PBCounter:
 
         ray.shutdown()
         ray.init(num_cpus=num_cpus)
+
+
+        print('Started WSICropping process...')
 
         if self.verbose:
             print("Initializing WSICropManager")
