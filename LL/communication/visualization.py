@@ -172,7 +172,7 @@ def save_bar_chart(
     """
 
     # Extracting keys and values from the dictionary
-    keys = [label.replace('immature granulocyte', 'Imm. Gran.') for label in data_dict.keys()]
+    keys = [label.replace('Immature Granulocyte', 'Imm. Gran.') for label in data_dict.keys()]
     values = list(data_dict.values())
 
     # Creating the bar chart with a specific theme
