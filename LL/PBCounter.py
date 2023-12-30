@@ -526,7 +526,7 @@ class PBCounter:
             self.profiling_data["high_mag_focus_regions_hoarding_time"] = (
                 time.time() - start_time
             )
-        
+
         else:
             self.profiling_data["high_mag_focus_regions_hoarding_time"] = 0
 
@@ -712,7 +712,7 @@ class PBCounter:
                 wbc_candidate._save_cell_image(self.save_dir)
 
             self.profiling_data["cells_hoarding_time"] = time.time() - start_time
-        
+
         else:
             self.profiling_data["cells_hoarding_time"] = 0
 
