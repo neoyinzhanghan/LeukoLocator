@@ -542,6 +542,8 @@ class FocusRegionsTracker:
 
             focus_region.resnet_confidence_score = confidence_score
 
+        print('Finished getting ResNet confidence score.')
+
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""
 
