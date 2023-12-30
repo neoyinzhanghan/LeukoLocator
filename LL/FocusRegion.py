@@ -1065,8 +1065,12 @@ class FocusRegionsTracker:
             f"Number of unrejected focus regions before resnet confidence score filtering: {len(self.info_df[self.info_df['rejected'] == 0])}"
         )
 
+        print("Getting resnet confidence score")
         self._get_resnet_confidence_score()
+        print("Done getting resnet confidence score")
+        print("Filtering using resnet confidence score")
         self._resnet_conf_filtering()
+        print("Done filtering using resnet confidence score")
 
         self.num_filtered = len(self.info_df[self.info_df["rejected"] == 0])
 
