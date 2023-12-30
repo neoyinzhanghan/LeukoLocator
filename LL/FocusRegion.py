@@ -4,6 +4,7 @@
 
 # Outside imports ##################################################################################
 import os
+import time
 import numpy as np
 import pandas as pd
 import yaml
@@ -932,6 +933,7 @@ class FocusRegionsTracker:
 
         # if hoarding is True, then save the focus regions at the search view magnification sorted into folders
         if hoarding:
+            start_time = time.time()
             # create some folders -- too_low_VoL, too_high_WMP, too_low_WMP, lm_ouliers
             os.makedirs(
                 os.path.join(save_dir, "focus_regions", "passed"), exist_ok=True
@@ -1051,9 +1053,18 @@ class FocusRegionsTracker:
                         )
                     )
 
+            hoarding_time = time.time() - start_time
+
+        else:
+            hoarding_time = 0
+
+        return hoarding_time
+
     def filter(self, save_dir, hoarding=False):
         """Run through the filtering pipeline, and if hoarding is True, then save the focus regions
         at the search view magnification sorted into folders."""
+
+        start_time = time.time()
 
         self._filter_min_VoL()
         self._filter_max_WMP()
@@ -1088,7 +1099,11 @@ class FocusRegionsTracker:
         #     self.info_df["lm_outier_removal_passed"] == 0, "reason_for_rejection"
         # ] = "lm_ouliers"
 
-        self.save_results(save_dir=save_dir, hoarding=hoarding)
+        hoarding_time = self.save_results(save_dir=save_dir, hoarding=hoarding)
+
+        filtering_time = time.time() - start_time - hoarding_time
+
+        return filtering_time, hoarding_time
 
     def get_filtered_focus_regions(self):
         """Return a list of filtered focus regions."""

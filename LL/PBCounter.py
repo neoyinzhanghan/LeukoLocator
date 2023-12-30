@@ -42,7 +42,8 @@ class PBCounter:
     - wbc_candidates : a list of WBCCandidate class objects that represent candidates for being WBCs
     - focus_regions : a list of FocusRegion class objects representing the focus regions of the search view
     - differential : a Differential class object representing the differential of the WSI
-    - save_dir : the directory to save the diagnostic logs, dataframes (and images if hoarding is True)
+    - save_dir : the directory to save the diagnostic logs, dataframes (and images if hoarding is True
+    - profiling_data : a dictionary containing the profiling data of the PBCounter object
 
     - verbose : whether to print out the progress of the PBCounter object
     - hoarding : whether to hoard regions and cell images processed into permanent storage
@@ -57,6 +58,10 @@ class PBCounter:
         continue_on_error: bool = False,
     ):
         """Initialize a PBCounter object."""
+
+        self.profiling_data = {}
+
+        start_time = time.time()
 
         self.verbose = verbose
         self.hoarding = hoarding
@@ -135,8 +140,12 @@ class PBCounter:
         self.wbc_candidates = None
         self.differential = None
 
+        self.profiling_data["init_time"] = time.time() - start_time
+
     def find_focus_regions(self):
         """Find the focus regions of the WSI."""
+
+        start_time = time.time()
 
         os.makedirs(os.path.join(self.save_dir, "focus_regions"), exist_ok=True)
 
@@ -210,9 +219,15 @@ class PBCounter:
             search_view=self.search_view, focus_regions_coords=focus_regions_coords
         )
 
-        fr_tracker.filter(save_dir=self.save_dir, hoarding=self.hoarding)
+        self.profiling_data["find_focus_regions_time"] = time.time() - start_time
 
-        print('Finished filtering...')
+        start_time = time.time()
+
+        _, hoarding_time = fr_tracker.filter(
+            save_dir=self.save_dir, hoarding=self.hoarding
+        )
+
+        self.profiling_data["low_mag_focus_regions_filtering_time"] = hoarding_time
 
         # add num_sds to the save_dir/focus_regions/focus_regions_filtering.csv file as a column
         # first read the csv file as a dataframe
@@ -229,14 +244,17 @@ class PBCounter:
 
         self.focus_regions = fr_tracker.get_filtered_focus_regions()
 
+        self.profiling_data["filter_focus_regions_time"] = (
+            time.time() - start_time - hoarding_time
+        )
+
         if self.verbose:
             print(f"Initializing {num_croppers} Ray workers")
 
         ray.shutdown()
         ray.init(num_cpus=num_cpus)
 
-
-        print('Started WSICropping process...')
+        start_time = time.time()
 
         if self.verbose:
             print("Initializing WSICropManager")
@@ -280,8 +298,14 @@ class PBCounter:
         print(f"{len(all_results)} focus regions successfully processed.")
         self.focus_regions = all_results
 
+        self.profiling_data["get_focus_region_full_images_time"] = (
+            time.time() - start_time
+        )
+
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""
+
+        start_time = time.time()
 
         # make the directory save_dir/focus_regions/YOLO_df
         os.makedirs(
@@ -478,7 +502,10 @@ class PBCounter:
         cell_detection_df = pd.DataFrame.from_dict(cell_detection_dict, orient="index")
         cell_detection_df.to_csv(cell_detection_csv_path, header=False)
 
+        self.profiling_data["find_wbc_candidates_time"] = time.time() - start_time
+
         if self.hoarding:
+            start_time = time.time()
             os.makedirs(
                 os.path.join(self.save_dir, "focus_regions", "high_mag_annotated"),
                 exist_ok=True,
@@ -496,8 +523,14 @@ class PBCounter:
             for candidate in tqdm(VoL_rejected, desc="Saving VoL rejected cell images"):
                 candidate._save_YOLO_bbox_image(self.save_dir)
 
+            self.profiling_data["high_mag_focus_regions_hoarding_time"] = (
+                time.time() - start_time
+            )
+
     def label_wbc_candidates(self):
         """Update the labels of the wbc_candidates of the PBCounter object."""
+
+        start_time = time.time()
 
         if self.wbc_candidates == [] or self.wbc_candidates is None:
             raise NoCellFoundError(
@@ -550,8 +583,13 @@ class PBCounter:
         self.wbc_candidates = all_results
         self.differential = Differential(self.wbc_candidates)
 
+        self.profiling_data["label_wbc_candidates_time"] = time.time() - start_time
+
     def _save_results(self):
         """Save the results of the PBCounter object."""
+
+        start_time = time.time()
+
         diff_full_class_dict = self.differential.tally_diff_full_class_dict()
         diff_class_dict = self.differential.tally_dict()
         diff_dict = self.differential.compute_PB_differential()
@@ -662,14 +700,18 @@ class PBCounter:
         # save a big dataframe of the cell info in save_dir/cells/cells_info.csv
         self.differential.save_cells_info(self.save_dir)
 
+        self.profiling_data["save_results_time"] = time.time() - start_time
+
         # if hoarding, the save all cells images in save_dir/cells/class for each of the classes under the file name of the cell
         if self.hoarding:
+            start_time = time.time()
             for wbc_candidate in tqdm(self.wbc_candidates, desc="Saving cell images"):
                 wbc_candidate._save_cell_image(self.save_dir)
 
+            self.profiling_data["cells_hoarding_time"] = time.time() - start_time
+
     def tally_differential(self):
         """Run all steps with time profiling and save the profiling data to YAML."""
-        profiling_data = {}
         try:
             save_selected_variables_to_yaml(
                 selected_variable_names,
@@ -677,54 +719,30 @@ class PBCounter:
             )
 
             if self.focus_regions is None:
-                start_time = time.time()
                 self.find_focus_regions()
-                profiling_data["time_taken_to_find_focus_regions"] = (
-                    time.time() - start_time
-                )
 
             if self.wbc_candidates is None:
-                start_time = time.time()
                 self.find_wbc_candidates()
-                profiling_data["time_taken_to_find_wbc_candidates"] = (
-                    time.time() - start_time
-                )
 
             if self.differential is None:
-                start_time = time.time()
                 self.label_wbc_candidates()
-                profiling_data["time_taken_to_label_wbc_candidates"] = (
-                    time.time() - start_time
-                )
 
-            start_time = time.time()
             self._save_results()
-            profiling_data["time_taken_to_save_results"] = time.time() - start_time
 
             # Save profiling data as a csv file
-            runtime_dct = {
-                "find_focus_regions": profiling_data.get(
-                    "time_taken_to_find_focus_regions", None
-                ),
-                "find_wbc_candidates": profiling_data.get(
-                    "time_taken_to_find_wbc_candidates", None
-                ),
-                "label_wbc_candidates": profiling_data.get(
-                    "time_taken_to_label_wbc_candidates", None
-                ),
-                "save_results": profiling_data.get("time_taken_to_save_results", None),
-                "total_runtime": sum(
-                    [
-                        profiling_data.get("time_taken_to_find_focus_regions", 0),
-                        profiling_data.get("time_taken_to_find_wbc_candidates", 0),
-                        profiling_data.get("time_taken_to_label_wbc_candidates", 0),
-                        profiling_data.get("time_taken_to_save_results", 0),
-                    ]
-                ),
-            }
+            self.profiling_data["total_time"] = sum(self.profiling_data.values())
+            self.profiling_data["hoarding_time"] = (
+                self.profiling_data["high_mag_focus_regions_hoarding_time"]
+                + self.profiling_data["low_mag_focus_regions_hoarding_time"]
+                + self.profiling_data["cells_hoarding_time"]
+            )
+
+            self.profiling_data["total_non_hoarding_time"] = (
+                self.profiling_data["total_time"] - self.profiling_data["hoarding_time"]
+            )
 
             # save runtime_dct as a csv file, first row is the keys and second row is the values
-            runtime_df = pd.DataFrame.from_dict(runtime_dct, orient="index")
+            runtime_df = pd.DataFrame.from_dict(self.profiling_data, orient="index")
             runtime_df.to_csv(
                 os.path.join(self.save_dir, "runtime_data.csv"), header=False
             )
@@ -743,7 +761,10 @@ class PBCounter:
                     os.path.join(self.save_dir, "runtime_data.yaml"), "w"
                 ) as file:
                     yaml.dump(
-                        profiling_data, file, default_flow_style=False, sort_keys=False
+                        self.profiling_data,
+                        file,
+                        default_flow_style=False,
+                        sort_keys=False,
                     )
 
                 # rename the save_dir name to "ERROR_" + save_dir

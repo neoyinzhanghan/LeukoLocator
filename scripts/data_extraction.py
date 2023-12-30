@@ -100,12 +100,6 @@ for i in tqdm(range(num_wsis), desc="Processing WSIs"):
 
         pbc = PBCounter(wsi_path, hoarding=True)
 
-        pbc.find_focus_regions()
-
-        pbc.find_wbc_candidates()
-
-        pbc.label_wbc_candidates()
-
         pbc.tally_differential()
 
     except Exception as e:
