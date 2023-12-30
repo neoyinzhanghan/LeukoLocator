@@ -151,10 +151,6 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
 #     # close the plot to free memory
 #     plt.close()
 
-# import matplotlib.pyplot as plt
-
-import matplotlib.pyplot as plt
-
 def save_bar_chart(
     data_dict,
     save_path,
@@ -167,6 +163,7 @@ def save_bar_chart(
     """
     Plots a bar chart with a specific theme from a given dictionary.
     The keys of the dictionary are used as labels, and the values are used as the heights of the bars.
+    Replaces 'immature granulocyte' with 'Imm. Gran.' in x-axis labels.
 
     Args:
     data_dict (dict): A dictionary where the keys are strings and the values are numbers (int or float).
@@ -175,7 +172,7 @@ def save_bar_chart(
     """
 
     # Extracting keys and values from the dictionary
-    keys = list(data_dict.keys())
+    keys = [label.replace('immature granulocyte', 'Imm. Gran.') for label in data_dict.keys()]
     values = list(data_dict.values())
 
     # Creating the bar chart with a specific theme
@@ -192,16 +189,13 @@ def save_bar_chart(
     plt.tick_params(axis="x", colors=edge_color)
     plt.tick_params(axis="y", colors=edge_color)
 
-    # Rotating the x-axis labels (the names of each bar) to 45 degrees
-    plt.xticks(rotation=45)
-
     # Setting the title and labels with a specific font color
     plt.title(title, color=edge_color)
     plt.xlabel(xaxis_name, color=edge_color)
     plt.ylabel(yaxis_name, color=edge_color)
 
-    # Save the plot to save_path
+    # save the plot to save_path
     plt.savefig(save_path, transparent=True, facecolor="black")
 
-    # Close the plot to free memory
+    # close the plot to free memory
     plt.close()
