@@ -11,5 +11,5 @@ for slide_name_stem in exception_list:
     print(slide_name)
     slide_path = os.path.join(wsi_dir, slide_name)
 
-    pbc = PBCounter(slide_path)
+    pbc = PBCounter(slide_path, hoarding=True)
     pbc.tally_differential()

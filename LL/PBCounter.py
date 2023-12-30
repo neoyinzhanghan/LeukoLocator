@@ -227,7 +227,7 @@ class PBCounter:
             save_dir=self.save_dir, hoarding=self.hoarding
         )
 
-        self.profiling_data["low_mag_focus_regions_filtering_time"] = hoarding_time
+        self.profiling_data["low_mag_focus_regions_hoarding_time"] = hoarding_time
 
         # add num_sds to the save_dir/focus_regions/focus_regions_filtering.csv file as a column
         # first read the csv file as a dataframe
@@ -526,6 +526,9 @@ class PBCounter:
             self.profiling_data["high_mag_focus_regions_hoarding_time"] = (
                 time.time() - start_time
             )
+        
+        else:
+            self.profiling_data["high_mag_focus_regions_hoarding_time"] = 0
 
     def label_wbc_candidates(self):
         """Update the labels of the wbc_candidates of the PBCounter object."""
@@ -709,6 +712,9 @@ class PBCounter:
                 wbc_candidate._save_cell_image(self.save_dir)
 
             self.profiling_data["cells_hoarding_time"] = time.time() - start_time
+        
+        else:
+            self.profiling_data["cells_hoarding_time"] = 0
 
     def tally_differential(self):
         """Run all steps with time profiling and save the profiling data to YAML."""
