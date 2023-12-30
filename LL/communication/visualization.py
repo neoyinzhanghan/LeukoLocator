@@ -50,10 +50,10 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
     # Create the figure with techno theme
     plt.figure(figsize=(10, 6))
 
-    print("Diagnostics for column: ", column_name)
-    print(df[column_name])
-    print(df[column_name].isnull().any())
-    print(df[column_name].dtype)
+    # print("Diagnostics for column: ", column_name)
+    # print(df[column_name])
+    # print(df[column_name].isnull().any())
+    # print(df[column_name].dtype)
 
     df[column_name] = df[column_name].round(3)
 
