@@ -55,16 +55,19 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
     # print(df[column_name].isnull().any())
     # print(df[column_name].dtype)
 
-    df[column_name] = df[column_name].round(3)
+    df_for_plot = df.copy()
+
+    # Perform the rounding
+    df_for_plot[column_name] = df_for_plot[column_name].round(3)
 
     # Create the histogram with KDE plot, changing 'stat' from 'density' to 'count' for mass
     sns.histplot(
-        df[column_name], kde=True, color="#606060", stat="count", edgecolor="none"
+        df_for_plot[column_name], kde=True, color="#606060", stat="count", edgecolor="none"
     )  # Even brighter grey
 
     # Add rug plot
     sns.rugplot(
-        df[column_name], color="#00FF00", height=0.05, alpha=0.5
+        df_for_plot[column_name], color="#00FF00", height=0.05, alpha=0.5
     )  # Neon green for futuristic feel
 
     # Customize the plot to match a techno futuristic theme
@@ -151,6 +154,7 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
 #     # close the plot to free memory
 #     plt.close()
 
+
 def save_bar_chart(
     data_dict,
     save_path,
@@ -172,7 +176,10 @@ def save_bar_chart(
     """
 
     # Extracting keys and values from the dictionary
-    keys = [label.replace('Immature Granulocyte', 'Imm. Gran.') for label in data_dict.keys()]
+    keys = [
+        label.replace("Immature Granulocyte", "Imm. Gran.")
+        for label in data_dict.keys()
+    ]
     values = list(data_dict.values())
 
     # Creating the bar chart with a specific theme
