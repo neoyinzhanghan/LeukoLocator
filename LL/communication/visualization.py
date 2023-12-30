@@ -153,6 +153,8 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
 
 # import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+
 def save_bar_chart(
     data_dict,
     save_path,
@@ -190,22 +192,16 @@ def save_bar_chart(
     plt.tick_params(axis="x", colors=edge_color)
     plt.tick_params(axis="y", colors=edge_color)
 
-    # Rotating the bar text labels to 45 degrees
-    for bar in bars:
-        yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2), 
-                 horizontalalignment='center', 
-                 verticalalignment='bottom', 
-                 color=edge_color, 
-                 rotation=45)
+    # Rotating the x-axis labels (the names of each bar) to 45 degrees
+    plt.xticks(rotation=45)
 
     # Setting the title and labels with a specific font color
     plt.title(title, color=edge_color)
     plt.xlabel(xaxis_name, color=edge_color)
     plt.ylabel(yaxis_name, color=edge_color)
 
-    # save the plot to save_path
+    # Save the plot to save_path
     plt.savefig(save_path, transparent=True, facecolor="black")
 
-    # close the plot to free memory
+    # Close the plot to free memory
     plt.close()
