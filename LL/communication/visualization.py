@@ -50,6 +50,11 @@ def save_hist_KDE_rug_plot(df, column_name, save_path, title, lines=[]):
     # Create the figure with techno theme
     plt.figure(figsize=(10, 6))
 
+    print("Diagnostics for column: ", column_name)
+    print(df[column_name])
+    print(df[column_name].isnull().any())
+    print(df[column_name].dtype)
+
     # Create the histogram with KDE plot, changing 'stat' from 'density' to 'count' for mass
     sns.histplot(
         df[column_name], kde=True, color="#606060", stat="count", edgecolor="none"
