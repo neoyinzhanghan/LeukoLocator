@@ -547,6 +547,8 @@ class FocusRegionsTracker:
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""
 
+        print('Started ResNet confidence score filtering.')
+
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
         # first filter out the focus regions that do not satisfy the confidence score requirement using self.info_df
@@ -599,6 +601,8 @@ class FocusRegionsTracker:
             & self.info_df["reason_for_rejection"].isna(),
             "reason_for_rejection",
         ] = "resnet_conf_too_low"
+
+        print('Finished ResNet confidence score filtering.')
 
     def _save_VoL_plot(self, save_dir, after_filtering=False):
         """Save the VoL plot, with the final_min_VoL as a vertical line."""
