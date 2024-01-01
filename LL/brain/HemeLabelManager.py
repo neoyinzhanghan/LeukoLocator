@@ -59,7 +59,8 @@ def remove_data_parallel(old_state_dict):
     return new_state_dict
 
 
-@ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
+# @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
+@ray.remote()
 class HemeLabelManager:
     """A class representing a HemeLabel Manager that manages the classification of a WSI.
 

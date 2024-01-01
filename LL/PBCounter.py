@@ -252,7 +252,8 @@ class PBCounter:
             print(f"Initializing {num_croppers} Ray workers")
 
         ray.shutdown()
-        ray.init(num_cpus=num_cpus)
+        # ray.init(num_cpus=num_cpus)
+        ray.init()
 
         start_time = time.time()
 
@@ -315,11 +316,9 @@ class PBCounter:
         # make the directory save_dir/cells
         os.makedirs(os.path.join(self.save_dir, "cells"), exist_ok=True)
 
-        if self.verbose:
-            print(f"Initializing {num_gpus} Ray workers")
-
         ray.shutdown()
-        ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+        # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+        ray.init()
 
         if self.verbose:
             print("Initializing YOLOManager")
@@ -330,7 +329,7 @@ class PBCounter:
                 save_dir=self.save_dir,
                 hoarding=self.hoarding,
             )
-            for _ in range(num_gpus)
+            for _ in range(num_YOLOManagers)
         ]
 
         tasks = {}
@@ -338,7 +337,7 @@ class PBCounter:
         new_focus_regions = []
 
         for i, focus_region in enumerate(self.focus_regions):
-            manager = task_managers[i % num_gpus]
+            manager = task_managers[i % num_YOLOManagers]
             task = manager.async_find_wbc_candidates.remote(focus_region)
             tasks[task] = focus_region
 
@@ -539,24 +538,22 @@ class PBCounter:
             raise NoCellFoundError(
                 "No WBC candidates found. Please run find_wbc_candidates() first. If problem persists, the slide may be problematic."
             )
-
-        if self.verbose:
-            print(f"Initializing {num_gpus} Ray workers")
-
+        
         ray.shutdown()
-        ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+        # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+        ray.init()
 
         if self.verbose:
             print("Initializing HemeLabelManager")
         task_managers = [
-            HemeLabelManager.remote(HemeLabel_ckpt_path) for _ in range(num_gpus)
+            HemeLabelManager.remote(HemeLabel_ckpt_path) for _ in range(num_labellers)
         ]
 
         tasks = {}
         all_results = []
 
         for i, wbc_candidate in enumerate(self.wbc_candidates):
-            manager = task_managers[i % num_gpus]
+            manager = task_managers[i % num_labellers]
             task = manager.async_label_wbc_candidate.remote(wbc_candidate)
             tasks[task] = wbc_candidate
 
