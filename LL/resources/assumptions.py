@@ -54,9 +54,9 @@ max_num_regions_after_region_clf = 1000
 
 num_gpus = 3
 num_cpus = 12
-num_croppers = 16
-num_YOLOManagers = 16
-num_labellers =16
+num_croppers = 32
+num_YOLOManagers = 32
+num_labellers =32
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 num_cpus_per_cropper = num_cpus // num_croppers

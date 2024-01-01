@@ -134,7 +134,7 @@ def load_clf_model(ckpt_path):
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
-@ray.remote()
+@ray.remote
 class RegionClfManager:
     """A class representing a manager that classifies regions.
 
