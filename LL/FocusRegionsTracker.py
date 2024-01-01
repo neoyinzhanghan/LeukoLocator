@@ -52,7 +52,7 @@ def _gather_focus_regions_and_metrics(
         total=len(focus_regions_coords), desc="Gathering focus regions and metrics"
     ) as pbar:
         while tasks:
-            done_ids, _ = ray.wait(list(tasks.keys()))
+            done_ids, _ = ray.wait(list(tasks))
 
             for done_id in done_ids:
                 try:
