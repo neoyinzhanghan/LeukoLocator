@@ -174,13 +174,11 @@ class RegionClfManager:
     - conf_thres : the confidence threshold of the region classification model
     """
 
-    def __init__(self, ckpt_path, conf_thres):
+    def __init__(self, ckpt_path):
         """Initialize the RegionClfManager object."""
 
         self.model = load_clf_model(ckpt_path)
         self.ckpt_path = ckpt_path
-        self.conf_thres = conf_thres
-        self.device = device = next(self.model.parameters()).device
 
     def async_predict(self, focus_region):
         """Classify the focus region probability score."""
