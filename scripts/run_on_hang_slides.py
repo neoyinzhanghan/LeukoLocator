@@ -5,7 +5,7 @@ import sys
 
 os.makedirs(dump_dir, exist_ok=True)
 
-wsi_dir = "/media/hdd1/neo/PB"
+wsi_dir = "/media/hdd2/neo/PB"
 
 for slide_name_stem in exception_list:
     slide_name = slide_name_stem + ".ndpi"
