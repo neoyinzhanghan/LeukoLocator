@@ -521,7 +521,7 @@ class FocusRegionsTracker:
         for i, row in unrejected_df.iterrows():
             focus_region = self.focus_regions_dct[row["focus_region_id"]]
             manager = region_clf_managers[i % num_region_clf_managers]
-            task = manager.async_get_focus_region_image.remote(focus_region)
+            task = manager.async_predict.remote(focus_region)
             task[task] = focus_region
 
         with tqdm(total=len(unrejected_df), desc="Getting focus region images") as pbar:
