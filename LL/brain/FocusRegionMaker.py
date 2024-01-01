@@ -3,9 +3,7 @@ import ray
 
 from LL.FocusRegion import FocusRegion
 
-ray.remote
-
-
+@ray.remote
 class FocusRegionMaker:
     """This class is responsible for creating a focus region from a given
     === Class Attributes ===
