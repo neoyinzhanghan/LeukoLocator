@@ -11,11 +11,13 @@ import yaml
 import statsmodels.api as sm
 import torch
 import seaborn as sns
+import ray
 from torchvision import transforms
 from PIL import Image
 from matplotlib import pyplot as plt
 from PIL import Image
 from tqdm import tqdm
+from ray.exceptions import RayTaskError
 
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
@@ -23,6 +25,7 @@ from LL.vision.image_quality import VoL, WMP
 from LL.communication.visualization import annotate_focus_region, save_hist_KDE_rug_plot
 from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
+from LL.brain.RegionClfManager import RegionClfManager
 
 
 class FocusRegion:
@@ -247,35 +250,6 @@ def load_model_from_checkpoint(checkpoint_path):
     model.eval()  # Set to evaluation mode
 
     return model
-
-
-def predict(pil_image, model):
-    """
-    Predict the confidence score for the given PIL image.
-
-    Parameters:
-    - pil_image (PIL.Image.Image): Input PIL Image object.
-    - model (torch.nn.Module): Trained model.
-
-    Returns:
-    - float: Confidence score for the class label `1`.
-    """
-    # Transform the input image to the format the model expects
-    transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.ToTensor(),
-        ]
-    )
-    image = pil_image.convert("RGB")
-    image = transform(image).unsqueeze(0)  # Add batch dimension
-
-    with torch.no_grad():  # No need to compute gradients for inference
-        logits = model(image)
-        probs = torch.softmax(logits, dim=1)
-        confidence_score = probs[0][1].item()
-
-    return confidence_score
 
 
 class FocusRegionsTracker:
@@ -532,16 +506,51 @@ class FocusRegionsTracker:
         model = load_model_from_checkpoint(model_ckpt_path)
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
-        for i, row in tqdm(
-            unrejected_df.iterrows(), desc="Getting ResNet confidence score"
-        ):
+        ray.shutdown()
+        ray.init()
+
+        region_clf_managers = [
+            RegionClfManager.remote(model_ckpt_path)
+            for _ in range(num_region_clf_managers)
+        ]
+
+        tasks = {}
+        all_results = []
+        new_focus_region_dct = {}
+
+        for i, row in unrejected_df.iterrows():
+            focus_region = self.focus_regions_dct[row["focus_region_id"]]
+            manager = region_clf_managers[i % num_region_clf_managers]
+            task = manager.async_get_focus_region_image.remote(focus_region)
+            task[task] = focus_region
+
+        with tqdm(total=len(unrejected_df), desc="Getting focus region images") as pbar:
+            while tasks:
+                done_ids, _ = ray.wait(list(tasks.keys()))
+
+                for done_id in done_ids:
+                    try:
+                        result = ray.get(done_id)
+                        if result is not None:
+                            all_results.append(result)
+                            new_focus_region_dct[result.idx] = result
+                    except RayTaskError as e:
+                        print(
+                            f"Task for focus region {tasks[done_id]} failed with error: {e}"
+                        )
+                    pbar.update()
+                    del tasks[done_id]
+
+        if self.verbose:
+            print(f"Shutting down Ray")
+        ray.shutdown()
+
+        for i, row in unrejected_df.iterrows():
             focus_region = self.focus_regions_dct[row["focus_region_id"]]
 
-            confidence_score = predict(focus_region.downsampled_image, model)
+            confidence_score = focus_region.resnet_confidence_score
 
             self.info_df.loc[i, "confidence_score"] = confidence_score
-
-            focus_region.resnet_confidence_score = confidence_score
 
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""

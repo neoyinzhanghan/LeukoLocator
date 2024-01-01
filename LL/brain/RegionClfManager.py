@@ -1,7 +1,6 @@
 import torch
 import torchvision.models as models
 import ray
-from torchvision import transforms
 import torchvision.models as models
 import pytorch_lightning as pl
 import torchmetrics
@@ -9,6 +8,8 @@ import torchmetrics
 from LL.resources.assumptions import *
 from torchvision import transforms
 from yaimpl import LitSupervisedModel  # yaimpl is a dependency of package LL
+from torchvision import transforms
+from PIL import Image as pil_image
 
 transform = transforms.Compose(
     [
@@ -133,6 +134,35 @@ def load_clf_model(ckpt_path):
     return trained_model
 
 
+def predict(pil_image, model):
+    """
+    Predict the confidence score for the given PIL image.
+
+    Parameters:
+    - pil_image (PIL.Image.Image): Input PIL Image object.
+    - model (torch.nn.Module): Trained model.
+
+    Returns:
+    - float: Confidence score for the class label `1`.
+    """
+    # Transform the input image to the format the model expects
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.ToTensor(),
+        ]
+    )
+    image = pil_image.convert("RGB")
+    image = transform(image).unsqueeze(0)  # Add batch dimension
+
+    with torch.no_grad():  # No need to compute gradients for inference
+        logits = model(image)
+        probs = torch.softmax(logits, dim=1)
+        confidence_score = probs[0][1].item()
+
+    return confidence_score
+
+
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
 @ray.remote
 class RegionClfManager:
@@ -152,13 +182,12 @@ class RegionClfManager:
         self.conf_thres = conf_thres
         self.device = device = next(self.model.parameters()).device
 
-    def async_classify(self, image):
-        """Classify the focus region."""
+    def async_predict(self, focus_region):
+        """Classify the focus region probability score."""
 
-        image = transform(image).unsqueeze(0)
-        image = image.to(self.device)  # Move image to the same device as the model
-        with torch.no_grad():
-            output = self.model(image)
-        prob = torch.softmax(output, dim=1)[0, 1].item()
+        image = focus_region.downsampled_image
+        confidence_score = predict(image, self.model)
 
-        return int(prob > self.conf_thres)
+        focus_region.resnet_confidence_score = confidence_score
+
+        return focus_region
