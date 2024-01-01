@@ -15,9 +15,9 @@ import ray
 from torchvision import transforms
 from PIL import Image
 from matplotlib import pyplot as plt
-from PIL import Image
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
+
 
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
@@ -75,11 +75,6 @@ def _gather_focus_regions_and_metrics(
     image_metrics_df = pd.DataFrame(image_metrics)
 
     return focus_regions_dct, image_metrics_df
-
-
-import torch
-from torchvision import transforms
-from PIL import Image
 
 # Assuming the ResNet50Classifier class definition is already loaded
 
