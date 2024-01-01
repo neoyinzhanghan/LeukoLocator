@@ -5,15 +5,10 @@
 # Outside imports ##################################################################################
 import os
 import time
-import numpy as np
 import pandas as pd
-import yaml
-import statsmodels.api as sm
 import torch
 import seaborn as sns
 import ray
-from torchvision import transforms
-from PIL import Image
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
@@ -21,13 +16,11 @@ from ray.exceptions import RayTaskError
 
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
-from LL.vision.image_quality import VoL, WMP
-from LL.communication.visualization import annotate_focus_region, save_hist_KDE_rug_plot
+from LL.communication.visualization import save_hist_KDE_rug_plot
 from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
 from LL.brain.RegionClfManager import RegionClfManager
 from LL.brain.FocusRegionMaker import FocusRegionMaker
-from LL.FocusRegion import FocusRegion
 
 
 def _gather_focus_regions_and_metrics(
@@ -75,6 +68,7 @@ def _gather_focus_regions_and_metrics(
     image_metrics_df = pd.DataFrame(image_metrics)
 
     return focus_regions_dct, image_metrics_df
+
 
 # Assuming the ResNet50Classifier class definition is already loaded
 
