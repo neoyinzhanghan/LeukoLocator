@@ -2,8 +2,8 @@
 ### Logistics ###
 #################
 
-# dump_dir = "/media/ssd1/neo/LLResults/V2" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_debug"
+dump_dir = "/media/ssd1/neo/LLResults/debug" # this one is for alpaca
+# dump_dir = "/media/hdd3/neo/results_debug"
 
 ############################
 ### WSI Image Parameters ###
@@ -68,20 +68,20 @@ allowed_reading_time = 20  # in seconds
 ### Models Configurations ###
 #############################
 
-region_clf_ckpt_path = "/home/greg/Documents/neo/LLCKPTS/LLRegionClf/V1/checkpoints/epoch=99-step=10300.ckpt"
-# region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
+# region_clf_ckpt_path = "/home/greg/Documents/neo/LLCKPTS/LLRegionClf/V1/checkpoints/epoch=99-step=10300.ckpt"
+region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 region_clf_conf_thres = (
     0.8  # TODO need to do a rigorous calibration still, but for now we are skipping it
 )
 
-YOLO_ckpt_path = (
-    "/home/greg/Documents/neo/LLCKPTS/YOLOv8/V1/detect/train/weights/best.pt"
-)
-# YOLO_ckpt_path = "/media/ssd1/neo/LLCKPTS/best.pt" # this one is for alpaca
+# YOLO_ckpt_path = (
+#     "/home/greg/Documents/neo/LLCKPTS/YOLOv8/V1/detect/train/weights/best.pt"
+# )
+YOLO_ckpt_path = "/media/ssd1/neo/LLCKPTS/best.pt" # this one is for alpaca
 YOLO_conf_thres = 0.8  # The calibration says 0.89 to do a 3% FNR control with pvalue less than 0.05 but we can afford to be more aggressive
 
-# HemeLabel_ckpt_path = "/media/ssd1/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
-HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
+HemeLabel_ckpt_path = "/media/ssd1/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
+# HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
 
 ######################
 ### Biology Config ###

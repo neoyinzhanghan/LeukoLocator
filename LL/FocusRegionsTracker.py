@@ -873,7 +873,7 @@ class FocusRegionsTracker:
                 tasks.append(task)
 
             # Initialize tqdm
-            pbar = tqdm(total=len(tasks), desc="Processing Focus Regions")
+            pbar = tqdm(total=len(tasks), desc="Hoarding Focus Regions")
 
             # Monitor task completion and update tqdm
             while tasks:
