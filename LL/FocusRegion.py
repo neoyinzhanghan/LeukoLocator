@@ -524,7 +524,7 @@ class FocusRegionsTracker:
             task = manager.async_predict.remote(focus_region)
             tasks[task] = focus_region
 
-        with tqdm(total=len(unrejected_df), desc="Getting focus region images") as pbar:
+        with tqdm(total=len(unrejected_df), desc="Getting ResNet Confidence Score") as pbar:
             while tasks:
                 done_ids, _ = ray.wait(list(tasks.keys()))
 
@@ -540,7 +540,7 @@ class FocusRegionsTracker:
                         )
                     pbar.update()
                     del tasks[done_id]
-                    
+
         ray.shutdown()
 
         for i, row in unrejected_df.iterrows():
@@ -549,6 +549,8 @@ class FocusRegionsTracker:
             confidence_score = focus_region.resnet_confidence_score
 
             self.info_df.loc[i, "confidence_score"] = confidence_score
+        
+        self.focus_regions_dct = new_focus_region_dct
 
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""
