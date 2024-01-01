@@ -540,9 +540,7 @@ class FocusRegionsTracker:
                         )
                     pbar.update()
                     del tasks[done_id]
-
-        if self.verbose:
-            print(f"Shutting down Ray")
+                    
         ray.shutdown()
 
         for i, row in unrejected_df.iterrows():
