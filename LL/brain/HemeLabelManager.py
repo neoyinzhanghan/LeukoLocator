@@ -39,7 +39,7 @@ def model_create(num_classes=23, path="not_existed_path"):
     )
 
     checkpoint_PATH = path
-    checkpoint = torch.load(checkpoint_PATH, map_location=torch.device("cpu"))
+    checkpoint = torch.load(checkpoint_PATH) #, map_location=torch.device("cpu"))
 
     checkpoint = remove_data_parallel(checkpoint["model_state_dict"])
 
