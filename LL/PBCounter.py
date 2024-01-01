@@ -538,7 +538,6 @@ class PBCounter:
             raise NoCellFoundError(
                 "No WBC candidates found. Please run find_wbc_candidates() first. If problem persists, the slide may be problematic."
             )
-        
         ray.shutdown()
         # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
         ray.init()
