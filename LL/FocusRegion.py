@@ -26,6 +26,7 @@ from LL.communication.visualization import annotate_focus_region, save_hist_KDE_
 from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
 from LL.brain.RegionClfManager import RegionClfManager
+from LL.brain.FocusRegionMaker import FocusRegionMaker
 
 
 class FocusRegion:
@@ -196,35 +197,36 @@ def _gather_focus_regions_and_metrics(
 
     image_metrics = []  # columns are x, y, VoL, WMP
 
-    for i, focus_region_coord in tqdm(
-        enumerate(focus_regions_coords), desc="Gathering focus regions and metrics"
-    ):
-        focus_region = FocusRegion(
-            idx=i,
-            coordinate=focus_region_coord,
-            search_view_image=search_view.image,
-            downsample_rate=int(search_view.downsampling_rate),
-        )
+    ray.shutdown()
+    ray.init()
 
-        focus_regions_dct[i] = focus_region
-        new_row = {
-            "focus_region_id": i,
-            "x": focus_region_coord[0],
-            "y": focus_region_coord[1],
-            "VoL": focus_region.VoL,
-            "WMP": focus_region.WMP,
-            "confidence_score": np.nan,
-            "rejected": 0,
-            "region_classification_passed": np.nan,
-            "max_WMP_passed": np.nan,
-            "min_WMP_passed": np.nan,
-            "min_VoL_passed": np.nan,
-            # "lm_outier_removal_passed": np.nan,
-            "reason_for_rejection": np.nan,
-            "num_wbc_candidates": np.nan,
-        }
+    task_managers = [
+        FocusRegionMaker.remote(search_view) for _ in range(num_focus_region_makers)
+    ]
 
-        image_metrics.append(new_row)
+    tasks = []
+
+    for i, focus_region_coord in enumerate(focus_regions_coords):
+        manager = task_managers[i % num_focus_region_makers]
+        task = manager.async_get_focus_region.remote(focus_region_coord, i)
+        tasks[task] = focus_region_coord
+
+    with tqdm(
+        total=len(focus_regions_coords), desc="Gathering focus regions and metrics"
+    ) as pbar:
+        while tasks:
+            done_ids, _ = ray.wait(list(tasks.keys()))
+
+            for done_id in done_ids:
+                try:
+                    new_focus_region, new_row = ray.get(done_id)
+                    focus_regions_dct[new_focus_region.idx] = new_focus_region
+                    image_metrics.append(new_row)
+                except RayTaskError as e:
+                    print(f"Task for {tasks[done_id]} failed with error: {e}")
+
+                pbar.update()
+                del tasks[done_id]
 
     image_metrics_df = pd.DataFrame(image_metrics)
 
@@ -524,7 +526,9 @@ class FocusRegionsTracker:
             task = manager.async_predict.remote(focus_region)
             tasks[task] = focus_region
 
-        with tqdm(total=len(unrejected_df), desc="Getting ResNet Confidence Score") as pbar:
+        with tqdm(
+            total=len(unrejected_df), desc="Getting ResNet Confidence Score"
+        ) as pbar:
             while tasks:
                 done_ids, _ = ray.wait(list(tasks.keys()))
 
@@ -551,7 +555,7 @@ class FocusRegionsTracker:
             confidence_score = focus_region.resnet_confidence_score
 
             self.info_df.loc[i, "confidence_score"] = confidence_score
-        
+
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""
 
