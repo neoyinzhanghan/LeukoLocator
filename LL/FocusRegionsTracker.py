@@ -405,7 +405,9 @@ class FocusRegionsTracker:
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
         ray.shutdown()
+        print('Ray initialization for resnet confidence score')
         ray.init()
+        print('Ray initialization for resnet confidence score done')
 
         region_clf_managers = [
             RegionClfManager.remote(model_ckpt_path)
