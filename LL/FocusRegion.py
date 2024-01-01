@@ -543,6 +543,8 @@ class FocusRegionsTracker:
 
         ray.shutdown()
 
+        self.focus_regions_dct = new_focus_region_dct
+
         for i, row in unrejected_df.iterrows():
             focus_region = self.focus_regions_dct[row["focus_region_id"]]
 
@@ -550,8 +552,6 @@ class FocusRegionsTracker:
 
             self.info_df.loc[i, "confidence_score"] = confidence_score
         
-        self.focus_regions_dct = new_focus_region_dct
-
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""
 
