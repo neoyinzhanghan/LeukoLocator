@@ -7,8 +7,6 @@ import torchmetrics
 
 from LL.resources.assumptions import *
 from torchvision import transforms
-from yaimpl import LitSupervisedModel  # yaimpl is a dependency of package LL
-from torchvision import transforms
 from PIL import Image as pil_image
 
 transform = transforms.Compose(
