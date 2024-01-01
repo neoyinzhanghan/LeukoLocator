@@ -36,7 +36,9 @@ def _gather_focus_regions_and_metrics(
 
     image_metrics = []  # columns are x, y, VoL, WMP
 
-    for i, focus_region_coord in tqdm(enumerate(focus_regions_coords), desc="Gathering focus regions and metrics"):
+    for i, focus_region_coord in tqdm(
+        enumerate(focus_regions_coords), desc="Gathering focus regions and metrics"
+    ):
         focus_region = FocusRegion(
             idx=i,
             coordinate=focus_region_coord,
@@ -115,6 +117,37 @@ def load_model_from_checkpoint(checkpoint_path):
     model.eval()  # Set to evaluation mode
 
     return model
+
+
+@ray.remote
+def process_and_save_focus_region_low_mag(focus_region, info_row, save_dir):
+    i = info_row["focus_region_id"]
+    rejection_reason = info_row["reason_for_rejection"]
+    file_name = ""
+
+    if info_row["rejected"] == 1:
+        # Determine the file name based on the reason for rejection
+        if rejection_reason == "too_low_VoL":
+            file_name = f"VoL{round(focus_region.VoL)}_{i}.png"
+        elif rejection_reason == "too_high_WMP":
+            file_name = f"WMP{round(focus_region.WMP * 100)}_{i}.png"
+        elif rejection_reason == "too_low_WMP":
+            file_name = f"WMP{round(focus_region.WMP * 100)}_{i}.png"
+        elif rejection_reason == "resnet_conf_too_low":
+            file_name = (
+                f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png"
+            )
+        subfolder = rejection_reason
+    else:
+        file_name = (
+            f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png"
+        )
+        subfolder = "passed"
+
+    # Save the image
+    focus_region.image_mask_duo.save(
+        os.path.join(save_dir, "focus_regions", subfolder, file_name)
+    )
 
 
 class FocusRegionsTracker:
@@ -831,103 +864,124 @@ class FocusRegionsTracker:
                 exist_ok=True,
             )
 
-            for i, focus_region in tqdm(
-                self.focus_regions_dct.items(),
-                desc="Hoarding",
-            ):
-                if (
-                    self.info_df.loc[
-                        self.info_df["focus_region_id"] == i, "rejected"
-                    ].values[0]
-                    == 1
-                ):
-                    # save the focus region image to the corresponding folder
-                    # the file name depend on the reason for rejection
-                    # if VoL is the reason the file name should be VoL-XXXX_idx.jog where XXXX is the rounded VoL and idx is the focus_region_id
-                    if (
-                        self.info_df.loc[
-                            self.info_df["focus_region_id"] == i,
-                            "reason_for_rejection",
-                        ].values[0]
-                        == "too_low_VoL"
-                    ):
-                        focus_region.image_mask_duo.save(
-                            os.path.join(
-                                save_dir,
-                                "focus_regions",
-                                self.info_df.loc[
-                                    self.info_df["focus_region_id"] == i,
-                                    "reason_for_rejection",
-                                ].values[0],
-                                f"VoL{round(focus_region.VoL)}_{i}.png",
-                            )
-                        )
-                    elif (
-                        self.info_df.loc[
-                            self.info_df["focus_region_id"] == i,
-                            "reason_for_rejection",
-                        ].values[0]
-                        == "too_high_WMP"
-                    ):
-                        focus_region.image_mask_duo.save(
-                            os.path.join(
-                                save_dir,
-                                "focus_regions",
-                                self.info_df.loc[
-                                    self.info_df["focus_region_id"] == i,
-                                    "reason_for_rejection",
-                                ].values[0],
-                                f"WMP{round(focus_region.WMP * 100)}_{i}.png",
-                            )
-                        )
+            ray.init()
 
-                    elif (
-                        self.info_df.loc[
-                            self.info_df["focus_region_id"] == i,
-                            "reason_for_rejection",
-                        ].values[0]
-                        == "too_low_WMP"
-                    ):
-                        focus_region.image_mask_duo.save(
-                            os.path.join(
-                                save_dir,
-                                "focus_regions",
-                                self.info_df.loc[
-                                    self.info_df["focus_region_id"] == i,
-                                    "reason_for_rejection",
-                                ].values[0],
-                                f"WMP{round(focus_region.WMP * 100)}_{i}.png",
-                            )
-                        )
+            tasks = []
+            for i, focus_region in self.focus_regions_dct.items():
+                info_row = self.info_df[self.info_df["focus_region_id"] == i].iloc[0].to_dict()
+                task = process_and_save_focus_region_low_mag.remote(focus_region, info_row, save_dir)
+                tasks.append(task)
 
-                    elif (
-                        self.info_df.loc[
-                            self.info_df["focus_region_id"] == i,
-                            "reason_for_rejection",
-                        ].values[0]
-                        == "resnet_conf_too_low"
-                    ):
-                        focus_region.image_mask_duo.save(
-                            os.path.join(
-                                save_dir,
-                                "focus_regions",
-                                self.info_df.loc[
-                                    self.info_df["focus_region_id"] == i,
-                                    "reason_for_rejection",
-                                ].values[0],
-                                f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png",
-                            )
-                        )
-                else:
-                    # save the focus region image to the passed folder, will save the resnet conf score for this one
-                    focus_region.image_mask_duo.save(
-                        os.path.join(
-                            save_dir,
-                            "focus_regions",
-                            "passed",
-                            f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png",
-                        )
-                    )
+            # Initialize tqdm
+            pbar = tqdm(total=len(tasks), desc="Processing Focus Regions")
+
+            # Monitor task completion and update tqdm
+            while tasks:
+                # Wait for any one of the batch of tasks to finish
+                done_ids, tasks = ray.wait(tasks)
+                # Update the tqdm bar
+                pbar.update(len(done_ids))
+
+            pbar.close()
+            ray.shutdown()
+
+            # for i, focus_region in tqdm(
+            #     self.focus_regions_dct.items(),
+            #     desc="Hoarding",
+            # ):
+            #     if (
+            #         self.info_df.loc[
+            #             self.info_df["focus_region_id"] == i, "rejected"
+            #         ].values[0]
+            #         == 1
+            #     ):
+            #         # save the focus region image to the corresponding folder
+            #         # the file name depend on the reason for rejection
+            #         # if VoL is the reason the file name should be VoL-XXXX_idx.jog where XXXX is the rounded VoL and idx is the focus_region_id
+            #         if (
+            #             self.info_df.loc[
+            #                 self.info_df["focus_region_id"] == i,
+            #                 "reason_for_rejection",
+            #             ].values[0]
+            #             == "too_low_VoL"
+            #         ):
+            #             focus_region.image_mask_duo.save(
+            #                 os.path.join(
+            #                     save_dir,
+            #                     "focus_regions",
+            #                     self.info_df.loc[
+            #                         self.info_df["focus_region_id"] == i,
+            #                         "reason_for_rejection",
+            #                     ].values[0],
+            #                     f"VoL{round(focus_region.VoL)}_{i}.png",
+            #                 )
+            #             )
+            #         elif (
+            #             self.info_df.loc[
+            #                 self.info_df["focus_region_id"] == i,
+            #                 "reason_for_rejection",
+            #             ].values[0]
+            #             == "too_high_WMP"
+            #         ):
+            #             focus_region.image_mask_duo.save(
+            #                 os.path.join(
+            #                     save_dir,
+            #                     "focus_regions",
+            #                     self.info_df.loc[
+            #                         self.info_df["focus_region_id"] == i,
+            #                         "reason_for_rejection",
+            #                     ].values[0],
+            #                     f"WMP{round(focus_region.WMP * 100)}_{i}.png",
+            #                 )
+            #             )
+
+            #         elif (
+            #             self.info_df.loc[
+            #                 self.info_df["focus_region_id"] == i,
+            #                 "reason_for_rejection",
+            #             ].values[0]
+            #             == "too_low_WMP"
+            #         ):
+            #             focus_region.image_mask_duo.save(
+            #                 os.path.join(
+            #                     save_dir,
+            #                     "focus_regions",
+            #                     self.info_df.loc[
+            #                         self.info_df["focus_region_id"] == i,
+            #                         "reason_for_rejection",
+            #                     ].values[0],
+            #                     f"WMP{round(focus_region.WMP * 100)}_{i}.png",
+            #                 )
+            #             )
+
+            #         elif (
+            #             self.info_df.loc[
+            #                 self.info_df["focus_region_id"] == i,
+            #                 "reason_for_rejection",
+            #             ].values[0]
+            #             == "resnet_conf_too_low"
+            #         ):
+            #             focus_region.image_mask_duo.save(
+            #                 os.path.join(
+            #                     save_dir,
+            #                     "focus_regions",
+            #                     self.info_df.loc[
+            #                         self.info_df["focus_region_id"] == i,
+            #                         "reason_for_rejection",
+            #                     ].values[0],
+            #                     f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png",
+            #                 )
+            #             )
+            #     else:
+            #         # save the focus region image to the passed folder, will save the resnet conf score for this one
+            #         focus_region.image_mask_duo.save(
+            #             os.path.join(
+            #                 save_dir,
+            #                 "focus_regions",
+            #                 "passed",
+            #                 f"RegClfConf{round(focus_region.resnet_confidence_score * 100)}_{i}.png",
+            #             )
+            #         )
 
             hoarding_time = time.time() - start_time
 
