@@ -46,13 +46,13 @@ def _gather_focus_regions_and_metrics(
     for i, focus_region_coord in enumerate(focus_regions_coords):
         manager = task_managers[i % num_focus_region_makers]
         task = manager.async_get_focus_region.remote(focus_region_coord, i)
-        tasks.append(task)
+        tasks[task] = focus_region_coord
 
     with tqdm(
         total=len(focus_regions_coords), desc="Gathering focus regions and metrics"
     ) as pbar:
         while tasks:
-            done_ids, _ = ray.wait(list(tasks))
+            done_ids, _ = ray.wait(list(tasks.keys()))
 
             for done_id in done_ids:
                 try:
