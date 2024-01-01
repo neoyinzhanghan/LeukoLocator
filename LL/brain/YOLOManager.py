@@ -120,7 +120,7 @@ def YOLO_detect(model, image, conf_thres, verbose=False):
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
-@ray.remote()
+@ray.remote
 class YOLOManager:
     """A Class representing a YOLO Manager that manages the object detection of a WSI.
 
