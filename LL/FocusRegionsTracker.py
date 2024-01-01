@@ -36,7 +36,7 @@ def _gather_focus_regions_and_metrics(
 
     image_metrics = []  # columns are x, y, VoL, WMP
 
-    for i, focus_region_coord in enumerate(focus_regions_coords):
+    for i, focus_region_coord in tqdm(enumerate(focus_regions_coords), desc="Gathering focus regions and metrics"):
         focus_region = FocusRegion(
             idx=i,
             coordinate=focus_region_coord,
