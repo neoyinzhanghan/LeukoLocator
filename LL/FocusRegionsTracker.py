@@ -41,7 +41,7 @@ def _gather_focus_regions_and_metrics(
         FocusRegionMaker.remote(search_view) for _ in range(num_focus_region_makers)
     ]
 
-    tasks = []
+    tasks = {}
 
     for i, focus_region_coord in enumerate(focus_regions_coords):
         manager = task_managers[i % num_focus_region_makers]
