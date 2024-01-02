@@ -63,9 +63,6 @@ def YOLO_detect(model, image, conf_thres, verbose=False):
     # conf_thres must be a float between 0 and 1 of not raise a ValueError
     assert 0 <= conf_thres <= 1
 
-    # move image to tensor on cuda
-    image = torch.from_numpy(np.array(image)).permute(2, 0, 1).float().div(255.0)
-
     # The model applies to a list of image but we only have one image it is still a list
     result = model([image], conf=conf_thres)[0]
 
