@@ -22,7 +22,7 @@ def extract_top_view(wsi_path):
     try:
         wsi = openslide.OpenSlide(wsi_path)
 
-        top_level = len(wsi.level_dimensions) - 2
+        top_level = len(wsi.level_dimensions) - 1
 
         top_view = read_with_timeout(
             wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
