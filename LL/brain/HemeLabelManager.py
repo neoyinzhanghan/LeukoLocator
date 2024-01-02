@@ -39,7 +39,7 @@ def model_create(num_classes=23, path="not_existed_path"):
     )
 
     checkpoint_PATH = path
-    checkpoint = torch.load(checkpoint_PATH) #, map_location=torch.device("cpu"))
+    checkpoint = torch.load(checkpoint_PATH)  # , map_location=torch.device("cpu"))
 
     checkpoint = remove_data_parallel(checkpoint["model_state_dict"])
 
@@ -102,8 +102,12 @@ class HemeLabelManager:
         # self.model.to("cpu")
         # self.model.to("cuda") # commented for debugging # TODO we need GPU implementation
 
-        image.to("cuda") # commented for debugging # TODO we need GPU implementation
         image = image_transforms(image).float().unsqueeze(0)
+
+        # move the image to a cuda tensor
+        image = image.to(
+            "cuda"
+        )  # commented for debugging # TODO we need GPU implementation
 
         ### BELOW MAY BECOME DEPRECATED ###
 
