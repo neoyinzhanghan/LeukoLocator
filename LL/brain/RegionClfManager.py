@@ -171,7 +171,7 @@ def predict(pil_image, model):
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
-@ray.remote(num_gpus=3)
+@ray.remote(num_gpus=1)
 class RegionClfManager:
     """A class representing a manager that classifies regions.
 
