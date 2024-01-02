@@ -22,10 +22,15 @@ def extract_top_view(wsi_path):
     stem = Path(wsi_path).stem
 
     try:
-        pbc = PBCounter(wsi_path)
-        topview = pbc.top_view.image
-        topview.save(os.path.join(save_dir, stem + ".jpg"))
+        toplevel = openslide.OpenSlide(wsi_path).level_count - 1
+        topview = read_with_timeout(
+            openslide.OpenSlide(wsi_path),
+            location=(0, 0),
+            level=toplevel,
+            dimensions=openslide.OpenSlide(wsi_path).level_dimensions[toplevel],
+        )
 
+        topview.save(os.path.join(save_dir, stem + ".png"))
     except Exception as e:
         # write the error as a txt file in log_dir using the same filename stem as the wsi
         with open(os.path.join(log_dir, stem + ".txt"), "w") as f:
