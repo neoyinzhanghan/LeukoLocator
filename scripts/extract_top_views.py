@@ -28,9 +28,7 @@ def extract_top_view(wsi_path):
         top_level = len(wsi.level_dimensions) - 1
 
         print("Extracting view ... ")
-        top_view = read_with_timeout(
-            wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
-        )
+        top_view = wsi.read_region((0, 0), top_level, wsi.level_dimensions[top_level])
         print("Finished extracting view ... ")
 
         print("Saving topview ...")
