@@ -63,6 +63,9 @@ def YOLO_detect(model, image, conf_thres, verbose=False):
     # conf_thres must be a float between 0 and 1 of not raise a ValueError
     assert 0 <= conf_thres <= 1
 
+    # move image to tensor on cuda
+    image = torch.from_numpy(np.array(image)).permute(2, 0, 1).float().div(255.0)
+
     # The model applies to a list of image but we only have one image it is still a list
     result = model([image], conf=conf_thres)[0]
 
@@ -120,7 +123,7 @@ def YOLO_detect(model, image, conf_thres, verbose=False):
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
-@ray.remote
+@ray.remote(num_gpus=1)
 class YOLOManager:
     """A Class representing a YOLO Manager that manages the object detection of a WSI.
 
@@ -140,6 +143,8 @@ class YOLOManager:
         self.conf_thres = conf_thres
         self.save_dir = save_dir
         self.hoarding = hoarding
+
+        YOLO.to("cuda")
 
     def async_find_wbc_candidates(self, focus_region):
         """Find WBC candidates in the image."""
