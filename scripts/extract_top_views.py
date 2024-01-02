@@ -18,6 +18,7 @@ wsi_paths = [
 num_to_skip = 1
 num_processed = 0
 
+
 def extract_top_view(wsi_path):
     stem = Path(wsi_path).stem
 
@@ -30,7 +31,10 @@ def extract_top_view(wsi_path):
         top_level = len(wsi.level_dimensions) - 1
 
         print("Extracting view ... ")
-        top_view = wsi.read_region((0, 0), top_level, wsi.level_dimensions[top_level])
+        top_view = read_with_timeout(
+            wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
+        )
+        # top_view = wsi.read_region((0, 0), top_level, wsi.level_dimensions[top_level])
         print("Finished extracting view ... ")
 
         print("Saving topview ...")
@@ -52,5 +56,5 @@ for wsi_path in tqdm(wsi_paths, desc="Extracting top views"):
     if num_processed < num_to_skip:
         num_processed += 1
         continue
-    
+
     extract_top_view(wsi_path)
