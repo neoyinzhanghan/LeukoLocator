@@ -144,7 +144,7 @@ class YOLOManager:
         self.save_dir = save_dir
         self.hoarding = hoarding
 
-        YOLO.to("cuda")
+        self.model.to("cuda")
 
     def async_find_wbc_candidates(self, focus_region):
         """Find WBC candidates in the image."""
