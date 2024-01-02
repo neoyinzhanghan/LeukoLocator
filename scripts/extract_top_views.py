@@ -28,7 +28,7 @@ def extract_top_view(wsi_path):
         wsi = openslide.OpenSlide(wsi_path)
         print("Finished opening slide ... ")
 
-        top_level = len(wsi.level_dimensions) - 1
+        top_level = len(wsi.level_dimensions) - 2
 
         print("Extracting view ... ")
         top_view = read_with_timeout(
