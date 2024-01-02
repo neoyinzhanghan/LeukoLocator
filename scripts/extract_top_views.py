@@ -3,6 +3,7 @@ import openslide
 from LL.vision.processing import read_with_timeout
 from pathlib import Path
 from tqdm import tqdm
+from LL.PBCounter import PBCounter
 
 wsi_dir = "/pesgisipth/NDPI"
 save_dir = "/media/hdd3/neo/topviews"
@@ -23,28 +24,9 @@ def extract_top_view(wsi_path):
     stem = Path(wsi_path).stem
 
     try:
-        print("Processing: " + wsi_path)
-        print("Opening slide ... ")
-        wsi = openslide.OpenSlide(wsi_path)
-        print("Finished opening slide ... ")
-
-        top_level = len(wsi.level_dimensions) - 2
-
-        print("Extracting view ... ")
-        top_view = read_with_timeout(
-            wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
-        )
-        # top_view = wsi.read_region((0, 0), top_level, wsi.level_dimensions[top_level])
-        print("Finished extracting view ... ")
-
-        print("Saving topview ...")
-        # save the topview as a jpg file in the save_dir using the same filename stem as the wsi
-        top_view.save(os.path.join(save_dir, stem + ".jpg"))
-        print("Finished saving topview ...")
-
-        print("Closing slide ... ")
-        wsi.close()
-        print("Finished closing slide ... ")
+        pbc = PBCounter(wsi_path)
+        topview = pbc.top_view.image
+        topview.save(os.path.join(save_dir, stem + ".jpg"))
 
     except Exception as e:
         # write the error as a txt file in log_dir using the same filename stem as the wsi
