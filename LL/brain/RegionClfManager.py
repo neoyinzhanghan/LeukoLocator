@@ -128,8 +128,8 @@ def load_clf_model(ckpt_path):
 
     # To deploy a checkpoint and use for inference
     trained_model = ResNet50Classifier.load_from_checkpoint(
-        ckpt_path, map_location=torch.device("cpu")
-    )
+        ckpt_path
+    )  # , map_location=torch.device("cpu"))
     trained_model.freeze()
 
     # move the model to the GPU
@@ -159,8 +159,8 @@ def predict(pil_image, model):
     image = pil_image.convert("RGB")
     image = transform(image).unsqueeze(0)  # Add batch dimension
 
-    # # Move the image to the GPU
-    # image = image.to("cuda")
+    # Move the image to the GPU
+    image = image.to("cuda")
 
     with torch.no_grad():  # No need to compute gradients for inference
         logits = model(image)
@@ -171,7 +171,7 @@ def predict(pil_image, model):
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
-@ray.remote
+@ray.remote(num_gpus=3)
 class RegionClfManager:
     """A class representing a manager that classifies regions.
 
