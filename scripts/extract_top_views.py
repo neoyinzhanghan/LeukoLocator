@@ -38,10 +38,6 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
         with open(os.path.join(log_dir, stem + ".txt"), "w") as f:
             f.write(str(e))
 
-
-for wsi_path in tqdm(wsi_paths, desc="Extracting top views"):
-    extract_top_view(wsi_path)
-
 ray.init()
 
 tasks = []
