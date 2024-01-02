@@ -38,7 +38,7 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
         with open(os.path.join(log_dir, stem + ".txt"), "w") as f:
             f.write(str(e))
 
-ray.init()
+ray.init(num_cpus=8)
 
 tasks = []
 for i, wsi_path in enumerate(wsi_paths):
