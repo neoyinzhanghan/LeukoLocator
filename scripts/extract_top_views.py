@@ -1,7 +1,7 @@
 import os
 import openslide
 from LL.vision.processing import read_with_timeout
-from Pathlib import Path
+from pathlib import Path
 from tqdm import tqdm
 
 wsi_dir = "/pesgisipth/NDPI"
