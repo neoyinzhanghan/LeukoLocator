@@ -39,11 +39,14 @@ def model_create(num_classes=23, path="not_existed_path"):
     )
 
     checkpoint_PATH = path
-    checkpoint = torch.load(checkpoint_PATH, map_location=torch.device("cpu"))
+    checkpoint = torch.load(checkpoint_PATH) #, map_location=torch.device("cpu"))
 
     checkpoint = remove_data_parallel(checkpoint["model_state_dict"])
 
     My_model.load_state_dict(checkpoint, strict=True)
+
+    My_model.eval()
+    My_model.to("cuda")
 
     return My_model
 
@@ -60,7 +63,7 @@ def remove_data_parallel(old_state_dict):
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
-@ray.remote
+@ray.remote(num_gpus=1)
 class HemeLabelManager:
     """A class representing a HemeLabel Manager that manages the classification of a WSI.
 
@@ -99,6 +102,7 @@ class HemeLabelManager:
         # self.model.to("cpu")
         # self.model.to("cuda") # commented for debugging # TODO we need GPU implementation
 
+        image.to("cuda") # commented for debugging # TODO we need GPU implementation
         image = image_transforms(image).float().unsqueeze(0)
 
         ### BELOW MAY BECOME DEPRECATED ###
