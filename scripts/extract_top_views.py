@@ -16,9 +16,6 @@ wsi_paths = [
     if Path(wsi_fname).suffix == ".ndpi" and Path(wsi_fname).stem[0] in ["H", "S"]
 ]
 
-num_to_skip = 5
-num_processed = 0
-
 
 def extract_top_view(wsi_path):
     stem = Path(wsi_path).stem
@@ -35,9 +32,4 @@ def extract_top_view(wsi_path):
 
 
 for wsi_path in tqdm(wsi_paths, desc="Extracting top views"):
-    if num_processed < num_to_skip:
-        num_processed += 1
-        continue
-
     extract_top_view(wsi_path)
-    num_processed += 1
