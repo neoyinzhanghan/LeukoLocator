@@ -5,6 +5,7 @@ from pathlib import Path
 from tqdm import tqdm
 from LL.PBCounter import PBCounter
 
+# wsi_dir = "/pesgisipth/NDPI"
 wsi_dir = "/media/hdd3/neo/PB_slides"
 save_dir = "/media/hdd3/neo/topviews"
 log_dir = "/media/hdd3/neo/topviews/extract_logs"
