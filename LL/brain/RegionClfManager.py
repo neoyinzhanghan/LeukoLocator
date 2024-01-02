@@ -7,6 +7,7 @@ import torchmetrics
 
 from LL.resources.assumptions import *
 from torchvision import transforms
+
 from PIL import Image as pil_image
 
 transform = transforms.Compose(
@@ -126,7 +127,7 @@ def load_clf_model(ckpt_path):
     """Load the classifier model."""
 
     # To deploy a checkpoint and use for inference
-    trained_model = ResNet50Classifier.load_from_checkpoint(ckpt_path) #, map_location=torch.device("cpu"))
+    trained_model = ResNet50Classifier.load_from_checkpoint(ckpt_path, map_location=torch.device("cpu"))
     trained_model.freeze()
 
     return trained_model
