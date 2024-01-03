@@ -26,9 +26,11 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
     print(stem)
 
     try:
+        print('Copying slide into tmp_dir')
         # first terminal copy of the wsi to tmp_dir
         os.system(f"cp \"{wsi_path}\" {tmp_dir}")
-
+        print('Done copying slide into tmp_dir')
+        
         # open the wsi in tmp_dir and extract the top view
         new_wsi_path = os.path.join(tmp_dir, os.path.basename(wsi_path))
         wsi = openslide.OpenSlide(new_wsi_path)
