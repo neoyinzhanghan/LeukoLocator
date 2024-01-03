@@ -37,7 +37,7 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
         wsi = openslide.OpenSlide(tmp_path)
         toplevel = wsi.level_count - 1
         topview = read_with_timeout(
-            openslide.OpenSlide(wsi_path),
+            wsi=wsi,
             location=(0, 0),
             level=toplevel,
             dimensions=wsi.level_dimensions[toplevel],
