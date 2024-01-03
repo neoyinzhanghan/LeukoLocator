@@ -2,9 +2,9 @@ import os
 import openslide
 import ray
 from LL.vision.processing import read_with_timeout
-from pathlib import Path
 from tqdm import tqdm
 from LL.PBCounter import PBCounter
+from pathlib import Path
 
 wsi_dir = "/pesgisipth/NDPI"
 tmp_dor = "/media/hdd3/neo/tmp"
@@ -20,14 +20,17 @@ wsi_paths = [
 
 
 def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
-    stem = Path(wsi_path).stem
+    # you can get the stem by removing the last 5 characters from the file name (".ndpi")
+    stem = os.path.basename(wsi_path)[:-5]
+
+    print(stem)
 
     try:
         # first terminal copy of the wsi to tmp_dir
         os.system(f"cp {wsi_path} {tmp_dor}")
 
         # open the wsi in tmp_dir and extract the top view
-        new_wsi_path = os.path.join(tmp_dor, Path(wsi_path).name)
+        new_wsi_path = os.path.join(tmp_dor, os.path.basename(wsi_path))
         wsi = openslide.OpenSlide(new_wsi_path)
         toplevel = wsi.level_count - 1
         topview = read_with_timeout(
