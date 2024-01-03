@@ -7,7 +7,7 @@ from LL.PBCounter import PBCounter
 from pathlib import Path
 
 wsi_dir = "/pesgisipth/NDPI"
-tmp_dor = "/media/hdd3/neo/tmp"
+tmp_dir = "/media/hdd3/neo/tmp"
 save_dir = "/media/hdd3/neo/topviews"
 log_dir = "/media/hdd3/neo/topviews/extract_logs"
 
@@ -27,10 +27,10 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
 
     try:
         # first terminal copy of the wsi to tmp_dir
-        os.system(f"cp {wsi_path} {tmp_dor}")
+        os.system(f"cp \"{wsi_path}\" {tmp_dir}")
 
         # open the wsi in tmp_dir and extract the top view
-        new_wsi_path = os.path.join(tmp_dor, os.path.basename(wsi_path))
+        new_wsi_path = os.path.join(tmp_dir, os.path.basename(wsi_path))
         wsi = openslide.OpenSlide(new_wsi_path)
         toplevel = wsi.level_count - 1
         topview = read_with_timeout(
