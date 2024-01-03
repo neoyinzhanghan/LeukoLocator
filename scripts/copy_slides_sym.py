@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # symbolically copy slides from one directory to another
-wsi_dir = "pesgisipth/NDPI"
+wsi_dir = "/pesgisipth/NDPI"
 save_dir = "/media/hdd3/neo/AllSlidesSym"
 
 os.makedirs(save_dir, exist_ok=True)
