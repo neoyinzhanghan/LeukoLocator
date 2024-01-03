@@ -18,7 +18,7 @@ wsi_paths = [
 
 def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
     # you can get the stem by removing the last 5 characters from the file name (".ndpi")
-    stem = os.path.basename(wsi_path)[:-5]
+    stem = Path(wsi_path).stem[:-5]
 
     print(stem)
 
