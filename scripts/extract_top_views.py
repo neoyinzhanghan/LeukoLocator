@@ -1,4 +1,5 @@
 import os
+import sys
 import openslide
 from LL.vision.processing import read_with_timeout
 from tqdm import tqdm
@@ -44,6 +45,8 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
         )
         topview.save(os.path.join(save_dir, stem + ".jpg"))
         wsi.close()
+    except KeyboardInterrupt:
+        sys.exit()
     except Exception as e:
         # write the error as a txt file in log_dir using the same filename stem as the wsi
         with open(os.path.join(log_dir, stem + ".txt"), "w") as f:
