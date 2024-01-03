@@ -19,7 +19,6 @@ wsi_paths = [
 ]
 
 
-@ray.remote
 def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
     stem = Path(wsi_path).stem
 
@@ -41,4 +40,4 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
 
 
 for wsi_path in tqdm(wsi_paths):
-    extract_top_view.remote(wsi_path)
+    extract_top_view(wsi_path)
