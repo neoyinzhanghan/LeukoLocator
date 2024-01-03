@@ -11,4 +11,4 @@ os.makedirs(save_dir, exist_ok=True)
 for wsi_fname in os.listdir(wsi_dir):
     if Path(wsi_fname).suffix == ".ndpi" and Path(wsi_fname).stem[0] in ["H", "S"]:
         # sudo copy and duplicate the file in save_dir, DO NOT use symbolic link
-        os.system(f"sudo cp -n {os.path.join(wsi_dir, wsi_fname)} {save_dir}")
+        os.system(f"sudo cp -n \"{os.path.join(wsi_dir, wsi_fname)}\" {save_dir}")
