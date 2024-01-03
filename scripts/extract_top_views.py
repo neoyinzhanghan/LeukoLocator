@@ -23,7 +23,7 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
 
     print("Copying wsi to tmp_dir")
     # copy the wsi to tmp_dir
-    os.system(f'sudo cp -n \"{wsi_path}\" {tmp_dir}')
+    os.system(f'cp -n \"{wsi_path}\" {tmp_dir}')
 
     # tmp_dir should contain only one file, the wsi
     assert len(os.listdir(tmp_dir)) == 1
