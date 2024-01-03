@@ -24,33 +24,21 @@ def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
     stem = Path(wsi_path).stem
 
     try:
-        toplevel = openslide.OpenSlide(wsi_path).level_count - 1
-        topview = openslide.OpenSlide(wsi_path).read_region(
-            (0, 0), toplevel, openslide.OpenSlide(wsi_path).level_dimensions[toplevel]
+        wsi = openslide.OpenSlide(wsi_path)
+        toplevel = wsi.level_count - 1
+        topview = read_with_timeout(
+            openslide.OpenSlide(wsi_path),
+            location=(0, 0),
+            level=toplevel,
+            dimensions=wsi.level_dimensions[toplevel],
         )
         topview.save(os.path.join(save_dir, stem + ".png"))
+        wsi.close()
     except Exception as e:
         # write the error as a txt file in log_dir using the same filename stem as the wsi
         with open(os.path.join(log_dir, stem + ".txt"), "w") as f:
             f.write(str(e))
 
 
-ray.init(num_cpus=8)
-
-tasks = []
-for i, wsi_path in enumerate(wsi_paths):
-    task = extract_top_view.remote(wsi_path, save_dir, log_dir)
-    tasks.append(task)
-
-# Initialize tqdm
-pbar = tqdm(total=len(tasks), desc="Collecting Top Views")
-
-# Monitor task completion and update tqdm
-while tasks:
-    # Wait for any one of the batch of tasks to finish
-    done_ids, tasks = ray.wait(tasks)
-    # Update the tqdm bar
-    pbar.update(len(done_ids))
-
-pbar.close()
-ray.shutdown()
+for wsi_path in tqdm(wsi_paths):
+    extract_top_view.remote(wsi_path)
