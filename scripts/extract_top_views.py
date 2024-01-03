@@ -10,12 +10,24 @@ save_dir = "/media/hdd3/neo/topviews"
 tmp_dir = "/media/hdd3/neo/tmp"
 log_dir = "/media/hdd3/neo/topviews/extract_logs"
 
+print("Finding all .ndpi files in wsi_dir")
 # recursively search for all .ndpi files in wsi_dir
 wsi_paths = []
 for root, dirs, files in os.walk(wsi_dir):
     for file in files:
         if Path(file).suffix == ".ndpi":
             wsi_paths.append(os.path.join(root, file))
+
+print("Found", len(wsi_paths), ".ndpi files")
+
+
+print("Creating save_dir")
+# create save_dir if it does not exist
+os.makedirs(save_dir, exist_ok=True)
+
+print("Creating tmp_dir")
+# create tmp_dir if it does not exist
+os.makedirs(tmp_dir, exist_ok=True)
 
 
 def extract_top_view(wsi_path, save_dir=save_dir, log_dir=log_dir):
