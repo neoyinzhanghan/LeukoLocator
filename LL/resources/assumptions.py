@@ -71,9 +71,9 @@ allowed_reading_time = 20  # in seconds
 region_clf_ckpt_path = "/home/greg/Documents/neo/LLCKPTS/LLRegionClf/V1/checkpoints/epoch=99-step=10300.ckpt"
 # region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 # region_clf_ckpt_path = "/media/hdd2/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for bear
-# region_clf_conf_thres = (
-#     0.8  # TODO need to do a rigorous calibration still, but for now we are skipping it
-# )
+region_clf_conf_thres = (
+    0.8  # TODO need to do a rigorous calibration still, but for now we are skipping it
+)
 
 YOLO_ckpt_path = (
     "/home/greg/Documents/neo/LLCKPTS/YOLOv8/V1/detect/train/weights/best.pt"
