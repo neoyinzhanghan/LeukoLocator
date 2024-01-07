@@ -64,7 +64,8 @@ num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 num_cpus_per_cropper = num_cpus // num_croppers
 allowed_reading_time = 20  # in seconds
 
-region_clf_batch_size = 512
+region_clf_batch_size = 256
+cell_clf_batch_size = 256
 
 #############################
 ### Models Configurations ###

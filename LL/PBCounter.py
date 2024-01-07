@@ -30,6 +30,7 @@ from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
 from LL.communication.write_config import *
 from LL.communication.visualization import *
+from LL.brain.utils import *
 
 
 class PBCounter:
@@ -543,6 +544,10 @@ class PBCounter:
         # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
         ray.init()
 
+        list_of_batches = create_list_of_batches_from_list(
+            self.wbc_candidates, cell_clf_batch_size
+        )
+
         if self.verbose:
             print("Initializing HemeLabelManager")
         task_managers = [
@@ -552,10 +557,10 @@ class PBCounter:
         tasks = {}
         all_results = []
 
-        for i, wbc_candidate in enumerate(self.wbc_candidates):
+        for i, batch in enumerate(list_of_batches):
             manager = task_managers[i % num_labellers]
-            task = manager.async_label_wbc_candidate.remote(wbc_candidate)
-            tasks[task] = wbc_candidate
+            task = manager.async_label_wbc_candidates.remote(batch)
+            tasks[task] = batch
 
         with tqdm(
             total=len(self.wbc_candidates), desc="Classifying WBC candidates"
@@ -565,20 +570,50 @@ class PBCounter:
 
                 for done_id in done_ids:
                     try:
-                        wbc_candidate = ray.get(done_id)
-                        if wbc_candidate is not None:
+                        batch = ray.get(done_id)
+                        for wbc_candidate in batch:
                             all_results.append(wbc_candidate)
+
+                            pbar.update()
 
                     except RayTaskError as e:
                         print(
                             f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
                         )
 
-                    pbar.update()
                     del tasks[done_id]
+
         if self.verbose:
             print(f"Shutting down Ray")
         ray.shutdown()
+
+        # for i, wbc_candidate in enumerate(self.wbc_candidates):
+        #     manager = task_managers[i % num_labellers]
+        #     task = manager.async_label_wbc_candidate.remote(wbc_candidate)
+        #     tasks[task] = wbc_candidate
+
+        # with tqdm(
+        #     total=len(self.wbc_candidates), desc="Classifying WBC candidates"
+        # ) as pbar:
+        #     while tasks:
+        #         done_ids, _ = ray.wait(list(tasks.keys()))
+
+        #         for done_id in done_ids:
+        #             try:
+        #                 wbc_candidate = ray.get(done_id)
+        #                 if wbc_candidate is not None:
+        #                     all_results.append(wbc_candidate)
+
+        #             except RayTaskError as e:
+        #                 print(
+        #                     f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
+        #                 )
+
+        #             pbar.update()
+        #             del tasks[done_id]
+        # if self.verbose:
+        #     print(f"Shutting down Ray")
+        # ray.shutdown()
 
         self.wbc_candidates = all_results
         self.differential = Differential(self.wbc_candidates)

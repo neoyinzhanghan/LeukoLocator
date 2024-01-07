@@ -62,6 +62,38 @@ def remove_data_parallel(old_state_dict):
     return new_state_dict
 
 
+def predict_batch(pil_images, model):
+    # Define the transformations
+    image_transforms = transforms.Compose(
+        [
+            transforms.Resize(96),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]),
+        ]
+    )
+
+    # Apply transformations to each image and create a batch
+    batch = torch.stack([image_transforms(image).float() for image in pil_images])
+
+    # Move the batch to the GPU if available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    batch = batch.to(device)
+
+    # Set the model to evaluation mode and make predictions
+    model.eval()
+    with torch.no_grad():
+        outputs = model(batch)
+
+    # Process each output as in the original code snippet
+    predictions = []
+    for output in outputs:
+        output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
+        predictions.append(tuple(output[0]))
+
+    # Return a list of predictions in the same order as the input images
+    return predictions
+
+
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
 @ray.remote(num_gpus=1)
 class HemeLabelManager:
@@ -128,3 +160,21 @@ class HemeLabelManager:
         wbc_candidate.softmax_vector = tuple(output[0])
 
         return wbc_candidate
+
+    def async_label_wbc_candidate_batch(self, wbc_candidates):
+        processed_wbc_candidates = []
+
+        if not do_zero_pad:
+            pil_images = [wbc_candidate.snap_shot for wbc_candidate in wbc_candidates]
+        else:
+            pil_images = [
+                wbc_candidate.padded_YOLO_bbox_image for wbc_candidate in wbc_candidates
+            ]
+
+        results = predict_batch(pil_images, self.model)
+
+        for i, wbc_candidate in enumerate(wbc_candidates):
+            wbc_candidate.softmax_vector = results[i]
+            processed_wbc_candidates.append(wbc_candidate)
+
+        return processed_wbc_candidates
