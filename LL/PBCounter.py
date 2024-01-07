@@ -31,6 +31,7 @@ from LL.vision.WSICropManager import WSICropManager
 from LL.communication.write_config import *
 from LL.communication.visualization import *
 from LL.brain.utils import *
+from LL.brain.SpecimenClf import get_region_type
 
 
 class PBCounter:
@@ -101,6 +102,16 @@ class PBCounter:
         top_view = read_with_timeout(
             wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
         )
+
+        print("Checking Specimen Type")
+        specimen_type = get_region_type(top_view)
+
+        if specimen_type != "Peripheral Blood":
+            raise SpecimenError(
+                "The specimen is not Peripheral Blood. Instead, it is "
+                + specimen_type
+                + "."
+            )
 
         # top_view = wsi.read_region(
         #     (0, 0), top_level, wsi.level_dimensions[top_level])

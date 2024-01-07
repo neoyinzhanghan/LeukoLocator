@@ -92,6 +92,8 @@ YOLO_conf_thres = 0.8  # The calibration says 0.89 to do a 3% FNR control with p
 # HemeLabel_ckpt_path = "/media/hdd2/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
 HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
 
+specimen_clf_checkpoint_path = "/home/greg/Documents/neo/LLCKPTS/SClf.ckpt"
+
 ######################
 ### Biology Config ###
 ######################
