@@ -344,7 +344,7 @@ class PBCounter:
 
         for i, batch in enumerate(list_of_batches):
             manager = task_managers[i % num_YOLOManagers]
-            task = manager.async_find_wbc_candidates.remote(batch)
+            task = manager.async_find_wbc_candidates_batch.remote(batch)
             tasks[task] = batch
 
         with tqdm(
@@ -368,6 +368,11 @@ class PBCounter:
                         print(f"Task for focus {tasks[done_id]} failed with error: {e}")
 
                     del tasks[done_id]
+
+        if self.verbose:
+            print(f"Shutting down Ray")
+
+        ray.shutdown()
 
         self.wbc_candidates = all_results  # the candidates here should be aliased with the candidates saved in focus_regions
         self.focus_regions = new_focus_regions  # these do not include all the focus regions, only the ones that have wbc_candidates before the max_num_candidates is reached
@@ -399,11 +404,6 @@ class PBCounter:
 
         #             pbar.update()
         #             del tasks[done_id]
-
-        if self.verbose:
-            print(f"Shutting down Ray")
-
-        ray.shutdown()
 
         # Regardless of hoarding, save a plot of the distribution of confidence score for all the detected cells, the distribution of number of cells detected per region, and the mean and sd thereof.
         # Plots should be saved at save_dir/focus_regions/YOLO_confidence.jpg and save_dir/focus_regions/num_cells_per_region.jpg
