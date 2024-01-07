@@ -75,6 +75,7 @@ selected_variable_names = [
     "YOLO_ckpt_path",
     "YOLO_conf_thres",
     "HemeLabel_ckpt_path",
+    "specimen_clf_checkpoint_path"
     "omitted_classes",
     "removed_classes",
 ]
