@@ -170,3 +170,25 @@ class FocusRegion:
             """Initialize a FocusRegionNotAnnotatedError object."""
 
             super().__init__(message)
+
+
+def min_resnet_conf(focus_regions):
+    """Return the minimum resnet confidence score of the focus regions."""
+
+    minimum = 1
+
+    for focus_region in focus_regions:
+        if focus_region.resnet_confidence_score is not None:
+            minimum = min(minimum, focus_region.resnet_confidence_score)
+
+    return minimum
+
+
+def sort_focus_regions(focus_regions):
+    """Sort the focus regions by their resnet confidence score largest to smallest."""
+
+    return sorted(
+        focus_regions,
+        key=lambda focus_region: focus_region.resnet_confidence_score,
+        reverse=True,
+    )

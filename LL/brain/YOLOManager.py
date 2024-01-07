@@ -20,6 +20,7 @@ from LL.brain.metrics import bb_intersection_over_union
 from LL.vision.processing import zero_pad
 from LL.WBCCandidate import WBCCandidate
 from LL.vision.image_quality import VoL
+from LL.brain.utils import *
 
 
 def _remove_wbc_df_duplicates(df):
@@ -130,9 +131,18 @@ class YOLOManager:
     - conf_thres : the confidence threshold of the YOLO model
     - save_dir : the directory to save the results
     - hoarding : True of False, whether to hoard the results
+    - num_detected : the total number of WBCs already detected by this YOLOManager
+    - max_num_wbc : the maximum number of WBCs to detect by this YOLOManager
     """
 
-    def __init__(self, ckpt_path, conf_thres, save_dir, hoarding=False):
+    def __init__(
+        self,
+        ckpt_path,
+        conf_thres,
+        save_dir,
+        hoarding=False,
+        max_num_wbc=max_num_wbc_per_manager,
+    ):
         """Initialize the YOLOManager object."""
 
         self.model = YOLO(ckpt_path)
@@ -142,6 +152,8 @@ class YOLOManager:
         self.hoarding = hoarding
 
         self.model.to("cuda")
+        self.num_detected = 0
+        self.max_num_wbc = max_num_wbc
 
     def async_find_wbc_candidates(self, focus_region):
         """Find WBC candidates in the image."""
@@ -256,4 +268,19 @@ class YOLOManager:
 
         focus_region._save_YOLO_df(self.save_dir)
 
+        self.num_detected += len(wbc_candidates)
+
         return focus_region
+
+    def async_find_wbc_candidates_batch(self, batch):
+        """Find WBC candidates in the image."""
+
+        processed_focus_regions = []
+
+        for focus_region in batch:
+            processed_focus_regions.append(self.async_find_wbc_candidates(focus_region))
+
+            if self.num_detected >= self.max_num_wbc:
+                processed_focus_regions.append(None)
+
+        return processed_focus_regions

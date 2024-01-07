@@ -47,6 +47,8 @@ min_num_regions_after_WMP_min_filter = 275
 min_num_regions_after_WMP_max_filter = 150
 min_num_regions_after_region_clf = 100
 max_num_regions_after_region_clf = 1000
+max_num_cells = 9999
+
 
 ###########################
 ### Parallel Processing ###
@@ -56,6 +58,7 @@ num_gpus = 3
 num_cpus = 12
 num_croppers = 32
 num_YOLOManagers = 3
+max_num_wbc_per_manager = max_num_cells // num_YOLOManagers
 num_labellers = 3
 num_region_clf_managers = 3
 num_focus_region_makers = 32
@@ -66,6 +69,7 @@ allowed_reading_time = 20  # in seconds
 
 region_clf_batch_size = 256
 cell_clf_batch_size = 256
+YOLO_batch_size = 32
 
 #############################
 ### Models Configurations ###

@@ -21,7 +21,7 @@ from LL.resources.assumptions import *
 from LL.FileNameManager import FileNameManager
 from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
 from LL.SearchView import SearchView
-from LL.FocusRegion import FocusRegion
+from LL.FocusRegion import *
 from LL.FocusRegionsTracker import FocusRegionsTracker
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
@@ -299,7 +299,7 @@ class PBCounter:
         ray.shutdown()
 
         print(f"{len(all_results)} focus regions successfully processed.")
-        self.focus_regions = all_results
+        self.focus_regions = sort_focus_regions(all_results)
 
         self.profiling_data["get_focus_region_full_images_time"] = (
             time.time() - start_time
@@ -334,14 +334,18 @@ class PBCounter:
             for _ in range(num_YOLOManagers)
         ]
 
+        list_of_batches = create_list_of_batches_from_list(
+            self.focus_regions, YOLO_batch_size
+        )
+
         tasks = {}
         all_results = []
         new_focus_regions = []
 
-        for i, focus_region in enumerate(self.focus_regions):
+        for i, batch in enumerate(list_of_batches):
             manager = task_managers[i % num_YOLOManagers]
-            task = manager.async_find_wbc_candidates.remote(focus_region)
-            tasks[task] = focus_region
+            task = manager.async_find_wbc_candidates.remote(batch)
+            tasks[task] = batch
 
         with tqdm(
             total=len(self.focus_regions), desc="Detecting WBC candidates"
@@ -351,23 +355,50 @@ class PBCounter:
 
                 for done_id in done_ids:
                     try:
-                        new_focus_region = ray.get(done_id)
-                        for wbc_candidate in new_focus_region.wbc_candidates:
-                            all_results.append(wbc_candidate)
-                        if len(all_results) > max_num_candidates:
-                            raise TooManyCandidatesError(
-                                f"Too many candidates found. max_num_candidates {max_num_candidates} is exceeded. Increase max_num_candidates or check code and slide for error."
-                            )
-                        new_focus_regions.append(new_focus_region)
+                        batch_focus_regions = ray.get(done_id)
+                        for focus_region in batch_focus_regions:
+                            if focus_region is not None:
+                                new_focus_regions.append(focus_region)
+                                for wbc_candidate in focus_region.wbc_candidates:
+                                    all_results.append(wbc_candidate)
+
+                            pbar.update()
 
                     except RayTaskError as e:
                         print(f"Task for focus {tasks[done_id]} failed with error: {e}")
 
-                    pbar.update()
                     del tasks[done_id]
 
         self.wbc_candidates = all_results  # the candidates here should be aliased with the candidates saved in focus_regions
-        self.focus_regions = new_focus_regions
+        self.focus_regions = new_focus_regions  # these do not include all the focus regions, only the ones that have wbc_candidates before the max_num_candidates is reached
+
+        # for i, focus_region in enumerate(self.focus_regions):
+        #     manager = task_managers[i % num_YOLOManagers]
+        #     task = manager.async_find_wbc_candidates.remote(focus_region)
+        #     tasks[task] = focus_region
+
+        # with tqdm(
+        #     total=len(self.focus_regions), desc="Detecting WBC candidates"
+        # ) as pbar:
+        #     while tasks:
+        #         done_ids, _ = ray.wait(list(tasks.keys()))
+
+        #         for done_id in done_ids:
+        #             try:
+        #                 new_focus_region = ray.get(done_id)
+        #                 for wbc_candidate in new_focus_region.wbc_candidates:
+        #                     all_results.append(wbc_candidate)
+        #                 if len(all_results) > max_num_candidates:
+        #                     raise TooManyCandidatesError(
+        #                         f"Too many candidates found. max_num_candidates {max_num_candidates} is exceeded. Increase max_num_candidates or check code and slide for error."
+        #                     )
+        #                 new_focus_regions.append(new_focus_region)
+
+        #             except RayTaskError as e:
+        #                 print(f"Task for focus {tasks[done_id]} failed with error: {e}")
+
+        #             pbar.update()
+        #             del tasks[done_id]
 
         if self.verbose:
             print(f"Shutting down Ray")
