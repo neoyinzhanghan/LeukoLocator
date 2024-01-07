@@ -443,12 +443,11 @@ class FocusRegionsTracker:
                     try:
                         results = ray.get(done_id)
                         for result in results:
-                            # each result is a list of processed focus regions
-                            for focus_region in result:
-                                all_results.append(focus_region)
-                                new_focus_region_dct[focus_region.idx] = focus_region
+                            # each result is a focus region
+                            all_results.append(result)
+                            new_focus_region_dct[result.idx] = result
 
-                                pbar.update()
+                            pbar.update()
 
                     except RayTaskError as e:
                         print(
