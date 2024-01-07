@@ -1,0 +1,1 @@
+specimen_type_fpath = ""

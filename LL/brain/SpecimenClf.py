@@ -134,7 +134,7 @@ def load_model_from_checkpoint(checkpoint_path, num_classes):
     return model
 
 
-def predict_image(model, image_path):
+def predict_image(model, image):
     # Define the same transformations as used during training
     transform = transforms.Compose(
         [
@@ -147,8 +147,6 @@ def predict_image(model, image_path):
         ]
     )
 
-    # Open the image, apply transformations and add batch dimension
-    image = Image.open(image_path).convert("RGB")  # Convert image to RGB
     image = transform(image).unsqueeze(0)  # Add batch dimension
 
     # Move the image tensor to the same device as the model
