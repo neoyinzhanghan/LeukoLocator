@@ -23,6 +23,7 @@ from LL.vision.region_clf_model import ResNet50Classifier
 from LL.brain.RegionClfManager import RegionClfManager
 from LL.brain.FocusRegionMaker import FocusRegionMaker
 from LL.FocusRegion import FocusRegion
+from LL.brain.utils import *
 
 
 def _gather_focus_regions_and_metrics(
@@ -405,9 +406,9 @@ class FocusRegionsTracker:
         unrejected_df = self.info_df[self.info_df["rejected"] == 0]
 
         ray.shutdown()
-        print('Ray initialization for resnet confidence score')
+        print("Ray initialization for resnet confidence score")
         ray.init()
-        print('Ray initialization for resnet confidence score done')
+        print("Ray initialization for resnet confidence score done")
 
         region_clf_managers = [
             RegionClfManager.remote(model_ckpt_path)
@@ -418,29 +419,41 @@ class FocusRegionsTracker:
         all_results = []
         new_focus_region_dct = {}
 
-        for i, row in unrejected_df.iterrows():
-            focus_region = self.focus_regions_dct[row["focus_region_id"]]
+        unrejected_focus_regions = [
+            self.focus_regions_dct[row["focus_region_id"]]
+            for _, row in unrejected_df.iterrows()
+        ]
+
+        list_of_batches = create_list_of_batches_from_list(
+            unrejected_focus_regions, region_clf_batch_size
+        )
+
+        for i, batch in enumerate(list_of_batches):
             manager = region_clf_managers[i % num_region_clf_managers]
-            task = manager.async_predict.remote(focus_region)
-            tasks[task] = focus_region
+            task = manager.async_predict_batch.remote(batch)
+            tasks[task] = batch
 
         with tqdm(
-            total=len(unrejected_df), desc="Getting ResNet Confidence Score"
+            total=len(unrejected_focus_regions), desc="Getting ResNet Confidence Scores"
         ) as pbar:
             while tasks:
                 done_ids, _ = ray.wait(list(tasks.keys()))
 
                 for done_id in done_ids:
                     try:
-                        result = ray.get(done_id)
-                        if result is not None:
-                            all_results.append(result)
-                            new_focus_region_dct[result.idx] = result
+                        results = ray.get(done_id)
+                        for result in results:
+                            # each result is a list of processed focus regions
+                            for focus_region in result:
+                                all_results.append(focus_region)
+                                new_focus_region_dct[focus_region.idx] = focus_region
+
+                                pbar.update()
+
                     except RayTaskError as e:
                         print(
                             f"Task for focus region {tasks[done_id]} failed with error: {e}"
                         )
-                    pbar.update()
                     del tasks[done_id]
 
         ray.shutdown()
@@ -453,6 +466,31 @@ class FocusRegionsTracker:
             confidence_score = focus_region.resnet_confidence_score
 
             self.info_df.loc[i, "confidence_score"] = confidence_score
+
+        # for i, row in unrejected_df.iterrows():
+        #     focus_region = self.focus_regions_dct[row["focus_region_id"]]
+        #     manager = region_clf_managers[i % num_region_clf_managers]
+        #     task = manager.async_predict.remote(focus_region)
+        #     tasks[task] = focus_region
+
+        # with tqdm(
+        #     total=len(unrejected_df), desc="Getting ResNet Confidence Score"
+        # ) as pbar:
+        #     while tasks:
+        #         done_ids, _ = ray.wait(list(tasks.keys()))
+
+        #         for done_id in done_ids:
+        #             try:
+        #                 result = ray.get(done_id)
+        #                 if result is not None:
+        #                     all_results.append(result)
+        #                     new_focus_region_dct[result.idx] = result
+        #             except RayTaskError as e:
+        #                 print(
+        #                     f"Task for focus region {tasks[done_id]} failed with error: {e}"
+        #                 )
+        #             pbar.update()
+        #             del tasks[done_id]
 
     def _resnet_conf_filtering(self):
         """Filter out the regions that do not satisfy the confidence score requirement."""
@@ -870,8 +908,12 @@ class FocusRegionsTracker:
 
             tasks = []
             for i, focus_region in self.focus_regions_dct.items():
-                info_row = self.info_df[self.info_df["focus_region_id"] == i].iloc[0].to_dict()
-                task = process_and_save_focus_region_low_mag.remote(focus_region, info_row, save_dir)
+                info_row = (
+                    self.info_df[self.info_df["focus_region_id"] == i].iloc[0].to_dict()
+                )
+                task = process_and_save_focus_region_low_mag.remote(
+                    focus_region, info_row, save_dir
+                )
                 tasks.append(task)
 
             # Initialize tqdm

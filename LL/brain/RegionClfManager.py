@@ -170,6 +170,40 @@ def predict(pil_image, model):
     return confidence_score
 
 
+def predict_batch(pil_images, model):
+    """
+    Predict the confidence scores for a batch of PIL images.
+
+    Parameters:
+    - pil_images (list of PIL.Image.Image): List of input PIL Image objects.
+    - model (torch.nn.Module): Trained model.
+
+    Returns:
+    - list of float: List of confidence scores for the class label `1` for each image.
+    """
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.ToTensor(),
+        ]
+    )
+
+    # Transform each image and stack them into a batch
+    batch = torch.stack([transform(image.convert("RGB")) for image in pil_images])
+
+    # Move the batch to the GPU
+    batch = batch.to("cuda")
+
+    with torch.no_grad():  # No need to compute gradients for inference
+        logits = model(batch)
+        probs = torch.softmax(logits, dim=1)
+        confidence_scores = probs[
+            :, 1
+        ].tolist()  # Get confidence score for label `1` for each image
+
+    return confidence_scores
+
+
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
 @ray.remote(num_gpus=1)
 class RegionClfManager:
@@ -196,3 +230,19 @@ class RegionClfManager:
         focus_region.resnet_confidence_score = confidence_score
 
         return focus_region
+
+    def async_predict_batch(self, batch):
+        """Classify the focus region probability score."""
+
+        processed_batch = []
+
+        pil_images = [focus_region.downsampled_image for focus_region in batch]
+
+        confidence_scores = predict_batch(pil_images, self.model)
+
+        for i, focus_region in enumerate(batch):
+            focus_region.resnet_confidence_score = confidence_scores[i]
+
+            processed_batch.append(focus_region)
+
+        return processed_batch
