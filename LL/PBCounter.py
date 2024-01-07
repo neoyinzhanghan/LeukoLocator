@@ -559,7 +559,7 @@ class PBCounter:
 
         for i, batch in enumerate(list_of_batches):
             manager = task_managers[i % num_labellers]
-            task = manager.async_label_wbc_candidates.remote(batch)
+            task = manager.async_label_wbc_candidate_batch.remote(batch)
             tasks[task] = batch
 
         with tqdm(
