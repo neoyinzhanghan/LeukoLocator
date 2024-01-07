@@ -278,9 +278,9 @@ class YOLOManager:
         processed_focus_regions = []
 
         for focus_region in batch:
-            processed_focus_regions.append(self.async_find_wbc_candidates(focus_region))
-
             if self.num_detected >= self.max_num_wbc:
                 processed_focus_regions.append(None)
+
+            processed_focus_regions.append(self.async_find_wbc_candidates(focus_region))
 
         return processed_focus_regions
