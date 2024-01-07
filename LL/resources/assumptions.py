@@ -40,7 +40,6 @@ focus_region_outlier_tolerance = 3
 ########################
 
 min_top_view_mask_prop = 0.3
-max_num_candidates = 999999999999
 min_num_regions_within_foci_sd = 500
 min_num_regions_after_VoL_filter = 400
 min_num_regions_after_WMP_min_filter = 275
