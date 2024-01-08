@@ -95,22 +95,38 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
         print(f"Copying {wsi_fname} to {BMA_dir}")
         os.system(f'cp "{os.path.join(wsi_read_only_dir, wsi_fname)}" {BMA_dir}')
 
-        # extract the topview image
-        topview = extract_top_view(
-            wsi_path=os.path.join(BMA_dir, wsi_fname),
-            save_dir=os.path.join(topview_saving_dir, "BMA"),
-        )
+        try:
+            # extract the topview image
+            topview = extract_top_view(
+                wsi_path=os.path.join(BMA_dir, wsi_fname),
+                save_dir=os.path.join(topview_saving_dir, "BMA"),
+            )
+
+        except OpenSlideError:
+            # move the slide to the error_dir
+            print(f"Moving {wsi_fname} to {error_dir}")
+            os.system(f'mv "{os.path.join(BMA_dir, wsi_fname)}" {error_dir}')
+            update_log(wsi_fname)
+            continue
 
     elif specimen_type == "PB":
         # carbon copy the slide to the PB_dir
         print(f"Copying {wsi_fname} to {PB_dir}")
         os.system(f'cp "{os.path.join(wsi_read_only_dir, wsi_fname)}" {PB_dir}')
 
-        # extract the topview image
-        topview = extract_top_view(
-            wsi_path=os.path.join(PB_dir, wsi_fname),
-            save_dir=os.path.join(topview_saving_dir, "PB"),
-        )
+        try:
+            # extract the topview image
+            topview = extract_top_view(
+                wsi_path=os.path.join(PB_dir, wsi_fname),
+                save_dir=os.path.join(topview_saving_dir, "PB"),
+            )
+
+        except OpenSlideError:
+            # move the slide to the error_dir
+            print(f"Moving {wsi_fname} to {error_dir}")
+            os.system(f'mv "{os.path.join(PB_dir, wsi_fname)}" {error_dir}')
+            update_log(wsi_fname)
+            continue
 
         pbc = PBCounter(
             wsi_path=os.path.join(PB_dir, wsi_fname),
