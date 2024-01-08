@@ -47,9 +47,11 @@ wsi_fnames = [fname for fname in wsi_fnames if fname not in lst_processed]
 for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     print(f"Processing {wsi_fname}...")
     wsi_path = os.path.join(wsi_read_only_dir, wsi_fname)
+    
+    # First, ensure that the "Slide" column is treated as a string
+    specimen_df['Slide'] = specimen_df['Slide'].astype(str)
 
-    # Assuming wsi_fname is a string containing the filename you want to match.
-    # Convert both to lower case and strip whitespaces before comparing
+    # Then perform the operations
     specimen_type_box = specimen_df[
         specimen_df["Slide"].str.lower().str.strip() == wsi_fname.lower().strip()
     ]["Tissue Type Code"]
