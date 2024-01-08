@@ -73,6 +73,10 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     print("Recorded Specimen Type:", specimen_type_str)
 
     # if the lower case of the specimen type string contains "bone marrow aspirate"
+
+    # first check that the specimen_type_str is not nan (float)
+    if not isinstance(specimen_type_str, str):
+        specimen_type = "Others"
     if "bone marrow aspirate" in specimen_type_str.lower():
         specimen_type = "BMA"
     elif "peripheral blood" in specimen_type_str.lower():
