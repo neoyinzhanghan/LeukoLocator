@@ -129,63 +129,68 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
             topview = extract_top_view(
                 wsi_path=os.path.join(MPBorIBMA_dir, wsi_fname),
             )
+
+            predicted_specimen_type = get_region_type(topview)
+
+            print("Predicted Specimen Type:", predicted_specimen_type)
+
+            if predicted_specimen_type == "Bone Marrow Aspirate":
+                # move the slide from the MPBorIBMA_dir to the BMA_dir
+                print(f"Moving {wsi_fname} from {MPBorIBMA_dir} to {BMA_dir}")
+                os.system(f'mv "{os.path.join(MPBorIBMA_dir, wsi_fname)}" {BMA_dir}')
+
+                # save the topview image to the BMA_dir
+                topview.save(
+                    os.path.join(
+                        topview_saving_dir, "BMA", Path(wsi_fname).stem + ".jpg"
+                    )
+                )
+
+            elif predicted_specimen_type == "Peripheral Blood":
+                # move the slide from the MPBorIBMA_dir to the PB_dir
+                print(f"Moving {wsi_fname} from {MPBorIBMA_dir} to {PB_dir}")
+                os.system(f'mv "{os.path.join(MPBorIBMA_dir, wsi_fname)}" {PB_dir}')
+
+                # save the topview image to the PB_dir
+                topview.save(
+                    os.path.join(
+                        topview_saving_dir, "PB", Path(wsi_fname).stem + ".jpg"
+                    )
+                )
+
+                pbc = PBCounter(
+                    wsi_path=os.path.join(PB_dir, wsi_fname),
+                    hoarding=True,
+                    continue_on_error=True,
+                )
+                pbc.tally_differential()
+
+            elif (
+                predicted_specimen_type
+                == "Manual Peripheral Blood or Inadequate Bone Marrow Aspirate"
+            ):
+                # save the topview image to the MPBorIBMA_dir
+                topview.save(
+                    os.path.join(
+                        topview_saving_dir, "MPBorIBMA", Path(wsi_fname).stem + ".jpg"
+                    )
+                )
+
+            else:
+                # save the topview image to the Others_dir
+                topview.save(
+                    os.path.join(
+                        topview_saving_dir, "Others", Path(wsi_fname).stem + ".jpg"
+                    )
+                )
+
+                # delete the slide from the MPBorIBMA_dir
+                print(f"Deleting {wsi_fname} from {MPBorIBMA_dir}")
+                os.system(f'rm "{os.path.join(MPBorIBMA_dir, wsi_fname)}"')
+
         except OpenSlideError:
             # move the slide to the error_dir
             print(f"Moving {wsi_fname} to {error_dir}")
             os.system(f'mv "{os.path.join(MPBorIBMA_dir, wsi_fname)}" {error_dir}')
-
-        predicted_specimen_type = get_region_type(topview)
-
-        print("Predicted Specimen Type:", predicted_specimen_type)
-
-        if predicted_specimen_type == "Bone Marrow Aspirate":
-            # move the slide from the MPBorIBMA_dir to the BMA_dir
-            print(f"Moving {wsi_fname} from {MPBorIBMA_dir} to {BMA_dir}")
-            os.system(f'mv "{os.path.join(MPBorIBMA_dir, wsi_fname)}" {BMA_dir}')
-
-            # save the topview image to the BMA_dir
-            topview.save(
-                os.path.join(topview_saving_dir, "BMA", Path(wsi_fname).stem + ".jpg")
-            )
-
-        elif predicted_specimen_type == "Peripheral Blood":
-            # move the slide from the MPBorIBMA_dir to the PB_dir
-            print(f"Moving {wsi_fname} from {MPBorIBMA_dir} to {PB_dir}")
-            os.system(f'mv "{os.path.join(MPBorIBMA_dir, wsi_fname)}" {PB_dir}')
-
-            # save the topview image to the PB_dir
-            topview.save(
-                os.path.join(topview_saving_dir, "PB", Path(wsi_fname).stem + ".jpg")
-            )
-
-            pbc = PBCounter(
-                wsi_path=os.path.join(PB_dir, wsi_fname),
-                hoarding=True,
-                continue_on_error=True,
-            )
-            pbc.tally_differential()
-
-        elif (
-            predicted_specimen_type
-            == "Manual Peripheral Blood or Inadequate Bone Marrow Aspirate"
-        ):
-            # save the topview image to the MPBorIBMA_dir
-            topview.save(
-                os.path.join(
-                    topview_saving_dir, "MPBorIBMA", Path(wsi_fname).stem + ".jpg"
-                )
-            )
-
-        else:
-            # save the topview image to the Others_dir
-            topview.save(
-                os.path.join(
-                    topview_saving_dir, "Others", Path(wsi_fname).stem + ".jpg"
-                )
-            )
-
-            # delete the slide from the MPBorIBMA_dir
-            print(f"Deleting {wsi_fname} from {MPBorIBMA_dir}")
-            os.system(f'rm "{os.path.join(MPBorIBMA_dir, wsi_fname)}"')
 
     update_log(wsi_fname)
