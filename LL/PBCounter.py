@@ -51,6 +51,8 @@ class PBCounter:
     - verbose : whether to print out the progress of the PBCounter object
     - hoarding : whether to hoard regions and cell images processed into permanent storage
     - continue_on_error : whether to continue processing the WSI if an error occurs
+
+    - predicted_specimen_type: the predicted specimen type of the WSI
     """
 
     def __init__(
@@ -59,6 +61,7 @@ class PBCounter:
         verbose: bool = False,
         hoarding: bool = False,
         continue_on_error: bool = False,
+        ignore_specimen_type: bool = False,
     ):
         """Initialize a PBCounter object."""
 
@@ -69,6 +72,7 @@ class PBCounter:
         self.verbose = verbose
         self.hoarding = hoarding
         self.continue_on_error = continue_on_error
+        self.ignore_specimen_type = ignore_specimen_type
 
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
@@ -106,12 +110,22 @@ class PBCounter:
         print("Checking Specimen Type")
         specimen_type = get_region_type(top_view)
 
+        self.predicted_specimen_type = specimen_type
+
         if specimen_type != "Peripheral Blood":
-            raise SpecimenError(
-                "The specimen is not Peripheral Blood. Instead, it is "
-                + specimen_type
-                + "."
-            )
+            if not self.ignore_specimen_type:
+                raise SpecimenError(
+                    "The specimen is not Peripheral Blood. Instead, it is "
+                    + specimen_type
+                    + "."
+                )
+
+            else:
+                print(
+                    "USERWarning: The specimen is not Peripheral Blood. Instead, it is "
+                    + specimen_type
+                    + "."
+                )
 
         # top_view = wsi.read_region(
         #     (0, 0), top_level, wsi.level_dimensions[top_level])
@@ -123,11 +137,6 @@ class PBCounter:
         )
 
         self.top_view.save_images(self.save_dir)
-
-        if self.verbose:
-            print(f"Checking if the specimen is peripheral blood")
-        if not self.top_view.is_peripheral_blood():
-            raise SpecimenError("The specimen is not peripheral blood.")
 
         if self.verbose:
             print(f"Processing WSI search view as SearchView object")
@@ -826,6 +835,9 @@ class PBCounter:
             runtime_df.to_csv(
                 os.path.join(self.save_dir, "runtime_data.csv"), header=False
             )
+
+        except SpecimenError as e:
+            raise e
 
         except Exception as e:
             if self.continue_on_error:

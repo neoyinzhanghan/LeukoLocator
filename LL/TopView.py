@@ -4,14 +4,38 @@
 
 # Outside imports ##################################################################################
 import os
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import openslide
+from pathlib import Path
 from PIL import Image
 
 # Within package imports ###########################################################################
 from LL.vision.masking import get_white_mask, get_obstructor_mask, get_top_view_mask
 from LL.resources.assumptions import *
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
+from LL.vision.processing import read_with_timeout
+
+
+def extract_top_view(wsi_path, save_dir=None):
+    # you can get the stem by removing the last 5 characters from the file name (".ndpi")
+    stem = Path(wsi_path).stem[:-5]
+
+    print("Extracting top view")
+    # open the wsi in tmp_dir and extract the top view
+    wsi = openslide.OpenSlide(wsi_path)
+    toplevel = wsi.level_count - 1
+    topview = read_with_timeout(
+        wsi=wsi,
+        location=(0, 0),
+        level=toplevel,
+        dimensions=wsi.level_dimensions[toplevel],
+    )
+    if save_dir is not None:
+        topview.save(os.path.join(save_dir, stem + ".jpg"))
+    wsi.close()
+
+    return topview
 
 
 class TopView:
