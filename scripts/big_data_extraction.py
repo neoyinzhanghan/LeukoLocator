@@ -63,14 +63,12 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
         "Part Description",
     ]
 
-    print("Specimen Type Box:", specimen_type_box)
-
     # If you expect only one match and want to get the single value as a string
     specimen_type_str = (
         specimen_type_box.iloc[0] if not specimen_type_box.empty else None
     )
 
-    print("Recorded Specimen Type:", specimen_type_str)
+    print("Recorded Specimen Type String:", specimen_type_str)
 
     # if the lower case of the specimen type string contains "bone marrow aspirate"
 
@@ -86,6 +84,8 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
         os.system(f'cp "{os.path.join(wsi_read_only_dir, wsi_fname)}" {PB_dir}')
     else:
         specimen_type = "Others"
+
+    print("Recorded Specimen Type:", specimen_type)
 
     if specimen_type == "BMA":
         # carbon copy the slide to the BMA_dir
