@@ -45,6 +45,7 @@ wsi_fnames = [fname for fname in wsi_fnames if fname not in lst_processed]
 
 
 for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
+    print(f"Processing {wsi_fname}...")
     wsi_path = os.path.join(wsi_read_only_dir, wsi_fname)
 
     specimen_type_box = specimen_df[specimen_df["Slide"] == wsi_fname][
