@@ -55,13 +55,15 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
 
     # Then, perform the operation to match the lowercased and stripped index with the wsi_fname
     # Also ensure wsi_fname is a string, strip it, and convert it to lowercase
-    wsi_fname_cleaned = str(wsi_fname).lower().strip()
+    wsi_fname_cleaned = str(wsi_fname).strip()
 
     # Use .loc to locate the row
     specimen_type_box = specimen_df.loc[
-        specimen_df.index.str.lower().str.strip() == wsi_fname_cleaned,
+        specimen_df.index.str.strip() == wsi_fname_cleaned,
         "Part Description",
     ]
+
+    print("Specimen Type Box:", specimen_type_box)
 
     # If you expect only one match and want to get the single value as a string
     specimen_type_str = (
