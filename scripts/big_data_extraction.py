@@ -77,14 +77,14 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
         specimen_type = "PB"
         # first make a carbon copy of the slide in the PB_dir
         print(f"Copying {wsi_fname} to {PB_dir}")
-        os.system(f"cp {os.path.join(wsi_read_only_dir, wsi_fname)} {PB_dir}")
+        os.system(f"cp \"{os.path.join(wsi_read_only_dir, wsi_fname)}\" {PB_dir}")
     else:
         specimen_type = "Others"
 
     if specimen_type == "BMA":
         # carbon copy the slide to the BMA_dir
         print(f"Copying {wsi_fname} to {BMA_dir}")
-        os.system(f"cp {os.path.join(wsi_read_only_dir, wsi_fname)} {BMA_dir}")
+        os.system(f"cp \"{os.path.join(wsi_read_only_dir, wsi_fname)}\" {BMA_dir}")
 
         # extract the topview image
         topview = extract_top_view(
@@ -95,7 +95,7 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     elif specimen_type == "PB":
         # carbon copy the slide to the PB_dir
         print(f"Copying {wsi_fname} to {PB_dir}")
-        os.system(f"cp {os.path.join(wsi_read_only_dir, wsi_fname)} {PB_dir}")
+        os.system(f"cp \"{os.path.join(wsi_read_only_dir, wsi_fname)}\" {PB_dir}")
 
         # extract the topview image
         topview = extract_top_view(
@@ -113,7 +113,7 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     else:
         # carbon copy the slide to the MPBorIBMA_dir
         print(f"Copying {wsi_fname} to {MPBorIBMA_dir}")
-        os.system(f"cp {os.path.join(wsi_read_only_dir, wsi_fname)} {MPBorIBMA_dir}")
+        os.system(f"cp \"{os.path.join(wsi_read_only_dir, wsi_fname)}\" {MPBorIBMA_dir}")
 
         # extract the topview image
         topview = extract_top_view(
@@ -125,7 +125,7 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
         if predicted_specimen_type == "Bone Marrow Aspirate":
             # move the slide from the MPBorIBMA_dir to the BMA_dir
             print(f"Moving {wsi_fname} from {MPBorIBMA_dir} to {BMA_dir}")
-            os.system(f"mv {os.path.join(MPBorIBMA_dir, wsi_fname)} {BMA_dir}")
+            os.system(f"mv \"{os.path.join(MPBorIBMA_dir, wsi_fname)}\" {BMA_dir}")
 
             # save the topview image to the BMA_dir
             topview.save(
@@ -135,7 +135,7 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
         elif predicted_specimen_type == "Peripheral Blood":
             # move the slide from the MPBorIBMA_dir to the PB_dir
             print(f"Moving {wsi_fname} from {MPBorIBMA_dir} to {PB_dir}")
-            os.system(f"mv {os.path.join(MPBorIBMA_dir, wsi_fname)} {PB_dir}")
+            os.system(f"mv \"{os.path.join(MPBorIBMA_dir, wsi_fname)}\" {PB_dir}")
 
             # save the topview image to the PB_dir
             topview.save(
@@ -170,6 +170,6 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
 
             # delete the slide from the MPBorIBMA_dir
             print(f"Deleting {wsi_fname} from {MPBorIBMA_dir}")
-            os.system(f"rm {os.path.join(MPBorIBMA_dir, wsi_fname)}")
+            os.system(f"rm \"{os.path.join(MPBorIBMA_dir, wsi_fname)}\"")
 
     update_log(wsi_fname)
