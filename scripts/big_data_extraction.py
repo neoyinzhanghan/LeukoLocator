@@ -51,8 +51,8 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     # First, ensure that the "Slide" column is treated as a string
     specimen_df["Slide"] = specimen_df["Slide"].astype(str)
 
-    # print the first entry of the Slide column
-    print(specimen_df["Slide"][0])
+    # print the index of the first row
+    print(specimen_df.index[0])
 
     row = specimen_df[
         specimen_df["Slide"].str.lower().str.strip() == wsi_fname.lower().strip()
