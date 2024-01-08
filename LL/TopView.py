@@ -31,6 +31,11 @@ def extract_top_view(wsi_path, save_dir=None):
         level=toplevel,
         dimensions=wsi.level_dimensions[toplevel],
     )
+
+    # make sure to convert topview tp a PIL image in RGB mode
+    if topview.mode != "RGB":
+        topview = topview.convert("RGB")
+
     if save_dir is not None:
         topview.save(os.path.join(save_dir, stem + ".jpg"))
     wsi.close()
