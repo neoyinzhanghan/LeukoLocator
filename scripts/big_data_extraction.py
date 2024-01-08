@@ -47,16 +47,15 @@ wsi_fnames = [fname for fname in wsi_fnames if fname not in lst_processed]
 for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     print(f"Processing {wsi_fname}...")
     wsi_path = os.path.join(wsi_read_only_dir, wsi_fname)
-    
+
     # First, ensure that the "Slide" column is treated as a string
-    specimen_df['Slide'] = specimen_df['Slide'].astype(str)
+    specimen_df["Slide"] = specimen_df["Slide"].astype(str)
 
-    # Then perform the operations
-    specimen_type_box = specimen_df[
+    row = specimen_df[
         specimen_df["Slide"].str.lower().str.strip() == wsi_fname.lower().strip()
-    ]["Tissue Type Code"]
+    ]
 
-    print(specimen_type_box)
+    print(row)
     specimen_type_str = specimen_type_box.values[0]
 
     # if the lower case of the specimen type string contains "bone marrow aspirate"
