@@ -5,6 +5,7 @@ from LL.PBCounter import PBCounter
 from LL.TopView import extract_top_view
 from LL.brain.SpecimenClf import *
 from pathlib import Path
+from openslide.lowlevel import OpenSlideError
 
 specimen_type_fpath = "/media/ssd2/clinical_text_data/tissueType/status_results.csv"
 specimen_df = pd.read_csv(specimen_type_fpath)
@@ -13,6 +14,8 @@ PB_dir = "/media/hdd2/PBs"
 BMA_dir = "/media/hdd1/BMAs"
 MPBorIBMA_dir = "/media/hdd3/neo/MPBorIBMAs"
 log_path = "/home/greg/Documents/neo/tmp/log.txt"
+
+error_dir = "/media/hdd3/neo/open_slide_errors"
 
 topview_saving_dir = "/media/hdd3/neo/topviews_full"
 # this folder has four subfolders: "BMA", "PB", "MPBorIMBA", "Others"
@@ -121,10 +124,15 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
         print(f"Copying {wsi_fname} to {MPBorIBMA_dir}")
         os.system(f'cp "{os.path.join(wsi_read_only_dir, wsi_fname)}" {MPBorIBMA_dir}')
 
-        # extract the topview image
-        topview = extract_top_view(
-            wsi_path=os.path.join(MPBorIBMA_dir, wsi_fname),
-        )
+        try:
+            # extract the topview image
+            topview = extract_top_view(
+                wsi_path=os.path.join(MPBorIBMA_dir, wsi_fname),
+            )
+        except OpenSlideError:
+            # move the slide to the error_dir
+            print(f"Moving {wsi_fname} to {error_dir}")
+            os.system(f'mv "{os.path.join(MPBorIBMA_dir, wsi_fname)}" {error_dir}')
 
         predicted_specimen_type = get_region_type(topview)
 
