@@ -48,17 +48,26 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     print(f"Processing {wsi_fname}...")
     wsi_path = os.path.join(wsi_read_only_dir, wsi_fname)
 
-    # First, ensure that the "Slide" column is treated as a string
-    specimen_df["Slide"] = specimen_df["Slide"].astype(str)
+    # Assuming specimen_df is your DataFrame and wsi_fname is the filename you're searching for.
 
-    # print the index of the first row
-    print(specimen_df.index[0])
+    # First, ensure that the index (if it's a column used as an index) is of type string
+    specimen_df.index = specimen_df.index.astype(str)
 
-    row = specimen_df[
-        specimen_df["Slide"].str.lower().str.strip() == wsi_fname.lower().strip()
+    # Then, perform the operation to match the lowercased and stripped index with the wsi_fname
+    # Also ensure wsi_fname is a string, strip it, and convert it to lowercase
+    wsi_fname_cleaned = str(wsi_fname).lower().strip()
+
+    # Use .loc to locate the row
+    specimen_type_box = specimen_df.loc[
+        specimen_df.index.str.lower().str.strip() == wsi_fname_cleaned,
+        "Part Description",
     ]
 
-    print(row)
+    # If you expect only one match and want to get the single value as a string
+    part_description = (
+        specimen_type_box.iloc[0] if not specimen_type_box.empty else None
+    )
+
     specimen_type_str = specimen_type_box.values[0]
 
     # if the lower case of the specimen type string contains "bone marrow aspirate"
