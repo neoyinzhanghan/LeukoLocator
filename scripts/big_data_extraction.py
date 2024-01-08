@@ -51,6 +51,9 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     # First, ensure that the "Slide" column is treated as a string
     specimen_df["Slide"] = specimen_df["Slide"].astype(str)
 
+    print(specimen_df["Slide"].str.lower().str.strip())
+    print(wsi_fname.lower().strip())
+
     row = specimen_df[
         specimen_df["Slide"].str.lower().str.strip() == wsi_fname.lower().strip()
     ]
