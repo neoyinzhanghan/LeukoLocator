@@ -9,8 +9,8 @@ from pathlib import Path
 specimen_type_fpath = "/media/ssd2/clinical_text_data/tissueType/status_results.csv"
 specimen_df = pd.read_csv(specimen_type_fpath)
 wsi_read_only_dir = "/pesgisipth/NDPI"
-PB_dir = "/media/hdd1/PBs"
-BMA_dir = "/media/hdd2/BMAs"
+PB_dir = "/media/hdd2/PBs"
+BMA_dir = "/media/hdd1/BMAs"
 MPBorIBMA_dir = "/media/hdd3/neo/MPBorIBMAs"
 log_path = "/home/greg/Documents/neo/tmp/log.txt"
 
