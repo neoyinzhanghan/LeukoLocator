@@ -48,9 +48,11 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     print(f"Processing {wsi_fname}...")
     wsi_path = os.path.join(wsi_read_only_dir, wsi_fname)
 
-    specimen_type_box = specimen_df[specimen_df["Slide"] == wsi_fname][
-        "Tissue Type Code"
-    ]
+    # Assuming wsi_fname is a string containing the filename you want to match.
+    # Convert both to lower case and strip whitespaces before comparing
+    specimen_type_box = specimen_df[
+        specimen_df["Slide"].str.lower().str.strip() == wsi_fname.lower().strip()
+    ]["Tissue Type Code"]
 
     print(specimen_type_box)
     specimen_type_str = specimen_type_box.values[0]
