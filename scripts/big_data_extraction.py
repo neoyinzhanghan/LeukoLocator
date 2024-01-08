@@ -51,6 +51,8 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
     specimen_type_box = specimen_df[specimen_df["Slide"] == wsi_fname][
         "Tissue Type Code"
     ]
+
+    print(specimen_type_box)
     specimen_type_str = specimen_type_box.values[0]
 
     # if the lower case of the specimen type string contains "bone marrow aspirate"
