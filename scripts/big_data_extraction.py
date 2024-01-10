@@ -132,6 +132,7 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
             wsi_path=os.path.join(PB_dir, wsi_fname),
             hoarding=True,
             continue_on_error=True,
+            ignore_specimen_type=True,
         )
         pbc.tally_differential()
 
