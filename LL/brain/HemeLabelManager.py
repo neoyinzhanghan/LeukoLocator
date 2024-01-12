@@ -64,6 +64,11 @@ def remove_data_parallel(old_state_dict):
 
 def predict_on_cpu(image, model):
     # Define the transformations
+
+    # make sure the image is RGB if it is not already
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
     image_transforms = transforms.Compose(
         [
             transforms.Resize(96),
