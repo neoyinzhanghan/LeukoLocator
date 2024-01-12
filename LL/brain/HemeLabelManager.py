@@ -62,6 +62,38 @@ def remove_data_parallel(old_state_dict):
     return new_state_dict
 
 
+def predict_on_cpu(image, model):
+    # Define the transformations
+    image_transforms = transforms.Compose(
+        [
+            transforms.Resize(96),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]),
+        ]
+    )
+
+    # Apply transformations to the input image and create a batch
+    image = image_transforms(image).float().unsqueeze(0)
+
+    # Set the model to evaluation mode and make predictions
+    model.eval()
+
+    # Move the image to the CPU if available
+    device = torch.device("cpu")
+
+    image = image.to(device)
+
+    with torch.no_grad():
+        output = model(image)
+
+    # Process the output as in the original code snippet
+    output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
+    prediction = tuple(output[0])
+
+    # Return the prediction
+    return prediction
+
+
 def predict_batch(pil_images, model):
     # Define the transformations
     image_transforms = transforms.Compose(
