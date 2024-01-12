@@ -3,12 +3,12 @@ import pandas as pd
 from pathlib import Path
 from tqdm import tqdm
 
-save_path = "/media/ssd2/dh_labelled_data/DeepHeme2/PBS/mskcc_pb_abnormal.csv"
+save_path = (
+    "/media/ssd2/dh_labelled_data/DeepHeme1/MSK_repo_normal/mskcc_bma_normal.csv"
+)
 
 cartridge_paths = [
-    "/media/ssd2/dh_labelled_data/DeepHeme2/PBS/labelled_cartridge_0",
-    "/media/ssd2/dh_labelled_data/DeepHeme2/PBS/labelled_cartridge_1",
-    "/media/ssd2/dh_labelled_data/DeepHeme2/PBS/labelled_cartridge_2",
+    "/media/ssd2/dh_labelled_data/DeepHeme1/MSK_repo_normal",
 ]
 
 # each cartridge path contains a number of subfolders, each subfolder is a label
@@ -32,17 +32,17 @@ for cartridge_path in cartridge_paths:
     for subfolder in os.listdir(cartridge_path):
         if len(subfolder) < 5:
             for f in os.listdir(os.path.join(cartridge_path, subfolder)):
-                # check if the file is a .jpg file
-                if f.endswith(".jpg"):
+                # check if the file is a .png file
+                if f.endswith(".png"):
                     fpaths.append(os.path.join(cartridge_path, subfolder, f))
 
 df = pd.DataFrame(fpaths, columns=["fpath"])
 
 df["institution"] = "MSKCC"
-df["abnormal"] = 1
-df["specimen_type"] = "PB"
-df["scanner"] = "Hamamatsu"
-df["sample_method"] = "random"
+df["abnormal"] = 0
+df["specimen_type"] = "BMA"
+df["scanner"] = "Aperio"
+df["sample_method"] = "manual"
 df["split"] = "NA"
 df["label"] = df["fpath"].apply(lambda x: Path(x).parent.name)
 
