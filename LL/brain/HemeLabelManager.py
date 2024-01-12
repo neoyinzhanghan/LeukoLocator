@@ -81,6 +81,7 @@ def predict_on_cpu(image, model):
     image = image_transforms(image).float().unsqueeze(0)
 
     # Set the model to evaluation mode and make predictions
+    model.to("cpu")
     model.eval()
 
     # Move the image to the CPU if available
