@@ -40,10 +40,10 @@ for cartridge_path in cartridge_paths:
 df = pd.DataFrame(fpaths, columns=["fpath"])
 
 df["institution"] = "MSKCC"
-df["abnormal"] = 0
+df["abnormal"] = 1
 df["specimen_type"] = "BMA"
-df["scanner"] = "Aperio"
-df["sample_method"] = "manual"
+df["scanner"] = "Hamamatsu"
+df["sample_method"] = "random"
 df["split"] = "NA"
 df["label"] = df["fpath"].apply(lambda x: Path(x).parent.name)
 
