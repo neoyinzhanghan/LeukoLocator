@@ -288,6 +288,9 @@ class HemeLabelManager:
         # for each image, save the feature vector
         for i, image_path in enumerate(image_paths):
             # save the feature vector as a torch tensor
+            os.makedirs(
+                os.path.join(os.path.dirname(image_path), "features"), exist_ok=True
+            )
 
             save_path = os.path.join(
                 os.path.dirname(image_path),
