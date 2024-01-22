@@ -7,12 +7,30 @@ import torch
 import torch.nn as nn
 import ray
 import numpy as np
-import cv2
+import os
+from PIL import Image
 from torchvision import transforms
 from collections import OrderedDict
 
 # Within package imports ###########################################################################
 from LL.resources.assumptions import *
+
+
+# class Myresnext50(nn.Module):
+#     def __init__(self, my_pretrained_model, num_classes=23):
+#         super(Myresnext50, self).__init__()
+#         self.pretrained = my_pretrained_model
+#         self.my_new_layers = nn.Sequential(
+#             nn.Linear(1000, 100), nn.ReLU(), nn.Linear(100, num_classes)
+#         )
+#         self.num_classes = num_classes
+
+#     def forward(self, x):
+#         x = self.pretrained(x)
+#         x = self.my_new_layers(x)
+
+#         pred = torch.sigmoid(x.reshape(x.shape[0], 1, self.num_classes))
+#         return pred
 
 
 class Myresnext50(nn.Module):
@@ -24,12 +42,15 @@ class Myresnext50(nn.Module):
         )
         self.num_classes = num_classes
 
-    def forward(self, x):
-        x = self.pretrained(x)
-        x = self.my_new_layers(x)
-
+    def forward(self, x, return_features=False):
+        features = self.pretrained(x)
+        x = self.my_new_layers(features)
         pred = torch.sigmoid(x.reshape(x.shape[0], 1, self.num_classes))
-        return pred
+
+        if return_features:
+            return pred, features
+        else:
+            return pred
 
 
 def model_create(num_classes=23, path="not_existed_path"):
@@ -132,6 +153,40 @@ def predict_batch(pil_images, model):
     return predictions
 
 
+def get_features_batch(pil_images, model):
+    # Define the transformations
+    image_transforms = transforms.Compose(
+        [
+            transforms.Resize(96),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]),
+        ]
+    )
+
+    # Apply transformations to each image and create a batch
+    batch = torch.stack([image_transforms(image).float() for image in pil_images])
+
+    # Move the batch to the GPU if available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    batch = batch.to(device)
+
+    # Set the model to evaluation mode and make predictions
+    model.eval()
+    with torch.no_grad():
+        outputs = model(batch)
+
+    # Process each output as in the original code snippet
+    predictions = []
+    features = []
+    for output in outputs:
+        output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
+        predictions.append(tuple(output[0]))
+        features.append(output)
+
+    # Return a list of predictions in the same order as the input images
+    return predictions, features
+
+
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
 @ray.remote(num_gpus=1)
 class HemeLabelManager:
@@ -216,3 +271,33 @@ class HemeLabelManager:
             processed_wbc_candidates.append(wbc_candidate)
 
         return processed_wbc_candidates
+
+    def async_save_wbc_image_feature_batch(self, image_paths):
+        """For each image, save the image;s feature vector to save_dir."""
+
+        # first read in the batch of images using PIL
+        if not do_zero_pad:
+            pil_images = [Image.open(image_path) for image_path in image_paths]
+        else:
+            pil_images = [
+                Image.open(image_path).convert("RGB") for image_path in image_paths
+            ]
+
+        _, features = get_features_batch(pil_images, self.model)
+
+        # for each image, save the feature vector
+        for i, image_path in enumerate(image_paths):
+            # save the feature vector as a torch tensor
+
+            save_path = os.path.join(
+                os.path.dirname(image_path),
+                "features",
+                os.path.basename(image_path).replace(".jpg", ".pt"),
+            )
+
+            torch.save(
+                features[i],
+                save_path,
+            )
+
+        return image_paths
