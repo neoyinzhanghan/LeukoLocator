@@ -15,13 +15,17 @@ from tqdm import tqdm
 cell_image_paths = []
 
 for wsi_folder in tqdm(os.listdir(dump_dir), desc="Gathering cell image paths"):
-    if not wsi_folder.startswith("ERROR"):
+    if not wsi_folder.startswith("ERROR") and os.path.isdir(
+        os.path.join(dump_dir, wsi_folder)
+    ):
         cells_folder = os.path.join(dump_dir, wsi_folder, "cells")
-        for cell_type in os.listdir(cells_folder):
-            cell_type_folder = os.path.join(cells_folder, cell_type)
-            for f in os.listdir(cell_type_folder):
-                if f.endswith(".jpg"):
-                    cell_image_paths.append(os.path.join(cell_type_folder, f))
+        if os.path.isdir(cells_folder):
+            for cell_type in os.listdir(cells_folder):
+                if os.path.isdir(os.path.join(cells_folder, cell_type)):
+                    cell_type_folder = os.path.join(cells_folder, cell_type)
+                    for f in os.listdir(cell_type_folder):
+                        if f.endswith(".jpg"):
+                            cell_image_paths.append(os.path.join(cell_type_folder, f))
 
 print(f"Found {len(cell_image_paths)} cell images.")
 
