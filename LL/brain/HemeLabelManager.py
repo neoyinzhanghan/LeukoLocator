@@ -178,6 +178,8 @@ def get_features_batch(pil_images, model):
     # Process each output as in the original code snippet
     features = []
     for output in outputs:
+        # print the shape of the output
+        print(output.shape)
         output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
         features.append(output)
 
