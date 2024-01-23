@@ -173,18 +173,16 @@ def get_features_batch(pil_images, model):
     # Set the model to evaluation mode and make predictions
     model.eval()
     with torch.no_grad():
-        outputs = model(batch)
+        _, outputs = model(batch, return_features=True)
 
     # Process each output as in the original code snippet
-    predictions = []
     features = []
     for output in outputs:
         output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
-        predictions.append(tuple(output[0]))
         features.append(output)
 
     # Return a list of predictions in the same order as the input images
-    return predictions, features
+    return features
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
@@ -283,7 +281,7 @@ class HemeLabelManager:
                 Image.open(image_path).convert("RGB") for image_path in image_paths
             ]
 
-        _, features = get_features_batch(pil_images, self.model)
+        features = get_features_batch(pil_images, self.model)
 
         # for each image, save the feature vector
         for i, image_path in enumerate(image_paths):
