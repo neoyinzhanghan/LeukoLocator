@@ -8,6 +8,7 @@ import torch.nn as nn
 import ray
 import numpy as np
 import os
+import sys
 from PIL import Image
 from torchvision import transforms
 from collections import OrderedDict
@@ -180,6 +181,8 @@ def get_features_batch(pil_images, model):
     for output in outputs:
         # print the shape of the output
         print(output.shape)
+
+        sys.exit()
         output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
         features.append(output)
 
