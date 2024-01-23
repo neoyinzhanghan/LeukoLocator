@@ -180,10 +180,8 @@ def get_features_batch(pil_images, model):
     features = []
     for output in outputs:
         # print the shape of the output
-        print(output.shape)
-
-        sys.exit()
-        output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
+        # print(output.shape)
+        output = output.detach().cpu().numpy()
         features.append(output)
 
     # Return a list of predictions in the same order as the input images
