@@ -41,3 +41,5 @@ df = pd.concat(dfs)
 
 # save the dataframe as a csv file
 save_path = os.path.join(dump_dir, "all_cells_info.csv")
+
+df.to_csv(save_path, index=False)
