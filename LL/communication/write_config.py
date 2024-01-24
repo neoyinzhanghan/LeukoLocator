@@ -8,7 +8,7 @@ import yaml
 
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 def numpy_to_python(value):

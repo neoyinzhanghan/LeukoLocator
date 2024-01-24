@@ -8,7 +8,7 @@ import pandas as pd
 import statsmodels.api as sm
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 def last_min_before_last_max(local_minima, local_maxima, last_n=1):

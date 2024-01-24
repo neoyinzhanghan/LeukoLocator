@@ -1,7 +1,7 @@
 import pandas as pd
 from tqdm import tqdm
 from PIL import Image
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from LL.brain.HemeLabelManager import model_create, predict_on_cpu
 
 df_path = "/home/greg/Documents/neo/tmp/conformal_data_cell_info.csv"

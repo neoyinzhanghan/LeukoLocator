@@ -1,5 +1,5 @@
 import pandas as pd
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 csv_path = "/Users/neo/Documents/Research/DeepHeme/LLResults/LLCKPTS/tmp/conformal_data_cell_info_with_scores.csv"

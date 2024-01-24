@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from LL.PBCounter import PBCounter
 from LL.brain.TextParser import read_and_transpose_as_df
 from pathlib import Path

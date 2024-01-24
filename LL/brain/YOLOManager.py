@@ -15,7 +15,7 @@ import sys
 from ultralytics import YOLO
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from LL.brain.metrics import bb_intersection_over_union
 from LL.vision.processing import zero_pad
 from LL.WBCCandidate import WBCCandidate

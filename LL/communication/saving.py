@@ -8,7 +8,7 @@ from tqdm import tqdm
 import numpy as np
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 def save_wbc_candidates(pbc, save_dir=os.path.join(dump_dir, 'wbc_candidates'), image_type='padded_YOLO_bbox_image'):

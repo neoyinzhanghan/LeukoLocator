@@ -5,7 +5,7 @@ import torchvision.models as models
 import pytorch_lightning as pl
 import torchmetrics
 
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from torchvision import transforms
 
 from PIL import Image as pil_image

@@ -14,7 +14,7 @@ from torchvision import transforms
 from collections import OrderedDict
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 # class Myresnext50(nn.Module):

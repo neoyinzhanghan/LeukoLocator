@@ -9,7 +9,7 @@ from PIL import Image, ImageOps
 
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from LL.vision.masking import otsu_white_mask
 
 

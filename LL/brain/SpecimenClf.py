@@ -8,7 +8,7 @@ from torchvision.datasets import ImageFolder
 from torchvision.models import resnet50, ResNet50_Weights
 from torch.utils.data import DataLoader
 from PIL import Image
-from LL.resources.assumptions import specimen_clf_checkpoint_path
+from LL.resources.PBassumptions import specimen_clf_checkpoint_path
 
 class_dct = {
     0: "Bone Marrow Aspirate",

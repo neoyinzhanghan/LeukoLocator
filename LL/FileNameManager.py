@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 # Within package imports ############################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 class FileNameManager:

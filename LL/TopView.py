@@ -13,7 +13,7 @@ from PIL import Image
 
 # Within package imports ###########################################################################
 from LL.vision.masking import get_white_mask, get_obstructor_mask, get_top_view_mask
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from LL.vision.processing import read_with_timeout
 
 
@@ -57,14 +57,16 @@ class TopView:
     - downsampling_rate : the downsampling rate of the top view
     - level : the level of the top view in the WSI
 
+    - is_bma : whether the top view is a bone marrow aspirate top view
     - verbose : whether to print out the progress of the top view
     """
 
-    def __init__(self, image, downsampling_rate, level, verbose=False):
+    def __init__(self, image, downsampling_rate, level, verbose=False, is_bma=False):
         """Initialize a TopView object.
         Image is a PIL image. Check the type of image. If not PIL image, raise ValueError.
         """
         self.verbose = verbose
+        self.is_bma = is_bma
 
         if self.verbose:
             print("Checking the type of image...")
@@ -77,17 +79,50 @@ class TopView:
         if self.verbose:
             print("Printing various masks of the top view...")
 
-        try:
-            self.obstructor_mask = get_obstructor_mask(image)
-            self.white_mask = get_white_mask(image)
-            self.top_view_mask = get_top_view_mask(
-                image, obstructor_mask=self.obstructor_mask, white_mask=self.white_mask
-            )
-        except Exception as e:
-            print(e)
-            # the obstructor mask should be 1 everywhere
-            # the white mask should be 0 everywhere
-            # the top view mask should be 1 everywhere
+        if not is_bma:
+            try:
+                self.obstructor_mask = get_obstructor_mask(image)
+                self.white_mask = get_white_mask(image)
+                self.top_view_mask = get_top_view_mask(
+                    image,
+                    obstructor_mask=self.obstructor_mask,
+                    white_mask=self.white_mask,
+                )
+            except Exception as e:
+                print(e)
+                # the obstructor mask should be 1 everywhere
+                # the white mask should be 0 everywhere
+                # the top view mask should be 1 everywhere
+                self.obstructor_mask = (
+                    np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
+                )
+                self.white_mask = np.zeros(
+                    (image.size[1], image.size[0]), dtype=np.uint8
+                )
+                self.top_view_mask = (
+                    np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
+                )
+
+            # if the proportion of white pixels in the top view mass is less than min_top_view_mask_prop, then change the top view mask to be 1 everywhere
+            if (
+                self.top_view_mask.sum() / (self.top_view_mask.size * 255)
+                < min_top_view_mask_prop
+            ):
+                self.obstructor_mask = (
+                    np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
+                )
+                self.white_mask = np.zeros(
+                    (image.size[1], image.size[0]), dtype=np.uint8
+                )
+                self.top_view_mask = (
+                    np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
+                )
+
+            self.width = image.size[0]
+            self.height = image.size[1]
+            self.downsampling_rate = downsampling_rate
+
+        else:
             self.obstructor_mask = (
                 np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
             )
@@ -96,22 +131,9 @@ class TopView:
                 np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
             )
 
-        # if the proportion of white pixels in the top view mass is less than min_top_view_mask_prop, then change the top view mask to be 1 everywhere
-        if (
-            self.top_view_mask.sum() / (self.top_view_mask.size * 255)
-            < min_top_view_mask_prop
-        ):
-            self.obstructor_mask = (
-                np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
-            )
-            self.white_mask = np.zeros((image.size[1], image.size[0]), dtype=np.uint8)
-            self.top_view_mask = (
-                np.ones((image.size[1], image.size[0]), dtype=np.uint8) * 255
-            )
-
-        self.width = image.size[0]
-        self.height = image.size[1]
-        self.downsampling_rate = downsampling_rate
+            self.width = image.size[0]
+            self.height = image.size[1]
+            self.downsampling_rate = downsampling_rate
 
     def is_peripheral_blood(self):
         """Return True iff the top view is a peripheral blood top view."""

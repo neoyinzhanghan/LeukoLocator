@@ -9,7 +9,7 @@ import numpy as np
 
 # Within package imports ###########################################################################
 from LL.vision.image_quality import VoL
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 class WBCCandidate:

@@ -1,4 +1,4 @@
-from LL.resources.assumptions import exception_list, dump_dir
+from LL.resources.PBassumptions import exception_list, dump_dir
 from LL.PBCounter import PBCounter
 import os
 import sys

@@ -7,7 +7,7 @@ from PIL import Image, ImageOps
 import threading
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 def crop_region_view(

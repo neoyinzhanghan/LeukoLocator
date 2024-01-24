@@ -17,12 +17,12 @@ from ray.exceptions import RayTaskError
 from pathlib import Path
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from LL.FileNameManager import FileNameManager
 from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
 from LL.SearchView import SearchView
-from LL.FocusRegion import *
-from LL.FocusRegionsTracker import FocusRegionsTracker
+from LL.PBFocusRegion import *
+from LL.PBFocusRegionsTracker import FocusRegionsTracker
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
 from LL.Differential import Differential, to_count_dict

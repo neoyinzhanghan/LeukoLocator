@@ -1,6 +1,6 @@
 import ray
 
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from LL.brain.HemeLabelManager import *
 from LL.brain.utils import *
 from ray.exceptions import RayTaskError

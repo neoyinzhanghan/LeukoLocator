@@ -1,7 +1,7 @@
 import numpy as np
 import ray
 
-from LL.FocusRegion import FocusRegion
+from LL.PBFocusRegion import FocusRegion
 
 
 @ray.remote

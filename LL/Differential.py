@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 # Within package imports ###########################################################################
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 
 
 class Differential:

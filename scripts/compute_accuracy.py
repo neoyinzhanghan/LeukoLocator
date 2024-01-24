@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from LL.resources.assumptions import *
+from LL.resources.PBassumptions import *
 from pathlib import Path
 
 

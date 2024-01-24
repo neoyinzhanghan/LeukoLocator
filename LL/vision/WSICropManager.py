@@ -7,8 +7,8 @@ import openslide
 import ray
 
 # Within package imports ###########################################################################
-from LL.FocusRegion import FocusRegion
-from LL.resources.assumptions import *
+from LL.BMAFocusRegion import FocusRegion
+from LL.resources.PBassumptions import *
 from LL.vision.image_quality import VoL
 
 
@@ -70,3 +70,15 @@ class WSICropManager:
         focus_region.get_image(image)
 
         return focus_region
+
+    def async_get_bma_focus_region_batch(self, focus_region_coords):
+        """Return a list of focus regions."""
+
+        focus_regions = []
+        for focus_region_coord in focus_region_coords:
+            image = self.crop(focus_region_coord)
+
+            focus_region = FocusRegion(coordinate=focus_region_coord, image=image)
+            focus_regions.append(focus_region)
+
+        return focus_regions
