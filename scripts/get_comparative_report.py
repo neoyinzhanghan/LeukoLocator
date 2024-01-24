@@ -3,14 +3,14 @@ import pandas as pd
 from tqdm import tqdm
 
 LL_report_path = (
-    "/Users/neo/Documents/Research/DeepHeme/LLResults/V2-full extract/PB_results.csv"
+    "/Users/neo/Documents/Research/DeepHeme/LLResults/V3 FullExtract/all_cells_info.csv"
 )
 machine_report_paths = [
     "/Users/neo/Documents/Research/DeepHeme/LLResults/MachineResults/CBC_PB_H18-H23.csv",
     "/Users/neo/Documents/Research/DeepHeme/LLResults/MachineResults/CBC_PB_H15-H18.csv",
 ]
 diagnosis_path = "/Users/neo/Documents/Research/DeepHeme/LLResults/diagnoses.csv"
-output_dir = "/Users/neo/Documents/Research/DeepHeme/LLResults/MachineResults"
+output_dir = "/Users/neo/Documents/Research/DeepHeme/LLResults/V3 FullExtract"
 
 # open the LL report
 LL_report = pd.read_csv(LL_report_path)
