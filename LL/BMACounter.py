@@ -240,24 +240,590 @@ class BMACounter:
         self.focus_regions = all_results
 
         self.profiling_data["cropping_focus_regions_time"] = time.time() - start_time
-    
+
     def filter_focus_regions(self):
+        start_time = time.time()
 
-        ft_tracker = FocusRegionsTracker(self.focus_regions)
+        fr_tracker = FocusRegionsTracker(self.focus_regions)
 
-        pass
+        fr_tracker.compute_resnet_confidence()
+        selected_focus_regions = fr_tracker.get_top_n_focus_regions()
+        fr_tracker.save_results(self.save_dir)
+
+        self.focus_regions = selected_focus_regions
+
+        self.profiling_data["filtering_focus_regions_time"] = time.time() - start_time
+
+        if self.hoarding:
+            start_time = time.time()
+            fr_tracker.save_selected_focus_regions(self.save_dir)
+            self.profiling_data["hoarding_focus_regions_time"] = (
+                time.time() - start_time
+            )
+        else:
+            self.profiling_data["hoarding_focus_regions_time"] = 0
 
     def find_wbc_candidates(self):
-        """Return the WBC candidates of the highest magnification view."""
+        """Update the wbc_candidates of the PBCounter object."""
 
-        pass  # this is exactly the same function as in PBCounter -- note with different model checkpoint for YOLO -- I should train my own YOLOv8 for this
+        start_time = time.time()
+
+        # make the directory save_dir/focus_regions/YOLO_df
+        os.makedirs(
+            os.path.join(self.save_dir, "focus_regions", "YOLO_df"), exist_ok=True
+        )
+
+        # make the directory save_dir/cells
+        os.makedirs(os.path.join(self.save_dir, "cells"), exist_ok=True)
+
+        ray.shutdown()
+        # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+        ray.init()
+
+        if self.verbose:
+            print("Initializing YOLOManager")
+        task_managers = [
+            YOLOManager.remote(
+                YOLO_ckpt_path,
+                YOLO_conf_thres,
+                save_dir=self.save_dir,
+                hoarding=self.hoarding,
+            )
+            for _ in range(num_YOLOManagers)
+        ]
+
+        list_of_batches = create_list_of_batches_from_list(
+            self.focus_regions, YOLO_batch_size
+        )
+
+        tasks = {}
+        all_results = []
+        new_focus_regions = []
+
+        for i, batch in enumerate(list_of_batches):
+            manager = task_managers[i % num_YOLOManagers]
+            task = manager.async_find_wbc_candidates_batch.remote(batch)
+            tasks[task] = batch
+
+        with tqdm(
+            total=len(self.focus_regions), desc="Detecting WBC candidates"
+        ) as pbar:
+            while tasks:
+                done_ids, _ = ray.wait(list(tasks.keys()))
+
+                for done_id in done_ids:
+                    try:
+                        batch_focus_regions = ray.get(done_id)
+                        for focus_region in batch_focus_regions:
+                            if focus_region is not None:
+                                new_focus_regions.append(focus_region)
+                                for wbc_candidate in focus_region.wbc_candidates:
+                                    all_results.append(wbc_candidate)
+
+                            pbar.update()
+
+                    except RayTaskError as e:
+                        print(f"Task for focus {tasks[done_id]} failed with error: {e}")
+
+                    del tasks[done_id]
+
+        if self.verbose:
+            print(f"Shutting down Ray")
+
+        ray.shutdown()
+
+        self.wbc_candidates = all_results  # the candidates here should be aliased with the candidates saved in focus_regions
+        self.focus_regions = new_focus_regions  # these do not include all the focus regions, only the ones that have wbc_candidates before the max_num_candidates is reached
+
+        # for i, focus_region in enumerate(self.focus_regions):
+        #     manager = task_managers[i % num_YOLOManagers]
+        #     task = manager.async_find_wbc_candidates.remote(focus_region)
+        #     tasks[task] = focus_region
+
+        # with tqdm(
+        #     total=len(self.focus_regions), desc="Detecting WBC candidates"
+        # ) as pbar:
+        #     while tasks:
+        #         done_ids, _ = ray.wait(list(tasks.keys()))
+
+        #         for done_id in done_ids:
+        #             try:
+        #                 new_focus_region = ray.get(done_id)
+        #                 for wbc_candidate in new_focus_region.wbc_candidates:
+        #                     all_results.append(wbc_candidate)
+        #                 if len(all_results) > max_num_candidates:
+        #                     raise TooManyCandidatesError(
+        #                         f"Too many candidates found. max_num_candidates {max_num_candidates} is exceeded. Increase max_num_candidates or check code and slide for error."
+        #                     )
+        #                 new_focus_regions.append(new_focus_region)
+
+        #             except RayTaskError as e:
+        #                 print(f"Task for focus {tasks[done_id]} failed with error: {e}")
+
+        #             pbar.update()
+        #             del tasks[done_id]
+
+        # Regardless of hoarding, save a plot of the distribution of confidence score for all the detected cells, the distribution of number of cells detected per region, and the mean and sd thereof.
+        # Plots should be saved at save_dir/focus_regions/YOLO_confidence.jpg and save_dir/focus_regions/num_cells_per_region.jpg
+        # Save a dataframe which trackers the number of cells detected for each region in save_dir/focus_regions/num_cells_per_region.csv
+        # Save a big cell dataframe which have the cell id, region_id, confidence, VoL, and coordinates in save_dir/cells/cells_info.csv
+        # The mean and sd should be saved as a part of the save_dir/cells/cell_detection.yaml file using yaml
+
+        # first compile the big cell dataframe
+        # traverse through the wbc_candidates and add their info
+        # create a list of dictionaries
+        big_cell_df_list = []
+
+        for i in range(len(self.wbc_candidates)):
+            # get the ith wbc_candidate
+            wbc_candidate = self.wbc_candidates[i]
+
+            # get the cell_info of the wbc_candidate as a dictionary
+            cell_info = {
+                "local_idx": wbc_candidate.local_idx,
+                "region_idx": wbc_candidate.focus_region_idx,
+                "confidence": wbc_candidate.confidence,
+                "VoL": wbc_candidate.VoL,
+                "TL_x": wbc_candidate.YOLO_bbox[0],
+                "TL_y": wbc_candidate.YOLO_bbox[1],
+                "BR_x": wbc_candidate.YOLO_bbox[2],
+                "BR_y": wbc_candidate.YOLO_bbox[3],
+            }
+
+            # add the cell_info to the list
+            big_cell_df_list.append(cell_info)
+
+        # create the big cell dataframe
+        big_cell_df = pd.DataFrame(big_cell_df_list)
+
+        # save the big cell dataframe
+        big_cell_df.to_csv(
+            os.path.join(self.save_dir, "cells", "cells_info.csv"), index=False
+        )
+
+        # second compile the num_cells_per_region dataframe which can be found from len(focus_region.wbc_candidate_bboxes) for each focus_region in self.focus_regions
+
+        # create a list of dictionaries
+        num_cells_per_region_df_list = []
+
+        for i in range(len(self.focus_regions)):
+            # get the ith focus_region
+            focus_region = self.focus_regions[i]
+
+            # get the number of cells detected in the focus_region
+            num_cells = len(focus_region.wbc_candidate_bboxes)
+
+            # add the num_cells to the list
+            num_cells_per_region_df_list.append(
+                {"focus_region_idx": focus_region.idx, "num_cells": num_cells}
+            )
+
+        # create the num_cells_per_region dataframe
+        num_cells_per_region_df = pd.DataFrame(num_cells_per_region_df_list)
+
+        # save the num_cells_per_region dataframe
+        num_cells_per_region_df.to_csv(
+            os.path.join(self.save_dir, "focus_regions", "num_cells_per_region.csv"),
+            index=False,
+        )
+
+        save_hist_KDE_rug_plot(
+            df=big_cell_df,
+            column_name="confidence",
+            save_path=os.path.join(self.save_dir, "cells", "YOLO_confidence.jpg"),
+            title="YOLO Confidence Distribution of Selected Cells",
+        )
+
+        save_hist_KDE_rug_plot(
+            df=num_cells_per_region_df,
+            column_name="num_cells",
+            save_path=os.path.join(
+                self.save_dir, "focus_regions", "num_cells_per_region.jpg"
+            ),
+            title="Number of Cells Detected in Selected Focus Regions",
+        )
+
+        # grab the info for the csv file as a dictionary
+        num_cells_per_region_mean = num_cells_per_region_df["num_cells"].mean()
+        num_cells_per_region_sd = num_cells_per_region_df["num_cells"].std()
+
+        YOLO_confidence_mean = big_cell_df["confidence"].mean()
+        YOLO_confidence_sd = big_cell_df["confidence"].std()
+
+        # total number of cells detected
+        num_cells_detected = len(big_cell_df)
+        # total number of focus regions scanned
+        num_focus_regions_scanned = len(self.focus_regions)
+
+        VoL_passed = []
+        VoL_rejected = []
+        for candidate in tqdm(self.wbc_candidates, desc="Cell VoL Filtering"):
+            if candidate.VoL >= min_cell_VoL:
+                VoL_passed.append(candidate)
+            else:
+                VoL_rejected.append(candidate)
+
+        self.wbc_candidates = VoL_passed
+
+        # number of VoL passed cells
+        num_VoL_passed = len(VoL_passed)
+
+        # number of VoL rejected cells
+        num_VoL_rejected = len(VoL_rejected)
+
+        # add the mean and sd to the save_dir/cells/cell_detection.yaml file using yaml
+        cell_detection_csv_path = os.path.join(
+            self.save_dir, "cells", "cell_detection.csv"
+        )
+
+        # first create the dictionary
+        cell_detection_dict = {
+            "num_cells_detected": numpy_to_python(num_cells_detected),
+            "num_VoL_passed": numpy_to_python(num_VoL_passed),
+            "num_VoL_rejected": numpy_to_python(num_VoL_rejected),
+            "num_focus_regions_scanned": numpy_to_python(num_focus_regions_scanned),
+            "num_cells_per_region_mean": numpy_to_python(num_cells_per_region_mean),
+            "num_cells_per_region_sd": numpy_to_python(num_cells_per_region_sd),
+            "YOLO_confidence_mean": numpy_to_python(YOLO_confidence_mean),
+            "YOLO_confidence_sd": numpy_to_python(YOLO_confidence_sd),
+        }
+
+        # then write the dictionary to the csv file with keys as the first row and values as the second row use panda
+        cell_detection_df = pd.DataFrame.from_dict(cell_detection_dict, orient="index")
+        cell_detection_df.to_csv(cell_detection_csv_path, header=False)
+
+        self.profiling_data["find_wbc_candidates_time"] = time.time() - start_time
+
+        if self.hoarding:
+            start_time = time.time()
+            os.makedirs(
+                os.path.join(self.save_dir, "focus_regions", "high_mag_annotated"),
+                exist_ok=True,
+            )
+            os.makedirs(
+                os.path.join(self.save_dir, "focus_regions", "high_mag_unannotated"),
+                exist_ok=True,
+            )
+            for focus_region in tqdm(
+                self.focus_regions, desc="Saving focus regions high mag images"
+            ):
+                focus_region.save_high_mag_image(self.save_dir)
+
+            os.makedirs(os.path.join(self.save_dir, "cells", "blurry"), exist_ok=True)
+            for candidate in tqdm(VoL_rejected, desc="Saving VoL rejected cell images"):
+                candidate._save_YOLO_bbox_image(self.save_dir)
+
+            self.profiling_data["high_mag_focus_regions_hoarding_time"] = (
+                time.time() - start_time
+            )
+
+        else:
+            self.profiling_data["high_mag_focus_regions_hoarding_time"] = 0
 
     def label_wbc_candidates(self):
-        """Label the WBC candidates."""
+        """Update the labels of the wbc_candidates of the PBCounter object."""
 
-        pass  # this is exactly the same function as in PBCounter
+        start_time = time.time()
+
+        if self.wbc_candidates == [] or self.wbc_candidates is None:
+            raise NoCellFoundError(
+                "No WBC candidates found. Please run find_wbc_candidates() first. If problem persists, the slide may be problematic."
+            )
+        ray.shutdown()
+        # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+        ray.init()
+
+        list_of_batches = create_list_of_batches_from_list(
+            self.wbc_candidates, cell_clf_batch_size
+        )
+
+        if self.verbose:
+            print("Initializing HemeLabelManager")
+        task_managers = [
+            HemeLabelManager.remote(HemeLabel_ckpt_path) for _ in range(num_labellers)
+        ]
+
+        tasks = {}
+        all_results = []
+
+        for i, batch in enumerate(list_of_batches):
+            manager = task_managers[i % num_labellers]
+            task = manager.async_label_wbc_candidate_batch.remote(batch)
+            tasks[task] = batch
+
+        with tqdm(
+            total=len(self.wbc_candidates), desc="Classifying WBC candidates"
+        ) as pbar:
+            while tasks:
+                done_ids, _ = ray.wait(list(tasks.keys()))
+
+                for done_id in done_ids:
+                    try:
+                        batch = ray.get(done_id)
+                        for wbc_candidate in batch:
+                            all_results.append(wbc_candidate)
+
+                            pbar.update()
+
+                    except RayTaskError as e:
+                        print(
+                            f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
+                        )
+
+                    del tasks[done_id]
+
+        if self.verbose:
+            print(f"Shutting down Ray")
+        ray.shutdown()
+
+        # for i, wbc_candidate in enumerate(self.wbc_candidates):
+        #     manager = task_managers[i % num_labellers]
+        #     task = manager.async_label_wbc_candidate.remote(wbc_candidate)
+        #     tasks[task] = wbc_candidate
+
+        # with tqdm(
+        #     total=len(self.wbc_candidates), desc="Classifying WBC candidates"
+        # ) as pbar:
+        #     while tasks:
+        #         done_ids, _ = ray.wait(list(tasks.keys()))
+
+        #         for done_id in done_ids:
+        #             try:
+        #                 wbc_candidate = ray.get(done_id)
+        #                 if wbc_candidate is not None:
+        #                     all_results.append(wbc_candidate)
+
+        #             except RayTaskError as e:
+        #                 print(
+        #                     f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
+        #                 )
+
+        #             pbar.update()
+        #             del tasks[done_id]
+        # if self.verbose:
+        #     print(f"Shutting down Ray")
+        # ray.shutdown()
+
+        self.wbc_candidates = all_results
+        self.differential = Differential(self.wbc_candidates)
+
+        self.profiling_data["label_wbc_candidates_time"] = time.time() - start_time
+
+    def _save_results(self):
+        """Save the results of the PBCounter object."""
+
+        start_time = time.time()
+
+        diff_full_class_dict = self.differential.tally_diff_full_class_dict()
+        diff_class_dict = self.differential.tally_dict()
+        diff_dict = self.differential.compute_PB_differential()
+
+        # save the diff_full_class_dict as a csv file called save_dir/differential_full.csv, where the first row is the class and the second row is the value
+        diff_full_csv_path = os.path.join(self.save_dir, "differential_full_class.csv")
+        diff_full_df = pd.DataFrame.from_dict(diff_full_class_dict, orient="index")
+        diff_full_df.to_csv(diff_full_csv_path, header=False)
+
+        # save the diff_class_dict as a csv file called save_dir/differential_class.csv, where the first row is the class and the second row is the value
+        diff_class_csv_path = os.path.join(self.save_dir, "differential_class.csv")
+        diff_class_df = pd.DataFrame.from_dict(diff_class_dict, orient="index")
+        diff_class_df.to_csv(diff_class_csv_path, header=False)
+
+        # save the diff_dict as a csv file called save_dir/differential.csv, where the first row is the class and the second row is the value
+        diff_csv_path = os.path.join(self.save_dir, "differential.csv")
+        diff_df = pd.DataFrame.from_dict(diff_dict, orient="index")
+        diff_df.to_csv(diff_csv_path, header=False)
+
+        # total number of cells detected
+        num_cells_detected = len(self.wbc_candidates)
+
+        diff_full_class_count_dict = to_count_dict(
+            diff_full_class_dict, num_cells_detected
+        )
+        diff_class_count_dict = to_count_dict(
+            dct=diff_class_dict, num_cells=num_cells_detected
+        )
+        diff_count_dict = to_count_dict(dct=diff_dict, num_cells=num_cells_detected)
+
+        # save the diff_full_class_count_dict as a csv file called save_dir/differential_full_class_count.csv, where the first row is the class and the second row is the value
+        diff_full_count_csv_path = os.path.join(
+            self.save_dir, "differential_full_class_count.csv"
+        )
+        diff_full_count_df = pd.DataFrame.from_dict(
+            diff_full_class_count_dict, orient="index"
+        )
+        diff_full_count_df.to_csv(diff_full_count_csv_path, header=False)
+
+        # save the diff_class_count_dict as a csv file called save_dir/differential_class_count.csv, where the first row is the class and the second row is the value
+        diff_class_count_csv_path = os.path.join(
+            self.save_dir, "differential_class_count.csv"
+        )
+        diff_class_count_df = pd.DataFrame.from_dict(
+            diff_class_count_dict, orient="index"
+        )
+        diff_class_count_df.to_csv(diff_class_count_csv_path, header=False)
+
+        # save the diff_count_dict as a csv file called save_dir/differential_count.csv, where the first row is the class and the second row is the value
+        diff_count_csv_path = os.path.join(self.save_dir, "differential_count.csv")
+        diff_count_df = pd.DataFrame.from_dict(diff_count_dict, orient="index")
+        diff_count_df.to_csv(diff_count_csv_path, header=False)
+
+        # save a bar chart of the differential_full_class_count_dict as save_dir/differential_full_class_count.jpg
+        save_bar_chart(
+            data_dict=diff_full_class_count_dict,
+            save_path=os.path.join(self.save_dir, "differential_full_class_count.jpg"),
+            title="Differential Count of Full Classes",
+            xaxis_name="Class",
+            yaxis_name="Count",
+        )
+
+        # save a bar chart of the diff_class_count_dict as save_dir/differential_class_count.jpg
+        save_bar_chart(
+            data_dict=diff_class_count_dict,
+            save_path=os.path.join(self.save_dir, "differential_class_count.jpg"),
+            title="Differential Count of Selected Classes",
+            xaxis_name="Class",
+            yaxis_name="Count",
+        )
+
+        # save a bar chart of the diff_count_dict as save_dir/differential_count.jpg
+        save_bar_chart(
+            data_dict=diff_count_dict,
+            save_path=os.path.join(self.save_dir, "differential_count.jpg"),
+            title="Differential Count",
+            xaxis_name="Class",
+            yaxis_name="Count",
+        )
+
+        # save a bar chart of the diff_full_class_dict as save_dir/differential_full_class.jpg
+        save_bar_chart(
+            data_dict=diff_full_class_dict,
+            save_path=os.path.join(self.save_dir, "differential_full_class.jpg"),
+            title="Differential of Full Classes",
+            xaxis_name="Class",
+            yaxis_name="Differential",
+        )
+
+        # save a bar chart of the diff_class_dict as save_dir/differential_class.jpg
+        save_bar_chart(
+            data_dict=diff_class_dict,
+            save_path=os.path.join(self.save_dir, "differential_class.jpg"),
+            title="Differential of Selected Classes",
+            xaxis_name="Class",
+            yaxis_name="Differential",
+        )
+
+        # save a bar chart of the diff_dict as save_dir/differential.jpg
+        save_bar_chart(
+            data_dict=diff_dict,
+            save_path=os.path.join(self.save_dir, "differential.jpg"),
+            title="Differential",
+            xaxis_name="Class",
+            yaxis_name="Differential",
+        )
+
+        # save a big dataframe of the cell info in save_dir/cells/cells_info.csv
+        self.differential.save_cells_info(self.save_dir)
+
+        self.profiling_data["save_results_time"] = time.time() - start_time
+
+        # if hoarding, the save all cells images in save_dir/cells/class for each of the classes under the file name of the cell
+        if self.hoarding:
+            start_time = time.time()
+            for wbc_candidate in tqdm(self.wbc_candidates, desc="Saving cell images"):
+                wbc_candidate._save_cell_image(self.save_dir)
+
+            self.profiling_data["cells_hoarding_time"] = time.time() - start_time
+
+        else:
+            self.profiling_data["cells_hoarding_time"] = 0
 
     def tally_differential(self):
-        """Return the differential of the WSI."""
+        """Run all steps with time profiling and save the profiling data to YAML."""
+        try:
+            save_selected_variables_to_yaml(
+                selected_variable_names,
+                os.path.join(self.save_dir, "global_config.yaml"),
+            )
 
-        pass  # this is exactly the same function as in PBCounter
+            if self.focus_regions is None:
+                self.find_focus_regions()
+
+            if self.wbc_candidates is None:
+                self.find_wbc_candidates()
+
+            if self.differential is None:
+                self.label_wbc_candidates()
+
+            self._save_results()
+
+            # Save profiling data as a csv file
+            self.profiling_data["total_time"] = sum(self.profiling_data.values())
+            self.profiling_data["hoarding_time"] = (
+                self.profiling_data["high_mag_focus_regions_hoarding_time"]
+                + self.profiling_data["low_mag_focus_regions_hoarding_time"]
+                + self.profiling_data["cells_hoarding_time"]
+            )
+
+            self.profiling_data["total_non_hoarding_time"] = (
+                self.profiling_data["total_time"] - self.profiling_data["hoarding_time"]
+            )
+
+            # save runtime_dct as a csv file, first row is the keys and second row is the values
+            runtime_df = pd.DataFrame.from_dict(self.profiling_data, orient="index")
+            runtime_df.to_csv(
+                os.path.join(self.save_dir, "runtime_data.csv"), header=False
+            )
+
+        except SpecimenError as e:
+            raise e
+
+        except Exception as e:
+            if self.continue_on_error:
+                # if the save_dir does not exist, create it
+                os.makedirs(self.save_dir, exist_ok=True)
+
+                # save the exception and profiling data
+                with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
+                    f.write(str(e))
+
+                # Save profiling data even in case of error
+                with open(
+                    os.path.join(self.save_dir, "runtime_data.yaml"), "w"
+                ) as file:
+                    yaml.dump(
+                        self.profiling_data,
+                        file,
+                        default_flow_style=False,
+                        sort_keys=False,
+                    )
+
+                # rename the save_dir name to "ERROR_" + save_dir
+                os.rename(
+                    self.save_dir,
+                    os.path.join(
+                        dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                    ),
+                )
+
+                print(f"Error occurred and logged. Continuing to next WSI.")
+
+            else:
+                raise e
+
+
+class NoCellFoundError(ValueError):
+    """An exception raised when no cell is found."""
+
+    def __init__(self, message):
+        """Initialize a NoCellFoundError object."""
+
+        super().__init__(message)
+
+
+class TooManyCandidatesError(ValueError):
+    """An exception raised when too many candidates are found."""
+
+    def __init__(self, message):
+        """Initialize a TooManyCandidatesError object."""
+
+        super().__init__(message)

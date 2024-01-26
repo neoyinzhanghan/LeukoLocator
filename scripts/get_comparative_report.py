@@ -3,7 +3,7 @@ import pandas as pd
 from tqdm import tqdm
 
 LL_report_path = (
-    "/Users/neo/Documents/Research/DeepHeme/LLResults/V3 FullExtract/all_cells_info.csv"
+    "/Users/neo/Documents/Research/DeepHeme/LLResults/V3 FullExtract/PB_results.csv"
 )
 machine_report_paths = [
     "/Users/neo/Documents/Research/DeepHeme/LLResults/MachineResults/CBC_PB_H18-H23.csv",

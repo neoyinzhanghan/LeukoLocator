@@ -20,7 +20,7 @@ from LL.resources.PBassumptions import *
 from LL.communication.visualization import save_hist_KDE_rug_plot
 from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
-from LL.brain.RegionClfManager import RegionClfManager
+from LL.brain.PBRegionClfManager import RegionClfManager
 from LL.brain.FocusRegionMaker import FocusRegionMaker
 from LL.PBFocusRegion import FocusRegion
 from LL.brain.utils import *
