@@ -131,11 +131,22 @@ class FocusRegionsTracker:
 
         self.focus_regions_dct = new_focus_region_dct
 
-        # add the resnet confidence score to the info_df
-        for focus_region in self.focus_regions_dct.values():
+        # add the peripheral_confidence_score, clot_confidence_score, and adequate_confidence_score columns to the info_df
+        self.info_df["peripheral_confidence_score"] = np.nan
+        self.info_df["clot_confidence_score"] = np.nan
+        self.info_df["adequate_confidence_score"] = np.nan
+
+        # update the info_df with the confidence scores
+        for idx in self.focus_regions_dct:
             self.info_df.loc[
-                self.info_df["idx"] == focus_region.idx, "resnet_confidence_score"
-            ] = focus_region.resnet_confidence_score
+                idx, "peripheral_confidence_score"
+            ] = self.focus_regions_dct[idx].peripheral_confidence_score
+            self.info_df.loc[idx, "clot_confidence_score"] = self.focus_regions_dct[
+                idx
+            ].clot_confidence_score
+            self.info_df.loc[idx, "adequate_confidence_score"] = self.focus_regions_dct[
+                idx
+            ].adequate_confidence_score
 
     def get_top_n_focus_regions(self, n=max_num_regions_after_region_clf):
         """Return the top n focus regions with the highest confidence scores."""
@@ -144,7 +155,7 @@ class FocusRegionsTracker:
         # in descending order of confidence scores
 
         top_n_idx = self.info_df.sort_values(
-            by=["resnet_confidence_score"], ascending=False
+            by=["adequate_confidence_score"], ascending=False
         ).head(n)["idx"]
 
         # add a column called "selected" which is True if the focus region is selected
@@ -179,7 +190,7 @@ class FocusRegionsTracker:
         # save the resnet confidence score distribution plot for all focus regions
         save_hist_KDE_rug_plot(
             df=self.info_df,
-            column_name="resnet_confidence_score",
+            column_name="adequate_confidence_score",
             save_path=os.path.join(
                 save_dir,
                 "focus_regions",
@@ -192,7 +203,7 @@ class FocusRegionsTracker:
         # save the resnet confidence score distribution plot for selected focus regions
         save_hist_KDE_rug_plot(
             df=self.info_df[self.info_df["selected"]],
-            column_name="resnet_confidence_score",
+            column_name="adequate_confidence_score",
             save_path=os.path.join(
                 save_dir,
                 "focus_regions",
@@ -200,6 +211,56 @@ class FocusRegionsTracker:
             ),
             title="ResNet Confidence Score Distribution for Selected Focus Regions",
             lines=[self.final_min_conf_thres],
+        )
+
+        # save the clot confidence score distribution plot for all focus regions
+        save_hist_KDE_rug_plot(
+            df=self.info_df,
+            column_name="clot_confidence_score",
+            save_path=os.path.join(
+                save_dir, "focus_regions", "all_clot_confidence_score_distribution.png"
+            ),
+            title="Clot Confidence Score Distribution for All Focus Regions",
+            lines=[],
+        )
+
+        # save the clot confidence score distribution plot for selected focus regions
+        save_hist_KDE_rug_plot(
+            df=self.info_df[self.info_df["selected"]],
+            column_name="clot_confidence_score",
+            save_path=os.path.join(
+                save_dir,
+                "focus_regions",
+                "selected_clot_confidence_score_distribution.png",
+            ),
+            title="Clot Confidence Score Distribution for Selected Focus Regions",
+            lines=[],
+        )
+
+        # save the peripheral confidence score distribution plot for all focus regions
+        save_hist_KDE_rug_plot(
+            df=self.info_df,
+            column_name="peripheral_confidence_score",
+            save_path=os.path.join(
+                save_dir,
+                "focus_regions",
+                "all_peripheral_confidence_score_distribution.png",
+            ),
+            title="Peripheral Confidence Score Distribution for All Focus Regions",
+            lines=[],
+        )
+
+        # save the peripheral confidence score distribution plot for selected focus regions
+        save_hist_KDE_rug_plot(
+            df=self.info_df[self.info_df["selected"]],
+            column_name="peripheral_confidence_score",
+            save_path=os.path.join(
+                save_dir,
+                "focus_regions",
+                "selected_peripheral_confidence_score_distribution.png",
+            ),
+            title="Peripheral Confidence Score Distribution for Selected Focus Regions",
+            lines=[],
         )
 
         # save the VoL distribution plot for all focus regions
@@ -271,9 +332,17 @@ class FocusRegionsTracker:
         # - sd_WMP_selected
 
         # calculate the average resnet confidence score
-        average_resnet_confidence_score = np.mean(
-            self.info_df["resnet_confidence_score"]
+        average_adequate_confidence_score = np.mean(
+            self.info_df["adequate_confidence_score"]
         )
+
+        # calculate the average peripheral confidence score
+        average_peripheral_confidence_score = np.mean(
+            self.info_df["peripheral_confidence_score"]
+        )
+
+        # calculate the average clot confidence score
+        average_clot_confidence_score = np.mean(self.info_df["clot_confidence_score"])
 
         # calculate the average VoL
         average_VoL = np.mean(self.info_df["VoL"])
@@ -282,8 +351,18 @@ class FocusRegionsTracker:
         average_WMP = np.mean(self.info_df["WMP"])
 
         # calculate the average resnet confidence score for selected focus regions
-        average_resnet_confidence_score_selected = np.mean(
-            self.info_df[self.info_df["selected"]]["resnet_confidence_score"]
+        average_adequate_confidence_score_selected = np.mean(
+            self.info_df[self.info_df["selected"]]["adequate_confidence_score"]
+        )
+
+        # calculate the average peripheral confidence score for selected focus regions
+        average_peripheral_confidence_score_selected = np.mean(
+            self.info_df[self.info_df["selected"]]["peripheral_confidence_score"]
+        )
+
+        # calculate the average clot confidence score for selected focus regions
+        average_clot_confidence_score_selected = np.mean(
+            self.info_df[self.info_df["selected"]]["clot_confidence_score"]
         )
 
         # calculate the average VoL for selected focus regions
@@ -293,7 +372,15 @@ class FocusRegionsTracker:
         average_WMP_selected = np.mean(self.info_df[self.info_df["selected"]]["WMP"])
 
         # calculate the sd resnet confidence score
-        sd_resnet_confidence_score = np.std(self.info_df["resnet_confidence_score"])
+        sd_adequate_confidence_score = np.std(self.info_df["adequate_confidence_score"])
+
+        # calculate the sd peripheral confidence score
+        sd_peripheral_confidence_score = np.std(
+            self.info_df["peripheral_confidence_score"]
+        )
+
+        # calculate the sd clot confidence score
+        sd_clot_confidence_score = np.std(self.info_df["clot_confidence_score"])
 
         # calculate the sd VoL
         sd_VoL = np.std(self.info_df["VoL"])
@@ -302,8 +389,18 @@ class FocusRegionsTracker:
         sd_WMP = np.std(self.info_df["WMP"])
 
         # calculate the sd resnet confidence score for selected focus regions
-        sd_resnet_confidence_score_selected = np.std(
-            self.info_df[self.info_df["selected"]]["resnet_confidence_score"]
+        sd_adequate_confidence_score_selected = np.std(
+            self.info_df[self.info_df["selected"]]["adequate_confidence_score"]
+        )
+
+        # calculate the sd peripheral confidence score for selected focus regions
+        sd_peripheral_confidence_score_selected = np.std(
+            self.info_df[self.info_df["selected"]]["peripheral_confidence_score"]
+        )
+
+        # calculate the sd clot confidence score for selected focus regions
+        sd_clot_confidence_score_selected = np.std(
+            self.info_df[self.info_df["selected"]]["clot_confidence_score"]
         )
 
         # calculate the sd VoL for selected focus regions
@@ -318,16 +415,24 @@ class FocusRegionsTracker:
             "final_min_WMP": self.final_min_WMP,
             "final_max_WMP": self.final_max_WMP,
             "final_min_conf_thres": self.final_min_conf_thres,
-            "average_resnet_confidence_score": average_resnet_confidence_score,
+            "average_adequate_confidence_score": average_adequate_confidence_score,
+            "average_peripheral_confidence_score": average_peripheral_confidence_score,
+            "average_clot_confidence_score": average_clot_confidence_score,
             "average_VoL": average_VoL,
             "average_WMP": average_WMP,
-            "average_resnet_confidence_score_selected": average_resnet_confidence_score_selected,
+            "average_adequate_confidence_score_selected": average_adequate_confidence_score_selected,
+            "average_peripheral_confidence_score_selected": average_peripheral_confidence_score_selected,
+            "average_clot_confidence_score_selected": average_clot_confidence_score_selected,
             "average_VoL_selected": average_VoL_selected,
             "average_WMP_selected": average_WMP_selected,
-            "sd_resnet_confidence_score": sd_resnet_confidence_score,
+            "sd_resnet_confidence_score": sd_adequate_confidence_score,
+            "sd_peripheral_confidence_score": sd_peripheral_confidence_score,
+            "sd_clot_confidence_score": sd_clot_confidence_score,
             "sd_VoL": sd_VoL,
             "sd_WMP": sd_WMP,
-            "sd_resnet_confidence_score_selected": sd_resnet_confidence_score_selected,
+            "sd_resnet_confidence_score_selected": sd_adequate_confidence_score_selected,
+            "sd_peripheral_confidence_score_selected": sd_peripheral_confidence_score_selected,
+            "sd_clot_confidence_score_selected": sd_clot_confidence_score_selected,
             "sd_VoL_selected": sd_VoL_selected,
             "sd_WMP_selected": sd_WMP_selected,
         }
