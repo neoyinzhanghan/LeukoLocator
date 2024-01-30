@@ -9,7 +9,7 @@ dump_dir = "/media/hdd3/neo/results_bma_v1"
 ### WSI Image Parameters ###
 ############################
 
-focus_regions_size = (512, 512)
+focus_regions_size = 512
 snap_shot_size = 96
 num_classes = 23
 do_zero_pad = False

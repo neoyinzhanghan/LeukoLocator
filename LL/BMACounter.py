@@ -171,8 +171,8 @@ class BMACounter:
         dimx, dimy = level_0_dimension
 
         # get the number of focus regions in the x and y direction
-        num_focus_regions_x = dimx // focus_regions_size[0]
-        num_focus_regions_y = dimy // focus_regions_size[1]
+        num_focus_regions_x = dimx // focus_regions_size
+        num_focus_regions_y = dimy // focus_regions_size
 
         # get the list of focus regions coordinates
         focus_regions_coordinates = []
