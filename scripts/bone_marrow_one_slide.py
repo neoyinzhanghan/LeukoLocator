@@ -1,6 +1,6 @@
 from LL.BMACounter import BMACounter
 
-slide_name = "/media/hdd1/BMAs/H23-9637;S10;MSKD - 2023-12-11 23.36.32.ndpi"
+slide_name = "/media/hdd1/BMAs/H22-9756;S9;MSKC - 2023-06-13 03.24.28.ndpi"
 
 bma_counter = BMACounter(slide_name, hoarding=True)
 
