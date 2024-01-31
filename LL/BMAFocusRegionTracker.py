@@ -116,8 +116,8 @@ class FocusRegionsTracker:
                 for done_id in done_ids:
                     try:
                         results = ray.get(done_id)
-                        for region in results:
-                            new_focus_region_dct[region.idx] = region
+                        for k in results:
+                            new_focus_region_dct[k] = results[k]
 
                             pbar.update()
 
