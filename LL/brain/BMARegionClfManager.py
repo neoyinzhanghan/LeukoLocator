@@ -139,17 +139,15 @@ class RegionClfManager:
     - max_num_regions : the maximum number of regions to classify
     """
 
-    def __init__(self, ckpt_path, focus_regions_dct):
+    def __init__(self, ckpt_path):
         """Initialize the RegionClfManager object."""
 
         self.model = load_clf_model(ckpt_path)
         self.ckpt_path = ckpt_path
-        self.focus_regions_dct = focus_regions_dct
 
-    def async_predict_batch_key_dct(self, batch_key):
+    def async_predict_batch_key_dct(self, focus_regions):
         """Classify the focus region probability score."""
 
-        focus_regions = [self.focus_regions_dct[k] for k in batch_key]
         pil_images = [focus_region.image for focus_region in focus_regions]
 
         confidence_scores = predict_batch(pil_images, self.model)
@@ -161,7 +159,6 @@ class RegionClfManager:
             focus_regions[i].adequate_confidence_score = float(adequate_confidence_scores[i])
 
         processed_batch = {}
-
 
         for focus_region in focus_regions:
             processed_batch[focus_region.idx] = focus_region

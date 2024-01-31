@@ -96,10 +96,10 @@ class FocusRegionsTracker:
         tasks = {}
         new_focus_region_dct = {}
 
-        dct_keys = list(self.focus_regions_dct.keys())
+        focus_regions = list(self.focus_regions_dct.values())
 
         list_of_batches = create_list_of_batches_from_list(
-            dct_keys, region_clf_batch_size
+            focus_regions, region_clf_batch_size
         )
 
         for i, batch in enumerate(list_of_batches):
@@ -116,8 +116,8 @@ class FocusRegionsTracker:
                 for done_id in done_ids:
                     try:
                         results = ray.get(done_id)
-                        for k in results:
-                            new_focus_region_dct[k] = results[k]
+                        for region in results:
+                            new_focus_region_dct[region.idx] = region
 
                             pbar.update()
 
