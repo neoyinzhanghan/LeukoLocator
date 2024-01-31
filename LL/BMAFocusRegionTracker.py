@@ -461,7 +461,7 @@ class FocusRegionsTracker:
         info_dct = pd.DataFrame(info_dct, index=[0])
 
         # save the dictionary as a csv file
-        numpy_to_python(info_dct).to_csv(
+        info_dct.to_csv(
             os.path.join(save_dir, "focus_regions", "focus_regions_info.csv")
         )
 
