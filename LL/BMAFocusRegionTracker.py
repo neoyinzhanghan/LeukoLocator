@@ -59,14 +59,16 @@ class FocusRegionsTracker:
         new_rows = []
 
         for focus_region in focus_regions:
-            new_rows.append({
-                "idx": focus_region.idx,
-                "coordinate": focus_region.coordinate,
-                "VoL": focus_region.VoL,
-                "peripheral_confidence_score": focus_region.peripheral_confidence_score,
-                "clot_confidence_score": focus_region.clot_confidence_score,
-                "adequate_confidence_score": focus_region.adequate_confidence_score,
-            })
+            new_rows.append(
+                {
+                    "idx": focus_region.idx,
+                    "coordinate": focus_region.coordinate,
+                    "VoL": focus_region.VoL,
+                    "peripheral_confidence_score": focus_region.peripheral_confidence_score,
+                    "clot_confidence_score": focus_region.clot_confidence_score,
+                    "adequate_confidence_score": focus_region.adequate_confidence_score,
+                }
+            )
 
         # Convert the list of dictionaries to a DataFrame
         new_rows_df = pd.DataFrame(new_rows)
@@ -87,7 +89,7 @@ class FocusRegionsTracker:
         print("Ray initialization for resnet confidence score done")
 
         region_clf_managers = [
-            RegionClfManager.remote(region_clf_ckpt_path)
+            RegionClfManager.remote(region_clf_ckpt_path, self.focus_regions_dct)
             for _ in range(num_region_clf_managers)
         ]
 
@@ -102,9 +104,7 @@ class FocusRegionsTracker:
 
         for i, batch in enumerate(list_of_batches):
             manager = region_clf_managers[i % num_region_clf_managers]
-            task = manager.async_predict_batch_key_dct.remote(
-                batch, self.focus_regions_dct
-            )
+            task = manager.async_predict_batch_key_dct.remote(batch)
             tasks[task] = batch
 
         with tqdm(
