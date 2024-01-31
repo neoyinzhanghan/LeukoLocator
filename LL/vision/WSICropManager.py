@@ -5,6 +5,7 @@
 # Outside imports ##################################################################################`
 import openslide
 import ray
+import pyvips
 
 # Within package imports ###########################################################################
 from LL.BMAFocusRegion import FocusRegion
@@ -51,6 +52,29 @@ class WSICropManager:
 
         return image
 
+    def crop_vips(self, coords):
+        """Crop the WSI at the lowest level of magnification."""
+
+        if self.wsi is None:
+            self.open_slide()  # make sure this method is compatible with pyvips
+
+        # Assuming self.wsi is a pyvips image or a path to an image
+        # If self.wsi is a path, load it with pyvips.Image.new_from_file
+        if isinstance(self.wsi, str):
+            self.wsi = pyvips.Image.new_from_file(self.wsi, access="sequential")
+
+        # Cropping the image
+        # coords are expected to be (left, top, right, bottom)
+        cropped_image = self.wsi.crop(
+            coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1]
+        )
+
+        # Convert the image to RGB if it's not already
+        if cropped_image.interpretation != pyvips.Interpretation.srgb:
+            cropped_image = cropped_image.colourspace(pyvips.Interpretation.srgb)
+
+        return cropped_image
+
     def async_get_focus_region_image(self, focus_region):
         """Update the image of the focus region."""
 
@@ -76,7 +100,7 @@ class WSICropManager:
 
         focus_regions = []
         for focus_region_coord in focus_region_coords:
-            image = self.crop(focus_region_coord)
+            image = self.crop_vips(focus_region_coord)
 
             focus_region = FocusRegion(coordinate=focus_region_coord, image=image)
             focus_regions.append(focus_region)
