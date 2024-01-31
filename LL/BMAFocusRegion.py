@@ -24,8 +24,6 @@ class FocusRegion:
     - image : the image of the focus region
     - annotated_image : the image of the focus region annotated with the WBC candidates
     - VoL : the variance of the laplacian of the focus region
-    - WMP : the white mask proportion of the focus region
-    - otsu_mask : the otsu mask of the focus region
     - image_mask_duo : the image of the focus region and the otsu mask of the focus region put side by side
     - wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
     - wbc_candidates : a list of wbc_candidates objects
@@ -45,7 +43,7 @@ class FocusRegion:
 
         # Calculate the VoL and WMP
         self.VoL = VoL(self.image)
-        self.WMP, self.otsu_mask = WMP(self.image)
+        # self.WMP, self.otsu_mask = WMP(self.image)　# for bone marrow aspirate we are not gonnae need this for now
 
         # image_mask_duo is one image where the downsampled image and mask are put side by side
         # note that mask is a black and white binary image while the downsampled image is a color image
