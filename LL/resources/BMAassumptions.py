@@ -62,7 +62,7 @@ num_cpus_per_cropper = num_cpus // num_croppers
 allowed_reading_time = 20  # in seconds
 
 region_cropping_batch_size = 512
-region_clf_batch_size = 256
+region_clf_batch_size = 64
 cell_clf_batch_size = 256
 YOLO_batch_size = 32
 
