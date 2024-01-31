@@ -188,6 +188,9 @@ class BMACounter:
                     )
                 )
 
+        # get the first 100 focus regions
+        focus_regions_coordinates = focus_regions_coordinates[:100]
+
         ray.shutdown()
         # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
         ray.init()

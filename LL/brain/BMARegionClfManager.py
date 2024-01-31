@@ -127,6 +127,7 @@ class RegionClfManager:
     - model : the region classification model
     - ckpt_path : the path to the checkpoint of the region classification model
     - conf_thres : the confidence threshold of the region classification model
+    - max_num_regions : the maximum number of regions to classify
     """
 
     def __init__(self, ckpt_path):
@@ -134,7 +135,7 @@ class RegionClfManager:
 
         self.model = load_clf_model(ckpt_path)
         self.ckpt_path = ckpt_path
-
+        
     def async_predict_batch_key_dct(self, batch_key, dct):
         """Classify the focus region probability score."""
 
@@ -147,6 +148,7 @@ class RegionClfManager:
             focus_regions[i].resnet_confidence_score = confidence_scores[i]
 
         processed_batch = {}
+
 
         for focus_region in focus_regions:
             processed_batch[focus_region.idx] = focus_region

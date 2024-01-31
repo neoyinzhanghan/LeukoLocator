@@ -72,7 +72,7 @@ class FocusRegionsTracker:
         new_rows_df = pd.DataFrame(new_rows)
 
         self.info_df = new_rows_df
-        
+
         self.final_min_VoL = None
         # self.final_min_WMP = None
         # self.final_max_WMP = None
