@@ -114,9 +114,6 @@ def predict_batch(pil_images, model):
     with torch.no_grad():  # No need to compute gradients for inference
         logits = model(batch)
         probs = torch.softmax(logits, dim=1)
-
-        print("Aāaaaaaaaaa!!!!!")
-        print(probs.shape)
         
         # prob shape is [44, 1, 3]
         peripheral_confidence_scores = probs[:, 0, 0].cpu().numpy()
