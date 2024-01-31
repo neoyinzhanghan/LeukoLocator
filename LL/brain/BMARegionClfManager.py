@@ -115,6 +115,9 @@ def predict_batch(pil_images, model):
         logits = model(batch)
         probs = torch.softmax(logits, dim=1)
 
+        print("Aāaaaaaaaaa!!!!!")
+        print(probs.shape)
+
         peripheral_confidence_scores = probs[
             :, 1
         ].tolist()  # Get confidence score for label `1` for each image
