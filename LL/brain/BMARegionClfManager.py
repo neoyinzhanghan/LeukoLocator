@@ -11,6 +11,18 @@ from LL.resources.BMAassumptions import *
 from torchvision import transforms
 from torchvision.models import resnext50_32x4d
 from PIL import Image as pil_image
+from collections import OrderedDict
+
+def remove_data_parallel(old_state_dict):
+    new_state_dict = OrderedDict()
+
+    for k, v in old_state_dict.items():
+        
+        name = k[7:] # remove `module.`
+        
+        new_state_dict[name] = v
+    
+    return new_state_dict
 
 transform = transforms.Compose(
     [
@@ -47,7 +59,7 @@ class Myresnext50(nn.Module):
         my_resnext50 = Myresnext50(model, num_classes=num_classes)
 
         # Load the saved state_dict from checkpoint
-        checkpoint = torch.load(checkpoint_path)
+        checkpoint  = remove_data_parallel(checkpoint['model_state_dict'])
 
         my_resnext50.load_state_dict(checkpoint['model_state_dict'])
 
