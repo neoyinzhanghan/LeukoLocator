@@ -61,18 +61,15 @@ class WSICropManager:
         """Crop the WSI at the lowest level of magnification."""
 
         if self.wsi is None:
-            self.open_vips()  # make sure this method is compatible with pyvips
+            self.open_vips()
 
-        # Assuming self.wsi is a pyvips image or a path to an image
-        # If self.wsi is a path, load it with pyvips.Image.new_from_file
-        if isinstance(self.wsi, str):
-            self.wsi = pyvips.Image.new_from_file(self.wsi, access="sequential")
+        # Ensure that self.wsi is a pyvips Image
+        if not isinstance(self.wsi, pyvips.Image):
+            raise TypeError("WSI is not a pyvips Image object")
 
         # Cropping the image
         # coords are expected to be (left, top, right, bottom)
-        cropped_image = self.wsi.crop(
-            coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1]
-        )
+        cropped_image = self.wsi.crop(coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1])
 
         # Convert the image to RGB if it's not already
         if cropped_image.interpretation != pyvips.Interpretation.srgb:
