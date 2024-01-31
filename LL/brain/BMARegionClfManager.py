@@ -78,7 +78,6 @@ def load_clf_model(ckpt_path):
     trained_model = Myresnext50.load_from_checkpoint(
         ckpt_path
     )  # , map_location=torch.device("cpu"))
-    trained_model.freeze()
 
     # move the model to the GPU
     trained_model.to("cuda")
