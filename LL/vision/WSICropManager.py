@@ -74,15 +74,11 @@ class WSICropManager:
     def async_get_bma_focus_region_batch(self, focus_region_coords):
         """Return a list of focus regions."""
 
-        print(f"focus_region_coords: {focus_region_coords}")
-
         focus_regions = []
         for focus_region_coord in focus_region_coords:
             image = self.crop(focus_region_coord)
 
             focus_region = FocusRegion(coordinate=focus_region_coord, image=image)
             focus_regions.append(focus_region)
-
-            print(f"focus_region: {focus_region}")
 
         return focus_regions
