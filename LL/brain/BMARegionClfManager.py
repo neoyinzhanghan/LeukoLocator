@@ -47,6 +47,8 @@ class Myresnext50(nn.Module):
 
         # Load the saved state_dict from checkpoint
         checkpoint = torch.load(checkpoint_path)
+
+        print(checkpoint.keys())
         my_resnext50.load_state_dict(checkpoint['state_dict'])
 
         # Make sure to call this before returning if you want to freeze the weights
@@ -135,7 +137,7 @@ class RegionClfManager:
 
         self.model = load_clf_model(ckpt_path)
         self.ckpt_path = ckpt_path
-        
+
     def async_predict_batch_key_dct(self, batch_key, dct):
         """Classify the focus region probability score."""
 
