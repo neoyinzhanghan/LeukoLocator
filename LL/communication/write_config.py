@@ -18,7 +18,6 @@ def numpy_to_python(value):
     else:
         return value
 
-
 def save_selected_variables_to_yaml(variable_names, yaml_file):
     # Extract specified variables from the current scope
     variables = {name: globals()[name] for name in variable_names if name in globals()}
