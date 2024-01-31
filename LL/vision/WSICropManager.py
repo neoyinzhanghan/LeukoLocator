@@ -71,10 +71,6 @@ class WSICropManager:
         # coords are expected to be (left, top, right, bottom)
         cropped_image = self.wsi.crop(coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1])
 
-        # Convert the image to RGB if it's not already
-        if cropped_image.interpretation != pyvips.Interpretation.srgb:
-            cropped_image = cropped_image.colourspace(pyvips.Interpretation.srgb)
-
         return cropped_image
 
     def async_get_focus_region_image(self, focus_region):
