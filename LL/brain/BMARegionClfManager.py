@@ -117,16 +117,11 @@ def predict_batch(pil_images, model):
 
         print("Aāaaaaaaaaa!!!!!")
         print(probs.shape)
-
-        peripheral_confidence_scores = probs[
-            :, 1
-        ].tolist()  # Get confidence score for label `1` for each image
-        clot_confidence_scores = probs[
-            :, 2
-        ].tolist()  # Get confidence score for label `2` for each image
-        adequate_confidence_scores = probs[
-            :, 0
-        ].tolist()  # Get confidence score for label `0` for each image
+        
+        # prob shape is [44, 1, 3]
+        peripheral_confidence_scores = probs[:, 0, 0].cpu().numpy()
+        clot_confidence_scores = probs[:, 0, 1].cpu().numpy()
+        adequate_confidence_scores = probs[:, 0, 2].cpu().numpy()
 
     return (
         peripheral_confidence_scores,
