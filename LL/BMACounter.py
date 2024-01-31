@@ -758,7 +758,6 @@ class BMACounter:
             self.profiling_data["total_time"] = sum(self.profiling_data.values())
             self.profiling_data["hoarding_time"] = (
                 self.profiling_data["high_mag_focus_regions_hoarding_time"]
-                + self.profiling_data["low_mag_focus_regions_hoarding_time"]
                 + self.profiling_data["cells_hoarding_time"]
             )
 
