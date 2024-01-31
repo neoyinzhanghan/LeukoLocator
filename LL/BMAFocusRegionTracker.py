@@ -67,15 +67,15 @@ class FocusRegionsTracker:
                     "idx": focus_region.idx,
                     "coordinate": focus_region.coordinate,
                     "VoL": focus_region.VoL,
-                    "WMP": focus_region.WMP,
+                    # "WMP": focus_region.WMP,
                     "resnet_confidence_score": focus_region.resnet_confidence_score,
                 },
                 ignore_index=True,
             )
 
         self.final_min_VoL = None
-        self.final_min_WMP = None
-        self.final_max_WMP = None
+        # self.final_min_WMP = None
+        # self.final_max_WMP = None
         self.final_min_conf_thres = None
 
     def compute_resnet_confidence(self):
@@ -167,7 +167,7 @@ class FocusRegionsTracker:
         return focus_regions
 
     def save_results(self, save_dir):
-        """Save the plots of the VoL, WMP, and resnet confidence score distributions.
+        """Save the plots of the VoL, and resnet confidence score distributions.
         For both all focus regions in the info_df and the selected focus regions.
 
         Use save_hist_KDE_rug_plot
@@ -181,11 +181,11 @@ class FocusRegionsTracker:
         # calculate the min VoL for the selected focus regions
         self.final_min_VoL = min(self.info_df[self.info_df["selected"]]["VoL"])
 
-        # calculate the min WMP for the selected focus regions
-        self.final_min_WMP = min(self.info_df[self.info_df["selected"]]["WMP"])
+        # # calculate the min WMP for the selected focus regions
+        # self.final_min_WMP = min(self.info_df[self.info_df["selected"]]["WMP"])
 
-        # calculate the max WMP for the selected focus regions
-        self.final_max_WMP = max(self.info_df[self.info_df["selected"]]["WMP"])
+        # # calculate the max WMP for the selected focus regions
+        # self.final_max_WMP = max(self.info_df[self.info_df["selected"]]["WMP"])
 
         # save the resnet confidence score distribution plot for all focus regions
         save_hist_KDE_rug_plot(
@@ -285,27 +285,27 @@ class FocusRegionsTracker:
             lines=[self.final_min_VoL],
         )
 
-        # save the WMP distribution plot for all focus regions
-        save_hist_KDE_rug_plot(
-            df=self.info_df,
-            column_name="WMP",
-            save_path=os.path.join(
-                save_dir, "focus_regions", "all_WMP_distribution.png"
-            ),
-            title="WMP Distribution for All Focus Regions",
-            lines=[self.final_min_WMP, self.final_max_WMP],
-        )
+        # # save the WMP distribution plot for all focus regions
+        # save_hist_KDE_rug_plot(
+        #     df=self.info_df,
+        #     column_name="WMP",
+        #     save_path=os.path.join(
+        #         save_dir, "focus_regions", "all_WMP_distribution.png"
+        #     ),
+        #     title="WMP Distribution for All Focus Regions",
+        #     lines=[self.final_min_WMP, self.final_max_WMP],
+        # )
 
-        # save the WMP distribution plot for selected focus regions
-        save_hist_KDE_rug_plot(
-            df=self.info_df[self.info_df["selected"]],
-            column_name="WMP",
-            save_path=os.path.join(
-                save_dir, "focus_regions", "selected_WMP_distribution.png"
-            ),
-            title="WMP Distribution for Selected Focus Regions",
-            lines=[self.final_min_WMP, self.final_max_WMP],
-        )
+        # # save the WMP distribution plot for selected focus regions
+        # save_hist_KDE_rug_plot(
+        #     df=self.info_df[self.info_df["selected"]],
+        #     column_name="WMP",
+        #     save_path=os.path.join(
+        #         save_dir, "focus_regions", "selected_WMP_distribution.png"
+        #     ),
+        #     title="WMP Distribution for Selected Focus Regions",
+        #     lines=[self.final_min_WMP, self.final_max_WMP],
+        # )
 
         # save the info_df into a csv file
         self.info_df.to_csv(
@@ -315,21 +315,15 @@ class FocusRegionsTracker:
 
         # save a csv file containing the following information:
         # - final_min_VoL
-        # - final_min_WMP
-        # - final_max_WMP
         # - final_min_conf_thres
         # - average_resnet_confidence_score
         # - average_VoL
-        # - average_WMP
         # - average_resnet_confidence_score_selected
         # - average_VoL_selected
-        # - average_WMP_selected
         # - sd_resnet_confidence_score
         # - sd_VoL
-        # - sd_WMP
         # - sd_resnet_confidence_score_selected
         # - sd_VoL_selected
-        # - sd_WMP_selected
 
         # calculate the average resnet confidence score
         average_adequate_confidence_score = np.mean(
@@ -347,8 +341,8 @@ class FocusRegionsTracker:
         # calculate the average VoL
         average_VoL = np.mean(self.info_df["VoL"])
 
-        # calculate the average WMP
-        average_WMP = np.mean(self.info_df["WMP"])
+        # # calculate the average WMP
+        # average_WMP = np.mean(self.info_df["WMP"])
 
         # calculate the average resnet confidence score for selected focus regions
         average_adequate_confidence_score_selected = np.mean(
@@ -368,8 +362,8 @@ class FocusRegionsTracker:
         # calculate the average VoL for selected focus regions
         average_VoL_selected = np.mean(self.info_df[self.info_df["selected"]]["VoL"])
 
-        # calculate the average WMP for selected focus regions
-        average_WMP_selected = np.mean(self.info_df[self.info_df["selected"]]["WMP"])
+        # # calculate the average WMP for selected focus regions
+        # average_WMP_selected = np.mean(self.info_df[self.info_df["selected"]]["WMP"])
 
         # calculate the sd resnet confidence score
         sd_adequate_confidence_score = np.std(self.info_df["adequate_confidence_score"])
@@ -385,8 +379,8 @@ class FocusRegionsTracker:
         # calculate the sd VoL
         sd_VoL = np.std(self.info_df["VoL"])
 
-        # calculate the sd WMP
-        sd_WMP = np.std(self.info_df["WMP"])
+        # # calculate the sd WMP
+        # sd_WMP = np.std(self.info_df["WMP"])
 
         # calculate the sd resnet confidence score for selected focus regions
         sd_adequate_confidence_score_selected = np.std(
@@ -406,35 +400,35 @@ class FocusRegionsTracker:
         # calculate the sd VoL for selected focus regions
         sd_VoL_selected = np.std(self.info_df[self.info_df["selected"]]["VoL"])
 
-        # calculate the sd WMP for selected focus regions
-        sd_WMP_selected = np.std(self.info_df[self.info_df["selected"]]["WMP"])
+        # # calculate the sd WMP for selected focus regions
+        # sd_WMP_selected = np.std(self.info_df[self.info_df["selected"]]["WMP"])
 
         # create a dictionary containing the above information
         info_dct = {
             "final_min_VoL": self.final_min_VoL,
-            "final_min_WMP": self.final_min_WMP,
-            "final_max_WMP": self.final_max_WMP,
+            # "final_min_WMP": self.final_min_WMP,
+            # "final_max_WMP": self.final_max_WMP,
             "final_min_conf_thres": self.final_min_conf_thres,
             "average_adequate_confidence_score": average_adequate_confidence_score,
             "average_peripheral_confidence_score": average_peripheral_confidence_score,
             "average_clot_confidence_score": average_clot_confidence_score,
             "average_VoL": average_VoL,
-            "average_WMP": average_WMP,
+            # "average_WMP": average_WMP,
             "average_adequate_confidence_score_selected": average_adequate_confidence_score_selected,
             "average_peripheral_confidence_score_selected": average_peripheral_confidence_score_selected,
             "average_clot_confidence_score_selected": average_clot_confidence_score_selected,
             "average_VoL_selected": average_VoL_selected,
-            "average_WMP_selected": average_WMP_selected,
+            # "average_WMP_selected": average_WMP_selected,
             "sd_resnet_confidence_score": sd_adequate_confidence_score,
             "sd_peripheral_confidence_score": sd_peripheral_confidence_score,
             "sd_clot_confidence_score": sd_clot_confidence_score,
             "sd_VoL": sd_VoL,
-            "sd_WMP": sd_WMP,
+            # "sd_WMP": sd_WMP,
             "sd_resnet_confidence_score_selected": sd_adequate_confidence_score_selected,
             "sd_peripheral_confidence_score_selected": sd_peripheral_confidence_score_selected,
             "sd_clot_confidence_score_selected": sd_clot_confidence_score_selected,
             "sd_VoL_selected": sd_VoL_selected,
-            "sd_WMP_selected": sd_WMP_selected,
+            # "sd_WMP_selected": sd_WMP_selected,
         }
 
         # save the dictionary as a csv file
