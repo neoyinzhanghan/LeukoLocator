@@ -32,6 +32,11 @@ class WSICropManager:
 
         self.wsi = openslide.OpenSlide(self.wsi_path)
 
+    def open_vips(self):
+        """Open the WSI with pyvips."""
+
+        self.wsi = pyvips.Image.new_from_file(self.wsi_path, access="sequential")
+
     def close_slide(self):
         """Close the WSI."""
 
@@ -56,7 +61,7 @@ class WSICropManager:
         """Crop the WSI at the lowest level of magnification."""
 
         if self.wsi is None:
-            self.open_slide()  # make sure this method is compatible with pyvips
+            self.open_vips()  # make sure this method is compatible with pyvips
 
         # Assuming self.wsi is a pyvips image or a path to an image
         # If self.wsi is a path, load it with pyvips.Image.new_from_file
