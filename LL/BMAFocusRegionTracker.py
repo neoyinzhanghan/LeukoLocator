@@ -89,7 +89,7 @@ class FocusRegionsTracker:
         print("Ray initialization for resnet confidence score done")
 
         region_clf_managers = [
-            RegionClfManager.remote(region_clf_ckpt_path, self.focus_regions_dct)
+            RegionClfManager.remote(region_clf_ckpt_path)
             for _ in range(num_region_clf_managers)
         ]
 
