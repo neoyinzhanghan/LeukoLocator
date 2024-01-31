@@ -457,6 +457,9 @@ class FocusRegionsTracker:
             # "sd_WMP_selected": sd_WMP_selected,
         }
 
+        # convert the dictionary to a DataFrame
+        info_dct = pd.DataFrame(info_dct, index=[0])
+
         # save the dictionary as a csv file
         numpy_to_python(info_dct).to_csv(
             os.path.join(save_dir, "focus_regions", "focus_regions_info.csv")
