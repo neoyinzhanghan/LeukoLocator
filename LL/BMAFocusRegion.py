@@ -10,7 +10,7 @@ from PIL import Image
 from PIL import Image
 
 # Within package imports ###########################################################################
-from LL.resources.PBassumptions import *
+from LL.resources.BMAassumptions import *
 from LL.vision.image_quality import VoL, WMP
 from LL.communication.visualization import annotate_focus_region
 
