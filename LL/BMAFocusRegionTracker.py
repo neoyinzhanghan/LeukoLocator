@@ -55,31 +55,24 @@ class FocusRegionsTracker:
             focus_region.idx: focus_region for focus_region in focus_regions
         }
 
-        self.info_df = pd.DataFrame(
-            columns=[
-                "idx",
-                "coordinate",
-                "VoL",
-                # "WMP",
-                "peripheral_confidence_score",
-                "clot_confidence_score",
-                "adequate_confidence_score",
-            ]
-        )
+        # Prepare a list to hold the dictionaries before creating a DataFrame
+        new_rows = []
 
         for focus_region in focus_regions:
-            self.info_df = self.info_df.append(
-                {
-                    "idx": focus_region.idx,
-                    "coordinate": focus_region.coordinate,
-                    "VoL": focus_region.VoL,
-                    # "WMP": focus_region.WMP,
-                    "peripheral_confidence_score": focus_region.peripheral_confidence_score,
-                    "clot_confidence_score": focus_region.clot_confidence_score,
-                    "adequate_confidence_score": focus_region.adequate_confidence_score,
-                },
-                ignore_index=True,
-            )
+            new_rows.append({
+                "idx": focus_region.idx,
+                "coordinate": focus_region.coordinate,
+                "VoL": focus_region.VoL,
+                "peripheral_confidence_score": focus_region.peripheral_confidence_score,
+                "clot_confidence_score": focus_region.clot_confidence_score,
+                "adequate_confidence_score": focus_region.adequate_confidence_score,
+            })
+
+        # Convert the list of dictionaries to a DataFrame
+        new_rows_df = pd.DataFrame(new_rows)
+
+        # Concatenate the new DataFrame with the existing one
+        self.info_df = pd.concat([self.info_df, new_rows_df], ignore_index=True)
 
         self.final_min_VoL = None
         # self.final_min_WMP = None

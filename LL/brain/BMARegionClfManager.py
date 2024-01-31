@@ -9,7 +9,7 @@ import albumentations
 
 from LL.resources.BMAassumptions import *
 from torchvision import transforms
-
+from torchvision.models import resnext50_32x4d
 from PIL import Image as pil_image
 
 transform = transforms.Compose(
@@ -35,11 +35,25 @@ class Myresnext50(nn.Module):
 
         pred = torch.sigmoid(x.reshape(x.shape[0], 1, self.num_classes))
         return pred
-    
-    def load_from_checkpoint(ckpt_path):
-        # Load the model from a checkpoint
-        model = torch.load(ckpt_path)
-        return model
+
+    @staticmethod
+    def load_from_checkpoint(checkpoint_path, num_classes=3):
+        """
+        Load the model from a saved checkpoint.
+        """
+        # Create an instance of the model - replace resnext50_32x4d with your model function if different
+        model = resnext50_32x4d(pretrained=False)
+        my_resnext50 = Myresnext50(model, num_classes=num_classes)
+
+        # Load the saved state_dict from checkpoint
+        checkpoint = torch.load(checkpoint_path)
+        my_resnext50.load_state_dict(checkpoint['state_dict'])
+
+        # Make sure to call this before returning if you want to freeze the weights
+        for param in my_resnext50.parameters():
+            param.requires_grad = False
+
+        return my_resnext50
 
 
 def load_clf_model(ckpt_path):
