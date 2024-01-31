@@ -35,7 +35,11 @@ class FocusRegionsTracker:
 
     - final_min_VoL : the final minimum VoL of the focus regions
     - final_min_WMP : the final minimum WMP of the focus regions
-    - final_max_WMP : the final maximum WMP of the focus regions
+    - final_min_conf_thres : the final minimum confidence threshold of the focus regions
+    - final_min_peripheral_confidence_score : the final minimum peripheral confidence score of the focus regions
+    - final_max_peripheral_confidence_score : the final maximum peripheral confidence score of the focus regions
+    - final_min_clot_confidence_score : the final minimum clot confidence score of the focus regions
+    - final_max_clot_confidence_score : the final maximum clot confidence score of the focus regions
     - final_min_conf_thres : the final minimum confidence threshold of the focus regions
     - region_clf_model : the region classifier
 
@@ -56,8 +60,10 @@ class FocusRegionsTracker:
                 "idx",
                 "coordinate",
                 "VoL",
-                "WMP",
-                "resnet_confidence_score",
+                # "WMP",
+                "peripheral_confidence_score",
+                "clot_confidence_score",
+                "adequate_confidence_score",
             ]
         )
 
@@ -68,7 +74,9 @@ class FocusRegionsTracker:
                     "coordinate": focus_region.coordinate,
                     "VoL": focus_region.VoL,
                     # "WMP": focus_region.WMP,
-                    "resnet_confidence_score": focus_region.resnet_confidence_score,
+                    "peripheral_confidence_score": focus_region.peripheral_confidence_score,
+                    "clot_confidence_score": focus_region.clot_confidence_score,
+                    "adequate_confidence_score": focus_region.adequate_confidence_score,
                 },
                 ignore_index=True,
             )
@@ -175,7 +183,21 @@ class FocusRegionsTracker:
 
         # calculate the min confidence threshold for the selected focus regions
         self.final_min_conf_thres = min(
-            self.info_df[self.info_df["selected"]]["resnet_confidence_score"]
+            self.info_df[self.info_df["selected"]]["adequate_confidence_score"]
+        )
+
+        # calculate the min and max peripheral and clot confidence scores for the selected focus regions
+        self.final_min_peripheral_confidence_score = min(
+            self.info_df[self.info_df["selected"]]["peripheral_confidence_score"]
+        )
+        self.final_max_peripheral_confidence_score = max(
+            self.info_df[self.info_df["selected"]]["peripheral_confidence_score"]
+        )
+        self.final_min_clot_confidence_score = min(
+            self.info_df[self.info_df["selected"]]["clot_confidence_score"]
+        )
+        self.final_max_clot_confidence_score = max(
+            self.info_df[self.info_df["selected"]]["clot_confidence_score"]
         )
 
         # calculate the min VoL for the selected focus regions
@@ -316,13 +338,25 @@ class FocusRegionsTracker:
         # save a csv file containing the following information:
         # - final_min_VoL
         # - final_min_conf_thres
+        # - final_max_peripheral_confidence_score
+        # - final_min_peripheral_confidence_score
+        # - final_max_clot_confidence_score
+        # - final_min_clot_confidence_score
         # - average_resnet_confidence_score
+        # - average_peripheral_confidence_score
+        # - average_clot_confidence_score
         # - average_VoL
         # - average_resnet_confidence_score_selected
+        # - average_peripheral_confidence_score_selected
+        # - average_clot_confidence_score_selected
         # - average_VoL_selected
         # - sd_resnet_confidence_score
+        # - sd_peripheral_confidence_score
+        # - sd_clot_confidence_score
         # - sd_VoL
         # - sd_resnet_confidence_score_selected
+        # - sd_peripheral_confidence_score_selected
+        # - sd_clot_confidence_score_selected
         # - sd_VoL_selected
 
         # calculate the average resnet confidence score
