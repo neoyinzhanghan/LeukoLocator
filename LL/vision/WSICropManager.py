@@ -98,7 +98,7 @@ class WSICropManager:
 
         focus_regions = []
         for focus_region_coord in focus_region_coords:
-            image = self.crop_vips(focus_region_coord)
+            image = self.crop(focus_region_coord)
 
             focus_region = FocusRegion(coordinate=focus_region_coord, image=image)
             focus_regions.append(focus_region)
