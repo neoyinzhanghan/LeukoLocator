@@ -71,9 +71,8 @@ class FocusRegionsTracker:
         # Convert the list of dictionaries to a DataFrame
         new_rows_df = pd.DataFrame(new_rows)
 
-        # Concatenate the new DataFrame with the existing one
-        self.info_df = pd.concat([self.info_df, new_rows_df], ignore_index=True)
-
+        self.info_df = new_rows_df
+        
         self.final_min_VoL = None
         # self.final_min_WMP = None
         # self.final_max_WMP = None
