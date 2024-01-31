@@ -35,6 +35,11 @@ class Myresnext50(nn.Module):
 
         pred = torch.sigmoid(x.reshape(x.shape[0], 1, self.num_classes))
         return pred
+    
+    def load_from_checkpoint(cls, ckpt_path):
+        # Load the model from a checkpoint
+        model = torch.load(ckpt_path)
+        return model
 
 
 def load_clf_model(ckpt_path):
