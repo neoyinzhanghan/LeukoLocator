@@ -24,7 +24,6 @@ class FocusRegion:
     - image : the image of the focus region
     - annotated_image : the image of the focus region annotated with the WBC candidates
     - VoL : the variance of the laplacian of the focus region
-    - image_mask_duo : the image of the focus region and the otsu mask of the focus region put side by side
     - wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
     - wbc_candidates : a list of wbc_candidates objects
     - YOLO_df : should contain the good bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
@@ -59,10 +58,10 @@ class FocusRegion:
             ]  # This keeps the R, G, B channels and discards the alpha channel
 
         # Convert the binary mask to a 3-channel RGB image
-        otsu_rgb = np.stack((self.otsu_mask,) * 3, axis=-1)
+        # otsu_rgb = np.stack((self.otsu_mask,) * 3, axis=-1)
 
         # Horizontally stack the two images
-        self.image_mask_duo = Image.fromarray(np.hstack((image_array, otsu_rgb)))
+        # self.image_mask_duo = Image.fromarray(np.hstack((image_array, otsu_rgb)))
 
         self.peripheral_confidence_score = None
         self.clot_confidence_score = None
