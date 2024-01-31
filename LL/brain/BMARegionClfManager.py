@@ -48,8 +48,7 @@ class Myresnext50(nn.Module):
         # Load the saved state_dict from checkpoint
         checkpoint = torch.load(checkpoint_path)
 
-        print(checkpoint.keys())
-        my_resnext50.load_state_dict(checkpoint['state_dict'])
+        my_resnext50.load_state_dict(checkpoint['model_state_dict'])
 
         # Make sure to call this before returning if you want to freeze the weights
         for param in my_resnext50.parameters():
