@@ -41,8 +41,9 @@ class Myresnext50(nn.Module):
         """
         Load the model from a saved checkpoint.
         """
-        # Create an instance of the model - replace resnext50_32x4d with your model function if different
-        model = resnext50_32x4d(pretrained=False)
+        # Create an instance of the model
+
+        model = torch.hub.load("pytorch/vision:v0.10.0", "resnext50_32x4d")
         my_resnext50 = Myresnext50(model, num_classes=num_classes)
 
         # Load the saved state_dict from checkpoint
