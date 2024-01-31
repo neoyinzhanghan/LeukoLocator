@@ -83,4 +83,6 @@ class WSICropManager:
             focus_region = FocusRegion(coordinate=focus_region_coord, image=image)
             focus_regions.append(focus_region)
 
+            print(f"focus_region: {focus_region}")
+
         return focus_regions
