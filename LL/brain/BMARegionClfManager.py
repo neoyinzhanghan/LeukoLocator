@@ -59,6 +59,7 @@ class Myresnext50(nn.Module):
         my_resnext50 = Myresnext50(model, num_classes=num_classes)
 
         # Load the saved state_dict from checkpoint
+        checkpoint = torch.load(checkpoint_path)  # , map_location=torch.device("cpu"))
         checkpoint  = remove_data_parallel(checkpoint['model_state_dict'])
 
         my_resnext50.load_state_dict(checkpoint['model_state_dict'])
