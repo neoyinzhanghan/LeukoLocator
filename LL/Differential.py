@@ -31,7 +31,6 @@ class Differential:
                 "focus_region_idx",
                 "local_idx",
                 "name",
-                "coords",
                 "confidence",
                 "VoL",
             ]
