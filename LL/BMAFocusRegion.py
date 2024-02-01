@@ -39,7 +39,6 @@ class FocusRegion:
 
         # calculate the downsampled coordinateF
 
-
         # Calculate the VoL and WMP
         self.VoL = VoL(self.image)
         # self.WMP, self.otsu_mask = WMP(self.image)　# for bone marrow aspirate we are not gonnae need this for now
@@ -112,6 +111,28 @@ class FocusRegion:
             self.YOLO_df.to_csv(
                 os.path.join(save_dir, "focus_regions", "YOLO_df", f"{self.idx}.csv")
             )
+
+    def get_classification(self):
+        """Return the classification of the focus region.
+        which one of the following:
+        - peripheral
+        - clot
+        - adequate
+
+        has the highest confidence score.
+        """
+
+        if self.peripheral_confidence_score is None:
+            raise self.FocusRegionNotAnnotatedError
+
+        return max(
+            [
+                ("peripheral", self.peripheral_confidence_score),
+                ("clot", self.clot_confidence_score),
+                ("adequate", self.adequate_confidence_score),
+            ],
+            key=lambda x: x[1],
+        )[0]
 
     def save_high_mag_image(self, save_dir, annotated=True):
         """Save the high magnification image of the focus region."""

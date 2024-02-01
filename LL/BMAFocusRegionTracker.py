@@ -465,6 +465,27 @@ class FocusRegionsTracker:
             os.path.join(save_dir, "focus_regions", "focus_regions_info.csv")
         )
 
+    def save_all_focus_regions(self, save_dir):
+        """Save the images of all focus regions in the focus_regions/all folder."""
+
+        # create a folder called all in the focus_regions folder
+        os.makedirs(
+            os.path.join(save_dir, "focus_regions", "peripheral"), exist_ok=True
+        )
+        os.makedirs(os.path.join(save_dir, "focus_regions", "clot"), exist_ok=True)
+        os.makedirs(os.path.join(save_dir, "focus_regions", "adequate"), exist_ok=True)
+
+        # save the images of all focus regions in the all folder
+        for idx in self.focus_regions_dct:
+            focus_region = self.focus_regions_dct[idx]
+            classification = focus_region.get_classification()
+
+            save_path = os.path.join(
+                save_dir, "focus_regions", classification, f"{idx}.png"
+            )
+
+            focus_region.image.save(save_path)
+
     def save_selected_focus_regions(self, save_dir):
         """Save the selected focus regions images in focus_regions/selected folder."""
 
