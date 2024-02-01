@@ -50,6 +50,7 @@ class BMACounter:
     - verbose : whether to print out the progress of the PBCounter object
     - hoarding : whether to hoard regions and cell images processed into permanent storage
     - continue_on_error : whether to continue processing the WSI if an error occurs
+    - fr_tracker : a FocusRegionsTracker object that tracks the focus regions
 
     - predicted_specimen_type: the predicted specimen type of the WSI
     - wsi_path : the path to the WSI
@@ -150,6 +151,7 @@ class BMACounter:
         # The focus regions and WBC candidates are None until they are processed
         self.focus_regions = None
         self.wbc_candidates = None
+        self.fr_tracker = None
         self.differential = None
 
         self.profiling_data["init_time"] = time.time() - start_time
@@ -255,14 +257,7 @@ class BMACounter:
 
         self.profiling_data["filtering_focus_regions_time"] = time.time() - start_time
 
-        if self.hoarding:
-            start_time = time.time()
-            fr_tracker.save_selected_focus_regions(self.save_dir)
-            self.profiling_data["hoarding_focus_regions_time"] = (
-                time.time() - start_time
-            )
-        else:
-            self.profiling_data["hoarding_focus_regions_time"] = 0
+        self.fr_tracker = fr_tracker
 
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""
