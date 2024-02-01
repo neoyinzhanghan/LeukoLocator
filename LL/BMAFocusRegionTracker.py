@@ -460,9 +460,10 @@ class FocusRegionsTracker:
         # convert the dictionary to a DataFrame
         info_dct = pd.DataFrame(info_dct, index=[0])
 
-        # save the dictionary as a csv file
+        # save the dictionary as a csv file each row is a key-value pair
         info_dct.to_csv(
-            os.path.join(save_dir, "focus_regions", "focus_regions_info.csv")
+            os.path.join(save_dir, "focus_regions", "focus_regions_filtering.csv"),
+            index=False,
         )
 
     def save_all_focus_regions(self, save_dir):
