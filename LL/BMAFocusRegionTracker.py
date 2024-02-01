@@ -476,7 +476,7 @@ class FocusRegionsTracker:
         os.makedirs(os.path.join(save_dir, "focus_regions", "adequate"), exist_ok=True)
 
         # save the images of all focus regions in the all folder
-        for idx in self.focus_regions_dct:
+        for idx in tqdm(self.focus_regions_dct, desc="Saving all focus regions"):
             focus_region = self.focus_regions_dct[idx]
             classification = focus_region.get_classification()
 

@@ -259,6 +259,13 @@ class BMACounter:
 
         self.fr_tracker = fr_tracker
 
+        if self.hoarding:
+            start_time = time.time()
+            fr_tracker.save_all_focus_regions(self.save_dir)
+            self.profiling_data["hoarding_focus_regions_time"] = (
+                time.time() - start_time
+            )
+
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""
 
@@ -757,6 +764,7 @@ class BMACounter:
             self.profiling_data["total_time"] = sum(self.profiling_data.values())
             self.profiling_data["hoarding_time"] = (
                 self.profiling_data["high_mag_focus_regions_hoarding_time"]
+                + self.profiling_data["hoarding_focus_regions_time"]
                 + self.profiling_data["cells_hoarding_time"]
             )
 
