@@ -382,7 +382,7 @@ class BMACounter:
         # traverse through the wbc_candidates and add their info
         # create a list of dictionaries
 
-        if sum([manager.get_num_detected() for manager in task_managers]) < min_num_cells:
+        if sum([manager.get_num_detected.remote() for manager in task_managers]) < min_num_cells:
             raise TooFewCandidatesError(
                 f"Too few candidates found. min_num_cells {min_num_cells} is not reached. Decrease min_num_cells or check code and slide for error."
             )
