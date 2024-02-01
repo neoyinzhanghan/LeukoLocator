@@ -392,7 +392,7 @@ class BMACounter:
         # Check if the sum is below the minimum required number
         if total_detected < min_num_cells:
             raise TooFewCandidatesError(
-                f"Too few candidates found. min_num_cells {min_num_cells} is not reached by {total_detected} candidates. Increase min_num_cells or check code and slide for error."
+                f"Too few candidates found. min_num_cells {min_num_cells} is not reached by {total_detected} candidates. Decrease min_num_cells or check code and slide for error."
                 "Decrease min_num_cells or check code and slide for error."
             )
 
