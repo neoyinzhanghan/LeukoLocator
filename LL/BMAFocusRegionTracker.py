@@ -484,16 +484,3 @@ class FocusRegionsTracker:
             )
 
             focus_region.image.save(save_path)
-
-    def save_selected_focus_regions(self, save_dir):
-        """Save the selected focus regions images in focus_regions/selected folder."""
-
-        # first get the idx of the selected focus regions from the info_df
-        selected_focus_regions_idx = self.info_df[self.info_df["selected"]]["idx"]
-
-        # create a folder called selected in the focus_regions folder
-        os.makedirs(os.path.join(save_dir, "focus_regions", "selected"), exist_ok=True)
-
-        # save the selected focus regions images in the selected folder
-        for idx in selected_focus_regions_idx:
-            self.focus_regions_dct[idx].save_high_mag_image(save_dir, annotated=True)
