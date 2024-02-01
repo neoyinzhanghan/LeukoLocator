@@ -82,10 +82,6 @@ class BMACounter:
         # Initialize the manager
         self.file_name_manager = FileNameManager(wsi_path)
 
-        print(dump_dir)
-
-        sys.exit()
-
         self.save_dir = os.path.join(dump_dir, self.file_name_manager.stem)
 
         # if the save_dir does not exist, create it
@@ -196,7 +192,7 @@ class BMACounter:
                 )
 
         focus_regions_coordinates = focus_regions_coordinates[:300]
-        
+
         ray.shutdown()
         # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
         ray.init()
