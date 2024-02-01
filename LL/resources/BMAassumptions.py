@@ -42,6 +42,7 @@ min_num_regions_after_WMP_min_filter = 275
 min_num_regions_after_WMP_max_filter = 150
 max_num_regions_after_region_clf = 100
 max_num_cells = 3000
+min_num_cells = 10
 
 
 ###########################

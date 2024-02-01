@@ -192,7 +192,7 @@ class BMACounter:
                 )
 
         # take the 300 focus regions from the middle of the list which is len(focus_regions_coordinates) // 2 - 150 to len(focus_regions_coordinates) // 2 + 150
-        half = 300//2
+        half = 300 // 2
         focus_regions_coordinates = focus_regions_coordinates[
             len(focus_regions_coordinates) // 2
             - half : len(focus_regions_coordinates) // 2
@@ -381,6 +381,11 @@ class BMACounter:
         # first compile the big cell dataframe
         # traverse through the wbc_candidates and add their info
         # create a list of dictionaries
+
+        if sum([manager.num_detected for manager in task_managers]) < min_num_cells:
+            raise TooFewCandidatesError(
+                f"Too few candidates found. min_num_cells {min_num_cells} is not reached. Decrease min_num_cells or check code and slide for error."
+            )
         big_cell_df_list = []
 
         for i in range(len(self.wbc_candidates)):
@@ -826,6 +831,15 @@ class NoCellFoundError(ValueError):
 
     def __init__(self, message):
         """Initialize a NoCellFoundError object."""
+
+        super().__init__(message)
+
+
+class TooFewCandidatesError(ValueError):
+    """An exception raised when too few candidates are found."""
+
+    def __init__(self, message):
+        """Initialize a TooFewCandidatesError object."""
 
         super().__init__(message)
 
