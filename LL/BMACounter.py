@@ -271,6 +271,8 @@ class BMACounter:
             self.profiling_data["hoarding_focus_regions_time"] = (
                 time.time() - start_time
             )
+        else:
+            self.profiling_data["hoarding_focus_regions_time"] = 0
 
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""
