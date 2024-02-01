@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import yaml
 import time
+import sys
 from PIL import Image
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
@@ -80,6 +81,10 @@ class BMACounter:
             print(f"Initializing FileNameManager object for {wsi_path}")
         # Initialize the manager
         self.file_name_manager = FileNameManager(wsi_path)
+
+        print(dump_dir)
+
+        sys.exit()
 
         self.save_dir = os.path.join(dump_dir, self.file_name_manager.stem)
 
