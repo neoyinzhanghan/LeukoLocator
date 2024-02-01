@@ -457,15 +457,13 @@ class FocusRegionsTracker:
             # "sd_WMP_selected": sd_WMP_selected,
         }
 
-        # convert the dictionary to a DataFrame
-        info_dct = pd.DataFrame(info_dct, index=[0])
-
         # save the dictionary as a csv file each row is a key-value pair
-        info_dct.to_csv(
-            os.path.join(save_dir, "focus_regions", "focus_regions_filtering.csv"),
-            index=False,
-        )
-
+        with open(
+            os.path.join(save_dir, "focus_regions", "focus_regions_filtering.csv"), "a"
+        ) as f:
+            for key in info_dct.keys():
+                f.write("%s,%s\n" % (key, info_dct[key]))
+        
     def save_all_focus_regions(self, save_dir):
         """Save the images of all focus regions in the focus_regions/all folder."""
 
