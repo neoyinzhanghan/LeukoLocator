@@ -382,10 +382,22 @@ class BMACounter:
         # traverse through the wbc_candidates and add their info
         # create a list of dictionaries
 
-        if sum([manager.get_num_detected.remote() for manager in task_managers]) < min_num_cells:
+        # Initiate remote calls and get futures
+        futures = [manager.get_num_detected.remote() for manager in task_managers]
+
+        # Wait for all futures to complete and retrieve the results
+        num_detected_values = ray.get(futures)
+
+        # Sum the results
+        total_detected = sum(num_detected_values)
+
+        # Check if the sum is below the minimum required number
+        if total_detected < min_num_cells:
             raise TooFewCandidatesError(
-                f"Too few candidates found. min_num_cells {min_num_cells} is not reached. Decrease min_num_cells or check code and slide for error."
+                f"Too few candidates found. min_num_cells {min_num_cells} is not reached. "
+                "Decrease min_num_cells or check code and slide for error."
             )
+
         big_cell_df_list = []
 
         for i in range(len(self.wbc_candidates)):
