@@ -162,6 +162,8 @@ class BMACounter:
 
         start_time = time.time()
 
+        os.makedirs(os.path.join(self.save_dir, "focus_regions"), exist_ok=True)
+
         # First get a list of the focus regions coordinates based on focus_regions_size at highest level of magnification
         # if the dimension is not divisible by the focus_regions_size, then we simply omit the last focus region
 
