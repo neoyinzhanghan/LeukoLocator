@@ -339,8 +339,6 @@ class BMACounter:
         if self.verbose:
             print(f"Shutting down Ray")
 
-        ray.shutdown()
-
         self.wbc_candidates = all_results  # the candidates here should be aliased with the candidates saved in focus_regions
         self.focus_regions = new_focus_regions  # these do not include all the focus regions, only the ones that have wbc_candidates before the max_num_candidates is reached
 
@@ -397,6 +395,8 @@ class BMACounter:
                 f"Too few candidates found. min_num_cells {min_num_cells} is not reached. "
                 "Decrease min_num_cells or check code and slide for error."
             )
+
+        ray.shutdown()
 
         big_cell_df_list = []
 
