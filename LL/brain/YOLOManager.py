@@ -286,3 +286,6 @@ class YOLOManager:
                 )
 
         return processed_focus_regions
+
+    def get_num_detected(self):
+        return self.num_detected
