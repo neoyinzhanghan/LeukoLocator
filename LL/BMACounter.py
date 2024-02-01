@@ -18,7 +18,6 @@ from ray.exceptions import RayTaskError
 from pathlib import Path
 
 # Within package imports ###########################################################################
-from LL.resources.BMAassumptions import *
 from LL.FileNameManager import FileNameManager
 from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
 from LL.SearchView import SearchView
@@ -33,6 +32,7 @@ from LL.communication.write_config import *
 from LL.communication.visualization import *
 from LL.brain.utils import *
 from LL.brain.SpecimenClf import get_region_type
+from LL.resources.BMAassumptions import *
 
 
 class BMACounter:
