@@ -57,6 +57,12 @@ class FocusRegion:
         # Assuming self.downsampled_image is a PIL image, convert it to a NumPy array
         image_array = np.array(self.image)
 
+        print("Aああああああああああああああ")
+        print(image_array.shape)
+
+        import sys
+        sys.exit()
+
         # Convert RGBA to RGB if the alpha channel is not necessary
         if image_array.shape[2] == 4:
             image_array = image_array[
