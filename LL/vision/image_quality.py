@@ -17,15 +17,6 @@ def VoL(image, sds=2):
     """Compute the VoL of an image, the variance is computed after removing all data sds standard deviations away from the mean.
     The image must be a PIL RGB image."""
 
-    import sys
-    # print the type, dimensions, and size of the image, and the maximum and minimum pixel values
-    print(type(image))
-    print(image.size)
-    print(image.mode)
-    print(image.getextrema())
-
-    sys.exit()
-
     # make sure that the image is from now on processed using cv2 so must be in BGR format
     image = np.array(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)

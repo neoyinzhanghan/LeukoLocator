@@ -47,7 +47,7 @@ class FocusRegion:
         # calculate the downsampled coordinateF
 
         # Calculate the VoL and WMP
-        self.VoL = VoL(self.image)
+        self.VoL = VoL(self.downsampled_image)
         # self.WMP, self.otsu_mask = WMP(self.image)　# for bone marrow aspirate we are not gonnae need this for now
 
         # image_mask_duo is one image where the downsampled image and mask are put side by side
