@@ -29,12 +29,19 @@ class FocusRegion:
     - YOLO_df : should contain the good bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
     """
 
-    def __init__(self, coordinate, image, idx=None):
+    def __init__(self, downsampled_coordinate, downsampled_image, idx=None):
         """Initialize a FocusRegion object. The full resolution image is None at initialization."""
 
         self.idx = idx
-        self.coordinate = coordinate
-        self.image = image
+        self.downsampled_coordinate = downsampled_coordinate
+        self.coordinate = (
+            downsampled_coordinate[0] * search_view_downsample_rate,
+            downsampled_coordinate[1] * search_view_downsample_rate,
+            downsampled_coordinate[2] * search_view_downsample_rate,
+            downsampled_coordinate[3] * search_view_downsample_rate,
+        )
+        self.downsampled_image = downsampled_image
+        self.image = None
         self.annotated_image = None
 
         # calculate the downsampled coordinateF

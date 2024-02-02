@@ -170,14 +170,14 @@ class BMACounter:
         # get the dimension of the highest mag, which is the level 0
         # get the level 0 dimension using
         wsi = openslide.OpenSlide(self.wsi_path)
-        level_0_dimension = wsi.level_dimensions[0]
+        search_view_dimension = wsi.level_dimensions[search_view_level]
         wsi.close()
 
-        dimx, dimy = level_0_dimension
+        dimx, dimy = search_view_dimension
 
         # get the number of focus regions in the x and y direction
-        num_focus_regions_x = dimx // focus_regions_size
-        num_focus_regions_y = dimy // focus_regions_size
+        num_focus_regions_x = dimx // search_view_focus_regions_size
+        num_focus_regions_y = dimy // search_view_focus_regions_size
 
         # get the list of focus regions coordinates
         focus_regions_coordinates = []
@@ -275,6 +275,25 @@ class BMACounter:
             )
         else:
             self.profiling_data["hoarding_focus_regions_time"] = 0
+
+        # now for each focus region, we will find get the image
+
+        start_time = time.time()
+        for focus_region in tqdm(
+            self.focus_regions, desc="Getting high magnification focus region images"
+        ):
+            wsi = openslide.OpenSlide(self.wsi_path)
+            image = self.wsi.read_region(
+                focus_region.coordinate,
+                0,
+                (
+                    focus_region.coordinate[2] - focus_region.coordinate[0],
+                    focus_region.coordinate[3] - focus_region.coordinate[1],
+                ),
+            )
+            focus_region.get_image(image)
+
+        self.profiling_data["getting_high_mag_images_time"] = time.time() - start_time
 
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""

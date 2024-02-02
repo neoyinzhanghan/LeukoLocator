@@ -463,7 +463,7 @@ class FocusRegionsTracker:
         ) as f:
             for key in info_dct.keys():
                 f.write("%s,%s\n" % (key, info_dct[key]))
-        
+
     def save_all_focus_regions(self, save_dir):
         """Save the images of all focus regions in the focus_regions/all folder."""
 
@@ -483,4 +483,4 @@ class FocusRegionsTracker:
                 save_dir, "focus_regions", classification, f"{idx}.png"
             )
 
-            focus_region.image.save(save_path)
+            focus_region.downsampled_image.save(save_path)
