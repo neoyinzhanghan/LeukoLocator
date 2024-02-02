@@ -57,22 +57,6 @@ class WSICropManager:
 
         return image
 
-    def crop_vips(self, coords):
-        """Crop the WSI at the lowest level of magnification."""
-
-        if self.wsi is None:
-            self.open_vips()
-
-        # Ensure that self.wsi is a pyvips Image
-        if not isinstance(self.wsi, pyvips.Image):
-            raise TypeError("WSI is not a pyvips Image object")
-
-        # Cropping the image
-        # coords are expected to be (left, top, right, bottom)
-        cropped_image = self.wsi.crop(coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1])
-
-        return cropped_image
-
     def async_get_focus_region_image(self, focus_region):
         """Update the image of the focus region."""
 
