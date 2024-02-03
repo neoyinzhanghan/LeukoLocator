@@ -81,6 +81,10 @@ class FocusRegion:
     def get_image(self, image):
         """Update the image of the focus region."""
 
+        # if the image is RGBA, convert it to RGB
+        if image.mode == "RGBA":
+            image = image.convert("RGB")
+
         self.image = image
 
     def get_annotated_image(self):
