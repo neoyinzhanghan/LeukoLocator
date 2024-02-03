@@ -162,6 +162,15 @@ class FocusRegionsTracker:
         self.info_df["selected"] = False
         self.info_df.loc[self.info_df["idx"].isin(top_n_idx), "selected"] = True
 
+
+        print("ああああああ")
+
+        # print the keys of focus_regions_dct sorted
+        print("Keys of focus_regions_dct sorted: ", sorted(self.focus_regions_dct.keys()))
+
+        # print the top_n_idx sorted
+        print("top_n_idx sorted: ", sorted(top_n_idx))
+
         focus_regions = [self.focus_regions_dct[idx] for idx in top_n_idx]
 
         return focus_regions
