@@ -193,13 +193,13 @@ class BMACounter:
                     )
                 )
 
-        # take the 300 focus regions from the middle of the list which is len(focus_regions_coordinates) // 2 - 150 to len(focus_regions_coordinates) // 2 + 150
-        half = 300 // 2
-        focus_regions_coordinates = focus_regions_coordinates[
-            len(focus_regions_coordinates) // 2
-            - half : len(focus_regions_coordinates) // 2
-            + half
-        ]
+        # # take the 300 focus regions from the middle of the list which is len(focus_regions_coordinates) // 2 - 150 to len(focus_regions_coordinates) // 2 + 150
+        # half = 300 // 2
+        # focus_regions_coordinates = focus_regions_coordinates[
+        #     len(focus_regions_coordinates) // 2
+        #     - half : len(focus_regions_coordinates) // 2
+        #     + half
+        # ]
 
         ray.shutdown()
         # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)

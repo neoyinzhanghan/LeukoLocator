@@ -73,9 +73,10 @@ def predict_batch(pil_images, model):
     - list of float: List of confidence scores for the class label `1` for each image.
     """
 
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-    )
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
 
     # Transform each image and stack them into a batch
     batch = torch.stack([transform(image.convert("RGB")) for image in pil_images])
