@@ -279,6 +279,7 @@ class BMACounter:
         # now for each focus region, we will find get the image
 
         start_time = time.time()
+
         for focus_region in tqdm(
             self.focus_regions, desc="Getting high magnification focus region images"
         ):

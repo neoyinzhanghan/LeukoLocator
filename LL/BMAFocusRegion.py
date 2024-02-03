@@ -6,6 +6,7 @@
 import os
 import numpy as np
 import pandas as pd
+import ray
 from PIL import Image
 from PIL import Image
 
@@ -208,3 +209,19 @@ def sort_focus_regions(focus_regions):
         key=lambda focus_region: focus_region.resnet_confidence_score,
         reverse=True,
     )
+
+@ray.remote
+def save_focus_region_batch(focus_regions, save_dir):
+    """
+    Ray task to save a single focus region image.
+    """
+
+    for idx, focus_region in enumerate(focus_regions):
+        classification = focus_region.get_classification()
+        save_path = os.path.join(
+            save_dir, "focus_regions", classification, f"{idx}.png"
+        )
+
+        focus_region.downsampled_image.save(save_path)
+
+    return len(focus_regions)

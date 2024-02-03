@@ -10,6 +10,7 @@ import torch
 import seaborn as sns
 import ray
 import numpy as np
+from LL.brain.utils import create_list_of_batches_from_list
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
@@ -22,9 +23,8 @@ from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
 from LL.brain.BMARegionClfManager import RegionClfManager
 from LL.brain.FocusRegionMaker import FocusRegionMaker
-from LL.BMAFocusRegion import FocusRegion
+from LL.BMAFocusRegion import save_focus_region_batch
 from LL.brain.utils import *
-
 
 class FocusRegionsTracker:
     """A class representing a focus region tracker object that tracks the metrics, objects, files related to focus region filtering.
@@ -474,13 +474,32 @@ class FocusRegionsTracker:
         os.makedirs(os.path.join(save_dir, "focus_regions", "clot"), exist_ok=True)
         os.makedirs(os.path.join(save_dir, "focus_regions", "adequate"), exist_ok=True)
 
-        # save the images of all focus regions in the all folder
-        for idx in tqdm(self.focus_regions_dct, desc="Saving all focus regions"):
-            focus_region = self.focus_regions_dct[idx]
-            classification = focus_region.get_classification()
 
-            save_path = os.path.join(
-                save_dir, "focus_regions", classification, f"{idx}.png"
-            )
+        focus_regions_lst = list(self.focus_regions_dct.values())
+        batches = create_list_of_batches_from_list(focus_regions_lst, batch_size=region_saving_batch_size)
 
-            focus_region.downsampled_image.save(save_path)
+        # create a list of batch
+
+        # List to store references to the async results
+        ray.shutdown()
+        ray.init()
+        save_tasks = []
+
+
+        for batch in batches:
+            # Queue the task
+            task = save_focus_region_batch.remote(batch, save_dir)
+            save_tasks.append(task)
+
+        pbar = tqdm(total=len(save_tasks), desc="Saving focus regions")
+        while save_tasks:
+            done_ids, _ = ray.wait(save_tasks)
+            # get the output of the task which is the number of focus regions saved, use that to update the progress bar
+            output = ray.get(done_ids) 
+            pbar.update(output)
+
+        # Wait for all tasks to complete
+        ray.get(save_tasks)
+
+        # Shutdown Ray
+        ray.shutdown()
