@@ -87,15 +87,10 @@ def predict_batch(pil_images, model):
         logits = model(batch)
         probs = torch.softmax(logits, dim=1)
 
-        print(probs.shape)
-
-        import sys
-        sys.exit()
-
         # prob shape is [44, 1, 3]
-        peripheral_confidence_scores = probs[:, 0, 0].cpu().numpy()
-        clot_confidence_scores = probs[:, 0, 1].cpu().numpy()
-        adequate_confidence_scores = probs[:, 0, 2].cpu().numpy()
+        peripheral_confidence_scores = probs[:, 0].cpu().numpy()
+        clot_confidence_scores = probs[:, 1].cpu().numpy()
+        adequate_confidence_scores = probs[:, 2].cpu().numpy()
 
     return (
         peripheral_confidence_scores,
