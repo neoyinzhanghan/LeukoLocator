@@ -496,7 +496,7 @@ class FocusRegionsTracker:
             done_ids, _ = ray.wait(save_tasks)
             # get the output of the task which is the number of focus regions saved, use that to update the progress bar
             output = ray.get(done_ids) 
-            pbar.update(output)
+            pbar.update(int(output))
 
         # Wait for all tasks to complete
         ray.get(save_tasks)
