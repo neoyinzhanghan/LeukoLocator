@@ -176,6 +176,7 @@ class BMACounter:
 
         print("The search view dimension is", search_view_dimension)
         print("The search view level is", search_view_level)
+        print("The search view focus regions size is", search_view_focus_regions_size)
 
         import sys
         sys.exit()
