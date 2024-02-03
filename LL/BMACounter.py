@@ -178,9 +178,6 @@ class BMACounter:
         print("The search view level is", search_view_level)
         print("The search view focus regions size is", search_view_focus_regions_size)
 
-        import sys
-        sys.exit()
-
         # get the number of focus regions in the x and y direction
         num_focus_regions_x = dimx // search_view_focus_regions_size
         num_focus_regions_y = dimy // search_view_focus_regions_size
@@ -192,10 +189,10 @@ class BMACounter:
             for j in range(num_focus_regions_y):
                 focus_regions_coordinates.append(
                     (
-                        i * focus_regions_size,
-                        j * focus_regions_size,
-                        (i + 1) * focus_regions_size,
-                        (j + 1) * focus_regions_size,
+                        i * search_view_focus_regions_size,
+                        j * search_view_focus_regions_size,
+                        (i + 1) * search_view_focus_regions_size,
+                        (j + 1) * search_view_focus_regions_size,
                     )
                 )
 
