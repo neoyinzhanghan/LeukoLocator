@@ -17,7 +17,6 @@ from ray.exceptions import RayTaskError
 
 
 # Within package imports ###########################################################################
-from LL.resources.BMAassumptions import *
 from LL.communication.visualization import save_hist_KDE_rug_plot
 from LL.communication.write_config import numpy_to_python
 from LL.vision.region_clf_model import ResNet50Classifier
@@ -25,6 +24,7 @@ from LL.brain.BMARegionClfManager import RegionClfManager
 from LL.brain.FocusRegionMaker import FocusRegionMaker
 from LL.BMAFocusRegion import save_focus_region_batch
 from LL.brain.utils import *
+from LL.resources.BMAassumptions import *
 
 class FocusRegionsTracker:
     """A class representing a focus region tracker object that tracks the metrics, objects, files related to focus region filtering.
