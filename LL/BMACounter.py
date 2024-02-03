@@ -283,7 +283,7 @@ class BMACounter:
             self.focus_regions, desc="Getting high magnification focus region images"
         ):
             wsi = openslide.OpenSlide(self.wsi_path)
-            image = self.wsi.read_region(
+            image = wsi.read_region(
                 focus_region.coordinate,
                 0,
                 (
