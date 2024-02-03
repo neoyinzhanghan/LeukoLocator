@@ -174,10 +174,6 @@ class BMACounter:
 
         dimx, dimy = search_view_dimension
 
-        print("The search view dimension is", search_view_dimension)
-        print("The search view level is", search_view_level)
-        print("The search view focus regions size is", search_view_focus_regions_size)
-
         # get the number of focus regions in the x and y direction
         num_focus_regions_x = dimx // search_view_focus_regions_size
         num_focus_regions_y = dimy // search_view_focus_regions_size

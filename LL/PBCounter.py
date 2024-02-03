@@ -25,7 +25,7 @@ from LL.PBFocusRegion import *
 from LL.PBFocusRegionsTracker import FocusRegionsTracker
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
-from LL.Differential import Differential, to_count_dict
+from LL.PBDifferential import Differential, to_count_dict
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
 from LL.communication.write_config import *
