@@ -491,7 +491,7 @@ class FocusRegionsTracker:
             task = save_focus_region_batch.remote(batch, save_dir)
             save_tasks.append(task)
 
-        pbar = tqdm(total=len(batches), desc="Saving focus regions")  # total should be the number of batches
+        pbar = tqdm(total=len(focus_regions_lst), desc="Saving focus regions")  # total should be the number of batches
         while save_tasks:
             # Wait for any of the tasks to complete
             done_ids, save_tasks = ray.wait(save_tasks)

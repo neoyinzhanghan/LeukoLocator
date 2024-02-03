@@ -9,7 +9,6 @@ import threading
 # Within package imports ###########################################################################
 from LL.resources.PBassumptions import *
 
-
 def crop_region_view(
     region_view,
     crop_width=search_view_crop_size[0],

@@ -20,12 +20,8 @@ from pathlib import Path
 # Within package imports ###########################################################################
 from LL.FileNameManager import FileNameManager
 from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
-from LL.SearchView import SearchView
-from LL.BMAFocusRegion import *
-from LL.BMAFocusRegionTracker import FocusRegionsTracker
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
-from LL.Differential import Differential, to_count_dict
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
 from LL.communication.write_config import *
@@ -33,7 +29,10 @@ from LL.communication.visualization import *
 from LL.brain.utils import *
 from LL.brain.SpecimenClf import get_region_type
 from LL.resources.BMAassumptions import *
-
+from LL.SearchView import SearchView
+from LL.PBDifferential import Differential, to_count_dict
+from LL.BMAFocusRegion import *
+from LL.BMAFocusRegionTracker import FocusRegionsTracker
 
 class BMACounter:
 
