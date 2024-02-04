@@ -4,27 +4,20 @@
 
 # Outside imports ##################################################################################
 import os
-import time
 import pandas as pd
-import torch
-import seaborn as sns
 import ray
 import numpy as np
 from LL.brain.utils import create_list_of_batches_from_list
-from matplotlib import pyplot as plt
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
 
 
 # Within package imports ###########################################################################
 from LL.communication.visualization import save_hist_KDE_rug_plot
-from LL.communication.write_config import numpy_to_python
-from LL.vision.region_clf_model import ResNet50Classifier
-from LL.brain.BMARegionClfManager import RegionClfManager
-from LL.brain.FocusRegionMaker import FocusRegionMaker
-from LL.BMAFocusRegion import save_focus_region_batch
 from LL.brain.utils import *
 from LL.resources.BMAassumptions import *
+from LL.brain.BMARegionClfManager import RegionClfManager
+from LL.BMAFocusRegion import save_focus_region_batch
 
 class FocusRegionsTracker:
     """A class representing a focus region tracker object that tracks the metrics, objects, files related to focus region filtering.
@@ -473,7 +466,6 @@ class FocusRegionsTracker:
         )
         os.makedirs(os.path.join(save_dir, "focus_regions", "clot"), exist_ok=True)
         os.makedirs(os.path.join(save_dir, "focus_regions", "adequate"), exist_ok=True)
-
 
         focus_regions_lst = list(self.focus_regions_dct.values())
         batches = create_list_of_batches_from_list(focus_regions_lst, batch_size=region_saving_batch_size)
