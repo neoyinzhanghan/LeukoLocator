@@ -42,7 +42,7 @@ min_num_regions_within_foci_sd = 500
 min_num_regions_after_VoL_filter = 400
 min_num_regions_after_WMP_min_filter = 275
 min_num_regions_after_WMP_max_filter = 150
-max_num_regions_after_region_clf = 300
+max_num_regions_after_region_clf = 500
 max_num_cells = 3000
 min_num_cells = 10
 
