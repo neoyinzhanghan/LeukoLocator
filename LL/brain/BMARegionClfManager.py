@@ -3,15 +3,11 @@ import torchvision.models as models
 import ray
 import torchvision.models as models
 import pytorch_lightning as pl
-import torchmetrics
 import torch.nn as nn
-import albumentations
 
-from LL.resources.BMAassumptions import *
 from torchvision import transforms
-from torchvision.models import resnext50_32x4d
-from PIL import Image as pil_image
 from collections import OrderedDict
+from LL.resources.BMAassumptions import *
 
 
 def remove_data_parallel(old_state_dict):

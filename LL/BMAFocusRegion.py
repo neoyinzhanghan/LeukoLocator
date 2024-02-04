@@ -223,7 +223,7 @@ def save_focus_region_batch(focus_regions, save_dir):
     for idx, focus_region in enumerate(focus_regions):
         classification = focus_region.get_classification()
         save_path = os.path.join(
-            save_dir, "focus_regions", classification, f"{idx}.png"
+            save_dir, "focus_regions", classification, f"{focus_region.idx}.png"
         )
 
         focus_region.downsampled_image.save(save_path)
