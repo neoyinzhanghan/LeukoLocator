@@ -824,8 +824,8 @@ class BMACounter:
                 os.path.join(self.save_dir, "runtime_data.csv"), header=False
             )
 
-        except SpecimenError as e:
-            raise e
+        # except SpecimenError as e:
+        #     raise e
 
         except Exception as e:
             if self.continue_on_error:
