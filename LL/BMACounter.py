@@ -117,6 +117,13 @@ class BMACounter:
         if specimen_type != "Bone Marrow Aspirate":
             if not self.ignore_specimen_type:
                 if self.continue_on_error:
+
+                    e = SpecimenError(
+                        "The specimen is not Bone Marrow Aspirate. Instead, it is "
+                        + specimen_type
+                        + "."
+                    )
+                    
                     print(
                         "ERROR: The specimen is not Bone Marrow Aspirate. Instead, it is "
                         + specimen_type
