@@ -116,11 +116,47 @@ class BMACounter:
 
         if specimen_type != "Bone Marrow Aspirate":
             if not self.ignore_specimen_type:
-                raise SpecimenError(
-                    "The specimen is not Bone Marrow Aspirate. Instead, it is "
-                    + specimen_type
-                    + "."
-                )
+                if self.continue_on_error:
+                    print(
+                        "ERROR: The specimen is not Bone Marrow Aspirate. Instead, it is "
+                        + specimen_type
+                        + "."
+                    )
+
+                    # if the save_dir does not exist, create it
+                    os.makedirs(self.save_dir, exist_ok=True)
+
+                    # save the exception and profiling data
+                    with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
+                        f.write(str(e))
+
+                    # Save profiling data even in case of error
+                    with open(
+                        os.path.join(self.save_dir, "runtime_data.yaml"), "w"
+                    ) as file:
+                        yaml.dump(
+                            self.profiling_data,
+                            file,
+                            default_flow_style=False,
+                            sort_keys=False,
+                        )
+
+                    # rename the save_dir name to "ERROR_" + save_dir
+                    os.rename(
+                        self.save_dir,
+                        os.path.join(
+                            dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                        ),
+                    )
+
+                    print(f"Error occurred and logged. Continuing to next WSI.")
+
+                else:
+                    raise SpecimenError(
+                        "The specimen is not Bone Marrow Aspirate. Instead, it is "
+                        + specimen_type
+                        + "."
+                    )
 
             else:
                 print(
