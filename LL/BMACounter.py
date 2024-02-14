@@ -158,6 +158,11 @@ class BMACounter:
 
                     print(f"Error occurred and logged. Continuing to next WSI.")
 
+                    # update the save_dir
+                    self.save_dir = os.path.join(
+                        dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                    )
+
                 else:
                     raise SpecimenError(
                         "The specimen is not Bone Marrow Aspirate. Instead, it is "
