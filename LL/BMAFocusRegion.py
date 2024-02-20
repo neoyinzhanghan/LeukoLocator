@@ -183,6 +183,14 @@ class FocusRegion:
                         f"{self.idx}.jpg",
                     )
                 )
+                self.downsampled_image.save(
+                    os.path.join(
+                        save_dir,
+                        "focus_regions",
+                        "low_mag_selected",
+                        f"{self.idx}.jpg",
+                    )
+                )
 
     class FocusRegionNotAnnotatedError(Exception):
         """Raise when the focus region is not annotated yet."""

@@ -99,7 +99,7 @@ def run_one_image(inf_class, image_path):
 if __name__ == "__main__":
 
 
-    image_path = "/media/hdd1/neo/pannuke/images/train/image_0040.jpg"
+    image_path = "/media/hdd1/neo/pannuke/images/train/image_0076.jpg"
 
     print("Running the inference on", image_path, "\n")
 

@@ -18,6 +18,7 @@ from ray.exceptions import RayTaskError
 from pathlib import Path
 
 # Within package imports ###########################################################################
+from LL.PBDifferential import Differential, to_count_dict
 from LL.FileNameManager import FileNameManager
 from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
 from LL.brain.HemeLabelManager import HemeLabelManager
@@ -28,11 +29,10 @@ from LL.communication.write_config import *
 from LL.communication.visualization import *
 from LL.brain.utils import *
 from LL.brain.SpecimenClf import get_region_type
-from LL.resources.BMAassumptions import *
 from LL.SearchView import SearchView
-from LL.PBDifferential import Differential, to_count_dict
 from LL.BMAFocusRegion import *
 from LL.BMAFocusRegionTracker import FocusRegionsTracker
+from LL.resources.BMAassumptions import *
 
 class BMACounter:
 
@@ -600,6 +600,9 @@ class BMACounter:
             os.makedirs(
                 os.path.join(self.save_dir, "focus_regions", "high_mag_unannotated"),
                 exist_ok=True,
+            )
+            os.makedirs(
+                os.path.join(self.save_dir, "focus_regions", "low_mag_selected"), exist_ok=True
             )
             for focus_region in tqdm(
                 self.focus_regions, desc="Saving focus regions high mag images"
