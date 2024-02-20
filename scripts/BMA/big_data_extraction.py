@@ -34,5 +34,6 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=True)
     bma_counter.tally_differential()
     
-    import sys
-    sys.exis(0)
+    if "ERROR" in bma_counter.save_dir:
+        import sys
+        sys.exis(0)
