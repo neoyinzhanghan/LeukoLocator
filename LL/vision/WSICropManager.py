@@ -10,7 +10,7 @@ import pyvips
 # Within package imports ###########################################################################
 from LL.vision.image_quality import VoL
 from LL.BMAFocusRegion import FocusRegion
-from LL.resources.BMAassumptions import search_view_level, search_view_downsample_rate
+from LL.resources.BMAassumptions import search_view_level, search_view_downsample_rate, search_view_focus_regions_size
 
 
 # @ray.remote(num_cpus=num_cpus_per_cropper)
@@ -44,14 +44,21 @@ class WSICropManager:
 
         self.wsi = None
 
-    def crop(self, coords, level=0):
+    def crop(self, coords, level=0, downsample_rate=1):
         """Crop the WSI at the lowest level of magnification."""
 
         if self.wsi is None:
             self.open_slide()
 
+        level_0_coords = (
+            coords[0] * downsample_rate,
+            coords[1] * downsample_rate,
+            coords[2] * downsample_rate,
+            coords[3] * downsample_rate,
+        )
+
         image = self.wsi.read_region(
-            coords, level, (coords[2] - coords[0], coords[3] - coords[1]) ## <<<< THIS SHIT IS FUCKED TODO
+            level_0_coords, level, coords[2] - coords[0], coords[3] - coords[1]
         )
 
         image = image.convert("RGB")
@@ -84,14 +91,7 @@ class WSICropManager:
         focus_regions = []
         for focus_region_coord in focus_region_coords:
 
-            level_0_coord = (
-                focus_region_coord[0] * search_view_downsample_rate,
-                focus_region_coord[1] * search_view_downsample_rate,
-                focus_region_coord[2] * search_view_downsample_rate,
-                focus_region_coord[3] * search_view_downsample_rate,
-            )
-
-            image = self.crop(level_0_coord, level=search_view_level)
+            image = self.crop(focus_region_coord, level=search_view_level, downsample_rate=search_view_downsample_rate)
 
             focus_region = FocusRegion(downsampled_coordinate=focus_region_coord, downsampled_image=image)
             focus_regions.append(focus_region)
