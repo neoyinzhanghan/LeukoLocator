@@ -220,7 +220,7 @@ class BMACounter:
         search_view_dimension = wsi.level_dimensions[search_view_level]
         wsi.close()
 
-        dimx, dimy = search_view_dimension, search_view_dimension
+        dimx, dimy = search_view_dimension
 
         # get the number of focus regions in the x and y direction
         num_focus_regions_x = dimx // search_view_focus_regions_size
