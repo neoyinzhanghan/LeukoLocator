@@ -36,4 +36,4 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     
     if "ERROR" not in bma_counter.save_dir:
         import sys
-        sys.exis(0)
+        sys.exit(0)
