@@ -58,7 +58,7 @@ class WSICropManager:
         )
 
         image = self.wsi.read_region(
-            level_0_coords, level, coords[2] - coords[0], coords[3] - coords[1]
+            level_0_coords, level, (coords[2] - coords[0], coords[3] - coords[1])
         )
 
         image = image.convert("RGB")
