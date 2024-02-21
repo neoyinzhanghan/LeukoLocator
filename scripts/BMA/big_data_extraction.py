@@ -35,5 +35,7 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     bma_counter.tally_differential()
     
     if "ERROR" not in bma_counter.save_dir:
+
+        print("Saving to", bma_counter.save_dir)
         import sys
         sys.exit(0)
