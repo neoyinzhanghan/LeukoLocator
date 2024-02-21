@@ -41,4 +41,8 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
         sys.exit(0)
 
     except Exception as e:
-        pass
+        print("Error:", e)
+
+    except KeyboardInterrupt:
+        print("Interrupted")
+        break
