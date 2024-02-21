@@ -31,11 +31,14 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     print("Processing", bma_fname)
     bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
 
-    bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=True)
-    bma_counter.tally_differential()
-    
-    if "ERROR" not in bma_counter.save_dir:
+    try:    
+        bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=False)
+        bma_counter.tally_differential()
 
         print("Saving to", bma_counter.save_dir)
+
         import sys
         sys.exit(0)
+
+    except Exception as e:
+        pass
