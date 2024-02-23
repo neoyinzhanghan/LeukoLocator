@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import random
 from tqdm import tqdm
 from LL.BMACounter import BMACounter
 from LL.resources.BMAassumptions import *
@@ -27,18 +28,28 @@ bma_fnames = [
 #     else:
 #         bma_fnames.remove(processed)
 
+num_processed = 0
+
+# shuffle the list of bma_fnames
+random.shuffle(bma_fnames)
+
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     print("Processing", bma_fname)
-    bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
+
+    if num_processed > 50:
+        print("Finished processing the set number of slides. Exiting ...")
+        import sys
+        sys.exit()
 
     try:    
+
+        bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
         bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=False)
         bma_counter.tally_differential()
 
         print("Saving to", bma_counter.save_dir)
 
-        import sys
-        sys.exit(0)
+        num_processed += 1
 
     except Exception as e:
         print("Error:", e)
