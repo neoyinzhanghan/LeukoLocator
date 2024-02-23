@@ -32,8 +32,6 @@ for folder in os.listdir(data_dir):
                 # the new filename should be the folder name + the file name
                 new_file_name = folder + "_" + file
                 save_path = os.path.join(save_dir, new_file_name)
-                if not os.path.exists(save_path):
-                    os.makedirs(save_path)
                 shutil.copy(os.path.join(high_mag_unannotated_dir, file), save_path)
 
             # update the tracker
