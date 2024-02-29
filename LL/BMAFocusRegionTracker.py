@@ -326,10 +326,7 @@ class FocusRegionsTracker:
         """Save the images of all focus regions in the focus_regions/all folder."""
 
         # create a folder called all in the focus_regions folder
-        os.makedirs(
-            os.path.join(save_dir, "focus_regions", "peripheral"), exist_ok=True
-        )
-        os.makedirs(os.path.join(save_dir, "focus_regions", "clot"), exist_ok=True)
+        os.makedirs(os.path.join(save_dir, "focus_regions", "inadequate"), exist_ok=True)
         os.makedirs(os.path.join(save_dir, "focus_regions", "adequate"), exist_ok=True)
 
         focus_regions_lst = list(self.focus_regions_dct.values())
