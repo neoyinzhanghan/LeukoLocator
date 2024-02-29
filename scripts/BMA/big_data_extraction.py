@@ -36,7 +36,7 @@ random.shuffle(bma_fnames)
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     print("Processing", bma_fname)
 
-    if num_processed > 50:
+    if num_processed > 5:
         print("Finished processing the set number of slides. Exiting ...")
         import sys
         sys.exit()
