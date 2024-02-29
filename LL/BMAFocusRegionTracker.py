@@ -53,8 +53,6 @@ class FocusRegionsTracker:
                     "idx": focus_region.idx,
                     "coordinate": focus_region.coordinate,
                     "VoL": focus_region.VoL,
-                    "peripheral_confidence_score": focus_region.peripheral_confidence_score,
-                    "clot_confidence_score": focus_region.clot_confidence_score,
                     "adequate_confidence_score": focus_region.adequate_confidence_score,
                 }
             )
@@ -120,7 +118,7 @@ class FocusRegionsTracker:
 
         self.focus_regions_dct = new_focus_region_dct
 
-        # add the peripheral_confidence_score, clot_confidence_score, and adequate_confidence_score columns to the info_df
+        # update the info_df with the confidence scores
         self.info_df["adequate_confidence_score"] = np.nan
 
         # update the info_df with the confidence scores
@@ -247,25 +245,13 @@ class FocusRegionsTracker:
         # save a csv file containing the following information:
         # - final_min_VoL
         # - final_min_conf_thres
-        # - final_max_peripheral_confidence_score
-        # - final_min_peripheral_confidence_score
-        # - final_max_clot_confidence_score
-        # - final_min_clot_confidence_score
         # - average_resnet_confidence_score
-        # - average_peripheral_confidence_score
-        # - average_clot_confidence_score
         # - average_VoL
         # - average_resnet_confidence_score_selected
-        # - average_peripheral_confidence_score_selected
-        # - average_clot_confidence_score_selected
         # - average_VoL_selected
         # - sd_resnet_confidence_score
-        # - sd_peripheral_confidence_score
-        # - sd_clot_confidence_score
         # - sd_VoL
         # - sd_resnet_confidence_score_selected
-        # - sd_peripheral_confidence_score_selected
-        # - sd_clot_confidence_score_selected
         # - sd_VoL_selected
 
         # calculate the average resnet confidence score

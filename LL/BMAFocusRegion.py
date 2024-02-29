@@ -125,24 +125,19 @@ class FocusRegion:
     def get_classification(self):
         """Return the classification of the focus region.
         which one of the following:
-        - peripheral
-        - clot
         - adequate
+        - inadequate
 
         has the highest confidence score.
         """
 
-        if self.peripheral_confidence_score is None:
+        if self.adequate_confidence_score is None:
             raise self.FocusRegionNotAnnotatedError
 
-        return max(
-            [
-                ("peripheral", self.peripheral_confidence_score),
-                ("clot", self.clot_confidence_score),
-                ("adequate", self.adequate_confidence_score),
-            ],
-            key=lambda x: x[1],
-        )[0]
+        if self.adequate_confidence_score > region_clf_conf_thres:
+            return "adequate"
+        else:
+            return "inadequate"
 
     def save_high_mag_image(self, save_dir, annotated=True):
         """Save the high magnification image of the focus region."""
