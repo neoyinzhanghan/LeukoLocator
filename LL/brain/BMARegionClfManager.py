@@ -31,7 +31,7 @@ transform = transforms.Compose(
 
 # Assuming ResNetModel is defined as before
 class ResNetModel(pl.LightningModule):
-    def __init__(self, num_classes=3):
+    def __init__(self, num_classes=2):
         super().__init__()
         self.model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
         self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
@@ -71,7 +71,7 @@ def predict_batch(pil_images, model):
 
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        transforms.Normalize(mean=(0.61070228, 0.54225375, 0.65411311), std=(0.1485182, 0.1786308, 0.12817113))
     ])
 
     # Transform each image and stack them into a batch
@@ -85,15 +85,9 @@ def predict_batch(pil_images, model):
         probs = torch.softmax(logits, dim=1)
 
         # prob shape is [44, 1, 3]
-        peripheral_confidence_scores = probs[:, 1].cpu().numpy()
-        clot_confidence_scores = probs[:, 2].cpu().numpy()
         adequate_confidence_scores = probs[:, 0].cpu().numpy()
 
-    return (
-        peripheral_confidence_scores,
-        clot_confidence_scores,
-        adequate_confidence_scores,
-    )
+    return adequate_confidence_scores
 
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
@@ -129,10 +123,6 @@ class RegionClfManager:
         for i in range(len(pil_images)):
             focus_regions[i].peripheral_confidence_score = float(
                 peripheral_confidence_scores[i]
-            )
-            focus_regions[i].clot_confidence_score = float(clot_confidence_scores[i])
-            focus_regions[i].adequate_confidence_score = float(
-                adequate_confidence_scores[i]
             )
 
         processed_batch = {}
