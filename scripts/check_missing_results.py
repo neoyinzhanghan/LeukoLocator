@@ -17,4 +17,6 @@ diagnosis_patients_set = set(diagnosis['Accession Number'])
 # Finding the difference between the patient accession names from the data directory and the diagnosis file
 not_in_diagnosis = datapateints_set - diagnosis_patients_set
 
+print(not_in_diagnosis)
+
 print(len(not_in_diagnosis))
