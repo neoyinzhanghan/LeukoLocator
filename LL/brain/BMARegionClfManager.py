@@ -113,16 +113,11 @@ class RegionClfManager:
 
         pil_images = [focus_region.downsampled_image for focus_region in focus_regions]
 
-        confidence_scores = predict_batch(pil_images, self.model)
-        (
-            peripheral_confidence_scores,
-            clot_confidence_scores,
-            adequate_confidence_scores,
-        ) = confidence_scores
+        adequate_confidence_scores = predict_batch(pil_images, self.model)
 
         for i in range(len(pil_images)):
-            focus_regions[i].peripheral_confidence_score = float(
-                peripheral_confidence_scores[i]
+            focus_regions[i].adequate_confidence_score = float(
+                adequate_confidence_scores[i]
             )
 
         processed_batch = {}

@@ -29,10 +29,6 @@ class FocusRegionsTracker:
     - final_min_VoL : the final minimum VoL of the focus regions
     - final_min_WMP : the final minimum WMP of the focus regions
     - final_min_conf_thres : the final minimum confidence threshold of the focus regions
-    - final_min_peripheral_confidence_score : the final minimum peripheral confidence score of the focus regions
-    - final_max_peripheral_confidence_score : the final maximum peripheral confidence score of the focus regions
-    - final_min_clot_confidence_score : the final minimum clot confidence score of the focus regions
-    - final_max_clot_confidence_score : the final maximum clot confidence score of the focus regions
     - final_min_conf_thres : the final minimum confidence threshold of the focus regions
     - region_clf_model : the region classifier
 
