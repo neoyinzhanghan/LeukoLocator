@@ -3,7 +3,7 @@
 #################
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_bma_v2"
+dump_dir = "/media/hdd3/neo/results_bma_v3"
 
 ############################
 ### WSI Image Parameters ###
@@ -72,7 +72,7 @@ YOLO_batch_size = 32
 ### Models Configurations ###
 #############################
 
-region_clf_ckpt_path = "/home/greg/Documents/neo/LLCKPTS/bma_region_clf_dsr_8.ckpt"
+region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt"
 # region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 # region_clf_ckpt_path = "/media/hdd2/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for bear
 # We do not need a confidence threshold because we take the top regions from the region classifier
