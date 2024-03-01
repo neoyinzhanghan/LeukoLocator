@@ -22,8 +22,9 @@ def handle_cell_images(class_dir, class_name, metadata_df):
         os.makedirs(dst_dir, exist_ok=True)
         dst_path = os.path.join(dst_dir, str(link_counter))
         os.symlink(src_path, dst_path)
-        # Update DataFrame instead of writing to a file directly
-        metadata_df = metadata_df.append({'Symbolic_Link': dst_path, 'Original_Path': src_path}, ignore_index=True)
+        # Update DataFrame using concat
+        new_row = pd.DataFrame({'Symbolic_Link': [dst_path], 'Original_Path': [src_path]})
+        metadata_df = pd.concat([metadata_df, new_row], ignore_index=True)
         link_counter += 1
     return metadata_df
 
