@@ -76,7 +76,11 @@ def predict_batch(pil_images, model):
         probs = torch.softmax(logits, dim=1)
 
         # prob shape is [44, 1, 3]
-        adequate_confidence_scores = probs[:, 0].cpu().numpy()
+
+        inadequate_confidence_scores = probs[:, 1].cpu().numpy()
+
+        # the adequate confidence score is the 1 - inadequate confidence score
+        adequate_confidence_scores = 1 - inadequate_confidence_scores
 
     return adequate_confidence_scores
 
