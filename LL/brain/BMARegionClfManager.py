@@ -20,15 +20,6 @@ def remove_data_parallel(old_state_dict):
 
     return new_state_dict
 
-
-transform = transforms.Compose(
-    [
-        transforms.Resize((256, 256)),
-        transforms.ToTensor(),
-    ]
-)
-
-
 # Assuming ResNetModel is defined as before
 class ResNetModel(pl.LightningModule):
     def __init__(self, num_classes=2):
@@ -71,7 +62,7 @@ def predict_batch(pil_images, model):
 
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean=(0.61070228, 0.54225375, 0.65411311), std=(0.1485182, 0.1786308, 0.12817113))
+        # transforms.Normalize(mean=(0.61070228, 0.54225375, 0.65411311), std=(0.1485182, 0.1786308, 0.12817113))
     ])
 
     # Transform each image and stack them into a batch
