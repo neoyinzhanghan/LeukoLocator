@@ -3,7 +3,7 @@
 #################
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_bma_v3"
+dump_dir = "/media/hdd3/neo/results_bma_v4"
 
 ############################
 ### WSI Image Parameters ###
@@ -76,7 +76,7 @@ region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf no normaliz
 # region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 # region_clf_ckpt_path = "/media/hdd2/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for bear
 # We do not need a confidence threshold because we take the top regions from the region classifier
-region_clf_conf_thres = 0.8
+region_clf_conf_thres = 0
 
 YOLO_ckpt_path = "/home/greg/Documents/neo/HemeYolo-dev/HemeYolo_YOLOv8/runs/detect/train/weights/best.pt"
 # YOLO_ckpt_path = "/media/ssd1/neo/LLCKPTS/best.pt" # this one is for alpaca
