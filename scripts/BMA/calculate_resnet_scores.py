@@ -5,9 +5,9 @@ from tqdm.auto import tqdm
 
 from LL.vision.ad_hoc_image_metric_functions import ResNetModelActor
 
-ray.init(num_cpus=20, num_gpus=2)
+ray.init()
 
-def batch_process_images(image_paths, actor, batch_size=32):
+def batch_process_images(image_paths, actor, batch_size=12):
     """Process images in batches and collect ResNet scores."""
     num_images = len(image_paths)
     scores = []

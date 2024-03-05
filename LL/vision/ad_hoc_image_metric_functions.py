@@ -1,7 +1,7 @@
 import numpy as np
 import ray
 from LL.vision.image_quality import VoL, WMP
-from LL.brain.BMARegionClfManager import load_clf_model, predict_batch
+from LL.brain.BMARegionClfManager import load_clf_model, predict_batch, load_clf_model_cpu, predict_batch_cpu
 from PIL import Image
 
 def VoL_n(image_path, n):
@@ -61,14 +61,14 @@ checkpoint_path_dct = {
     16: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/16/version_0/checkpoints/epoch=99-step=5500.ckpt"
 }
 
-@ray.remote(num_gpus=1)
+@ray.remote()
 class ResNetModelActor:
     def __init__(self, n):
         assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
         # Assume load_clf_model_cpu loads the model correctly and is adjusted for CPU or GPU usage as needed
-        self.model = load_clf_model(checkpoint_path_dct[n])
+        self.model = load_clf_model_cpu(checkpoint_path_dct[n])
 
     def predict_batch(self, image_paths):
 
         images = [Image.open(image_path) for image_path in image_paths]
-        return predict_batch(images, self.model)
+        return predict_batch_cpu(images, self.model)
