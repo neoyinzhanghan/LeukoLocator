@@ -15,11 +15,6 @@ import csv
 import ray
 from tqdm import tqdm
 
-pooled_dir = "/media/hdd3/neo/results_bma_v4_regions_pooled"
-output_csv = os.path.join(pooled_dir, "image_metrics.csv")
-
-# Downsampling factors to be used for metrics calculation
-downsampling_factors = [1, 2, 4, 8, 16]
 
 # # Prepare the CSV file for logging the metrics
 # with open(output_csv, 'w', newline='') as csvfile:
@@ -71,7 +66,7 @@ import ray
 # Initialize Ray
 ray.init()
 
-pooled_dir = "/media/hdd3/neo/results_bma_v3_regions_pooled"
+pooled_dir = "/media/hdd3/neo/results_bma_v4_regions_pooled"
 output_csv = os.path.join(pooled_dir, "image_metrics.csv")
 downsampling_factors = [1, 2, 4, 8, 16]
 
