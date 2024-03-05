@@ -61,7 +61,7 @@ checkpoint_path_dct = {
     16: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/16/version_0/checkpoints/epoch=99-step=5500.ckpt"
 }
 
-@ray.remote
+@ray.remote(num_gpus=1)
 class ResNetModelActor:
     def __init__(self, n):
         assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
