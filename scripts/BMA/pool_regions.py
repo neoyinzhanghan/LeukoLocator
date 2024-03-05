@@ -3,8 +3,8 @@ import shutil
 import csv
 from tqdm import tqdm
 
-root_dir = "/media/hdd3/neo/results_bma_v3"  # Set your root directory path here
-save_dir = "/media/hdd3/neo/results_bma_v3_regions_pooled"  # Set your save directory path here
+root_dir = "/media/hdd3/neo/results_bma_v4"  # Set your root directory path here
+save_dir = "/media/hdd3/neo/results_bma_v4_regions_pooled"  # Set your save directory path here
 
 os.makedirs(save_dir, exist_ok=True)  # Ensure save_dir exists
 
