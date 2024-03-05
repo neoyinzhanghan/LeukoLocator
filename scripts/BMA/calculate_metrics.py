@@ -9,7 +9,7 @@
 # The functions VoL_n, WMP_n, RBI_n, RGI_n, RRI_n, and ResNet_n are not provided, but you can assume that they take an image path and return the corresponding metric.
 # n take the following values 1, 2, 4, 8, 16
 
-from LL.vision.ad_hoc_image_metric_functions import VoL_n, WMP_n, RBI_n, RGI_n, RRI_n, ResNet_n
+from LL.vision.ad_hoc_image_metric_functions import VoL_n, WMP_n, RBI_n, RGI_n, RRI_n
 import os
 import csv
 import ray
@@ -51,7 +51,6 @@ downsampling_factors = [1, 2, 4, 8, 16]
 
 @ray.remote
 def calculate_metrics_for_image(image_path, downsampling_factors):
-    from LL.vision.ad_hoc_image_metric_functions import VoL_n, WMP_n, RBI_n, RGI_n, RRI_n, ResNet_n
     metrics = {}
     for factor in downsampling_factors:
         metrics.update({
@@ -60,7 +59,7 @@ def calculate_metrics_for_image(image_path, downsampling_factors):
             f'RBI_{factor}': RBI_n(image_path, factor),
             f'RGI_{factor}': RGI_n(image_path, factor),
             f'RRI_{factor}': RRI_n(image_path, factor),
-            f'ResNet_{factor}': ResNet_n(image_path, factor)
+            # f'ResNet_{factor}': ResNet_n(image_path, factor)
         })
     return metrics
 
@@ -77,7 +76,7 @@ output_csv = os.path.join(pooled_dir, "image_metrics.csv")
 downsampling_factors = [1, 2, 4, 8, 16]
 
 # Prepare CSV for logging
-fieldnames = ['Image Name'] + [f'{metric}_{factor}' for factor in downsampling_factors for metric in ['VoL', 'WMP', 'RBI', 'RGI', 'RRI', 'ResNet']]
+fieldnames = ['Image Name'] + [f'{metric}_{factor}' for factor in downsampling_factors for metric in ['VoL', 'WMP', 'RBI', 'RGI', 'RRI']]
 
 # Dispatch Ray tasks
 image_files = [f for f in os.listdir(pooled_dir) if os.path.isfile(os.path.join(pooled_dir, f)) and f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff'))]
