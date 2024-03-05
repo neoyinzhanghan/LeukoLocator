@@ -16,7 +16,7 @@ def WMP_n(image_path, n):
     The image must be a PIL RGB image."""
     image = Image.open(image_path)
     image = image.resize((image.width // n, image.height // n))
-    return WMP(image)
+    return float(WMP(image)[0])
 
 def RBI_n(image_path, n):
     """Compute the sum of the blue channel intensities divided by the sum of all channel intensities for the downsampled image by a factor of n."""
