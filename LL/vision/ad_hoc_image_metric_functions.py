@@ -69,4 +69,4 @@ class ResNetModelActor:
         self.model = load_clf_model(checkpoint_path_dct[n])
 
     def predict_batch(self, image_paths):
-        return predict_batch(self.model, image_paths)
+        return predict_batch(image_paths, self.model)
