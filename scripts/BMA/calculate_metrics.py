@@ -22,7 +22,7 @@ downsampling_factors = [1, 2, 4, 8, 16]
 
 # Prepare the CSV file for logging the metrics
 with open(output_csv, 'w', newline='') as csvfile:
-    fieldnames = ['Image Name'] + [f'{metric}_n{factor}' for factor in downsampling_factors for metric in ['VoL', 'WMP', 'RBI', 'RGI', 'RRI', 'ResNet']]
+    fieldnames = ['Image Name'] + [f'{metric}_{factor}' for factor in downsampling_factors for metric in ['VoL', 'WMP', 'RBI', 'RGI', 'RRI', 'ResNet']]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
 
@@ -38,7 +38,7 @@ with open(output_csv, 'w', newline='') as csvfile:
             metrics_row.update({
                 f'VoL_{factor}': VoL_n(image_path, factor),
                 f'WMP_{factor}': WMP_n(image_path, factor),
-                f'RBI_n{factor}': RBI_n(image_path, factor),
+                f'RBI_{factor}': RBI_n(image_path, factor),
                 f'RGI_{factor}': RGI_n(image_path, factor),
                 f'RRI_{factor}': RRI_n(image_path, factor),
                 f'ResNet_{factor}': ResNet_n(image_path, factor)
