@@ -54,11 +54,11 @@ def RRI_n(image_path, n):
 ####################################################################################################
 
 checkpoint_path_dct = {
-    1: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt",
-    2: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt",
-    4: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt",
-    8: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt",
-    16: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt"
+    1: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/1/version_0/checkpoints/epoch=99-step=5500.ckpt",
+    2: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/2/version_0/checkpoints/epoch=99-step=5500.ckpt",
+    4: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/4/version_0/checkpoints/epoch=99-step=5500.ckpt",
+    8: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/8/version_0/checkpoints/epoch=99-step=5500.ckpt",
+    16: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/16/version_0/checkpoints/epoch=99-step=5500.ckpt"
 }
 
 def ResNet_n(image_path, n):
