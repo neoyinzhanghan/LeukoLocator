@@ -23,8 +23,10 @@ downsampling_factors = [1, 2, 4, 8, 16]
 
 image_files = [os.path.join(pooled_dir, f) for f in os.listdir(pooled_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff'))]
 
-first_actors = {n: ResNetModelActor.remote(n) for n in downsampling_factors}
-second_actors = {n: ResNetModelActor.remote(n) for n in downsampling_factors}
+M = 10  # Specify the number of actors you want to use
+
+# Create M sets of actors for each downsampling factor
+actor_sets = [{n: ResNetModelActor.remote(n) for n in downsampling_factors} for _ in range(M)]
 
 fieldnames = ['Image Name'] + [f'ResNet_{n}' for n in downsampling_factors]
 with open(output_csv, 'w', newline='') as csvfile:
@@ -35,13 +37,12 @@ with open(output_csv, 'w', newline='') as csvfile:
         row = {'Image Name': os.path.basename(image_path)}
         for n in downsampling_factors:
             image_batch = [image_path]  # Placeholder for actual batch processing
-            # Launch both tasks in parallel
-            future_first = first_actors[n].predict_batch.remote(image_batch)
-            future_second = second_actors[n].predict_batch.remote(image_batch)
-            # Wait for both tasks to complete and then combine their results
-            score_first, score_second = ray.get([future_first, future_second])
-            # Averaging the scores for demonstration; modify as needed
-            averaged_score = (score_first[0] + score_second[0]) / 2
+            # Launch tasks in parallel for all actor sets
+            futures = [actor_set[n].predict_batch.remote(image_batch) for actor_set in actor_sets]
+            # Wait for all tasks to complete
+            scores = ray.get(futures)
+            # Combine the results, e.g., averaging the scores
+            averaged_score = sum(scores) / len(scores)
             row[f'ResNet_{n}'] = averaged_score
         writer.writerow(row)
 
