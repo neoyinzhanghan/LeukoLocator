@@ -1,7 +1,7 @@
 import numpy as np
 
 from LL.vision.image_quality import VoL, WMP
-from LL.brain.BMARegionClfManager import load_clf_model, predict_batch
+from LL.brain.BMARegionClfManager import load_clf_model_cpu, predict_batch_cpu
 from PIL import Image
 
 def VoL_n(image_path, n):
@@ -66,11 +66,11 @@ def ResNet_n(image_path, n):
     assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
 
     # Load the model
-    model = load_clf_model(checkpoint_path_dct[n])
+    model = load_clf_model_cpu(checkpoint_path_dct[n])
 
     # Predict the confidence score
     image = Image.open(image_path)
 
     image_batch = [image]
 
-    return float(predict_batch(image_batch, model)[0])
+    return float(predict_batch_cpu(image_batch, model)[0])

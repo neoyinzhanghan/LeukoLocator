@@ -138,6 +138,21 @@ def load_clf_model(ckpt_path):
     return trained_model
 
 
+def load_clf_model_cpu(ckpt_path):
+    """Load the classifier model."""
+
+    # To deploy a checkpoint and use for inference
+    trained_model = ResNet50Classifier.load_from_checkpoint(
+        ckpt_path
+    )  # , map_location=torch.device("cpu"))
+    trained_model.freeze()
+
+    # move the model to the CPU
+    trained_model.to("cpu")
+
+    return trained_model
+
+
 def predict(pil_image, model):
     """
     Predict the confidence score for the given PIL image.
@@ -193,6 +208,40 @@ def predict_batch(pil_images, model):
 
     # Move the batch to the GPU
     batch = batch.to("cuda")
+
+    with torch.no_grad():  # No need to compute gradients for inference
+        logits = model(batch)
+        probs = torch.softmax(logits, dim=1)
+        confidence_scores = probs[
+            :, 1
+        ].tolist()  # Get confidence score for label `1` for each image
+
+    return confidence_scores
+
+
+def predict_batch_cpu(pil_images, model):
+    """
+    Predict the confidence scores for a batch of PIL images.
+
+    Parameters:
+    - pil_images (list of PIL.Image.Image): List of input PIL Image objects.
+    - model (torch.nn.Module): Trained model.
+
+    Returns:
+    - list of float: List of confidence scores for the class label `1` for each image.
+    """
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.ToTensor(),
+        ]
+    )
+
+    # Transform each image and stack them into a batch
+    batch = torch.stack([transform(image.convert("RGB")) for image in pil_images])
+
+    # Move the batch to the CPU
+    batch = batch.to("cpu")
 
     with torch.no_grad():  # No need to compute gradients for inference
         logits = model(batch)
