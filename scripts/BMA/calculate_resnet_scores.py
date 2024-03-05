@@ -22,7 +22,7 @@ downsampling_factors = [1, 2, 4, 8, 16]
 # Assuming you've defined a function `get_image_batch` that loads and preprocesses images for prediction
 image_files = [os.path.join(pooled_dir, f) for f in os.listdir(pooled_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff'))]
 
-actors = {n: ResNetModelActor.remote(n) for n in downsampling_factors}
+actors = {n: ResNetModelActor.predict_batch.remote(n) for n in downsampling_factors}
 
 fieldnames = ['Image Name'] + [f'ResNet_{n}' for n in downsampling_factors]
 with open(output_csv, 'w', newline='') as csvfile:

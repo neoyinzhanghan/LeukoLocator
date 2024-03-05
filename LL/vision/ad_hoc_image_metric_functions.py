@@ -1,7 +1,7 @@
 import numpy as np
 import ray
 from LL.vision.image_quality import VoL, WMP
-from LL.brain.BMARegionClfManager import load_clf_model_cpu, predict_batch_cpu, predict_batch, load_clf_model
+from LL.brain.BMARegionClfManager import load_clf_model, predict_batch
 from PIL import Image
 
 def VoL_n(image_path, n):
@@ -66,13 +66,7 @@ class ResNetModelActor:
     def __init__(self, n):
         assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
         # Assume load_clf_model_cpu loads the model correctly and is adjusted for CPU or GPU usage as needed
-        self.model = self.load_clf_model_cpu(checkpoint_path_dct[n])
+        self.model = load_clf_model(checkpoint_path_dct[n])
 
-    def load_clf_model_cpu(self, checkpoint_path):
-        # Load the model from the checkpoint path for CPU
-        pass  # Implement model loading here
-
-    def predict(self, image_batch):
-        # Implement batch prediction using the loaded model
-        # This function should return a list of confidence scores for each image in the batch
-        return [0.5] * len(image_batch)  # Placeholder implementation
+    def predict_batch(self, image_paths):
+        return predict_batch(self.model, image_paths)
