@@ -45,47 +45,52 @@ from tqdm import tqdm
 
 
 @ray.remote
-def calculate_metrics_for_image(image_path, downsampling_factors):
-    metrics = {}
-    for factor in downsampling_factors:
-        metrics.update({
-            f'VoL_{factor}': VoL_n(image_path, factor),
-            f'WMP_{factor}': WMP_n(image_path, factor),
-            f'RBI_{factor}': RBI_n(image_path, factor),
-            f'RGI_{factor}': RGI_n(image_path, factor),
-            f'RRI_{factor}': RRI_n(image_path, factor),
-            # f'ResNet_{factor}': ResNet_n(image_path, factor)
-        })
-    return metrics
+def calculate_metrics_for_images(image_paths, downsampling_factors):
+    batch_metrics = []
+    for image_path in image_paths:
+        metrics = {}
+        for factor in downsampling_factors:
+            metrics.update({
+                f'VoL_{factor}': VoL_n(image_path, factor),
+                f'WMP_{factor}': WMP_n(image_path, factor),
+                f'RBI_{factor}': RBI_n(image_path, factor),
+                f'RGI_{factor}': RGI_n(image_path, factor),
+                f'RRI_{factor}': RRI_n(image_path, factor),
+                # f'ResNet_{factor}': ResNet_n(image_path, factor)
+            })
+        batch_metrics.append((os.path.basename(image_path), metrics))
+    return batch_metrics
 
 import os
 import csv
 from tqdm.auto import tqdm
 import ray
 
-# Initialize Ray
 ray.init()
 
 pooled_dir = "/media/hdd3/neo/results_bma_v4_regions_pooled"
 output_csv = os.path.join(pooled_dir, "image_metrics.csv")
 downsampling_factors = [1, 2, 4, 8, 16]
+fieldnames = ['Image Name'] + [f'{metric}_{factor}' for factor in downsampling_factors for metric in ['VoL', 'WMP', 'RBI', 'RGI', 'RRI', 'ResNet']]
+batch_size = 10  # Adjust based on your requirements
 
-# Prepare CSV for logging
-fieldnames = ['Image Name'] + [f'{metric}_{factor}' for factor in downsampling_factors for metric in ['VoL', 'WMP', 'RBI', 'RGI', 'RRI']]
-
-# Dispatch Ray tasks
+# Create batches of image files
 image_files = [f for f in os.listdir(pooled_dir) if os.path.isfile(os.path.join(pooled_dir, f)) and f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff'))]
-tasks = [calculate_metrics_for_image.remote(os.path.join(pooled_dir, image_name), downsampling_factors) for image_name in image_files]
+image_batches = [image_files[i:i + batch_size] for i in range(0, len(image_files), batch_size)]
+image_batch_paths = [[os.path.join(pooled_dir, image_name) for image_name in batch] for batch in image_batches]
+
+# Dispatch Ray tasks for each batch
+tasks = [calculate_metrics_for_images.remote(batch, downsampling_factors) for batch in image_batch_paths]
 
 # Initialize tqdm progress bar
-progress_bar = tqdm(total=len(tasks), desc="Processing Images")
+progress_bar = tqdm(total=len(tasks), desc="Processing Image Batches")
 
 results = []
-for i in range(len(tasks)):
+for _ in range(len(tasks)):
     # Wait for the next task to complete and fetch its result
     done_id, tasks = ray.wait(tasks)
     result = ray.get(done_id[0])
-    results.append(result)
+    results.extend(result)  # Append results from the batch
     progress_bar.update(1)
 
 progress_bar.close()
@@ -94,7 +99,7 @@ progress_bar.close()
 with open(output_csv, 'w', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
-    for image_name, metrics in zip(image_files, results):
+    for image_name, metrics in results:
         metrics_row = {'Image Name': image_name}
         metrics_row.update(metrics)
         writer.writerow(metrics_row)
