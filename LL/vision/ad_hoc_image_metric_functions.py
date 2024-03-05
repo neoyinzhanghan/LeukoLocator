@@ -61,25 +61,18 @@ checkpoint_path_dct = {
     16: "/media/hdd3/neo/MODELS/2024-03-04 Region Clf Binary/lightning_logs/16/version_0/checkpoints/epoch=99-step=5500.ckpt"
 }
 
-def ResNet_n(image_path, n):
-    """Compute the confidence score for the class label `1` for the downsampled image by a factor of n."""
-    assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
-
-    # Load the model
-    model = load_clf_model(checkpoint_path_dct[n])
-
-    # Predict the confidence score
-    image = Image.open(image_path)
-
-    image_batch = [image]
-
-    return float(predict_batch(image_batch, model)[0])
-
 @ray.remote
 class ResNetModelActor:
     def __init__(self, n):
         assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
+        # Assume load_clf_model_cpu loads the model correctly and is adjusted for CPU or GPU usage as needed
         self.model = self.load_clf_model_cpu(checkpoint_path_dct[n])
 
-    def predict_batch(self, image_batch):
-        return predict_batch(image_batch, self.model)
+    def load_clf_model_cpu(self, checkpoint_path):
+        # Load the model from the checkpoint path for CPU
+        pass  # Implement model loading here
+
+    def predict(self, image_batch):
+        # Implement batch prediction using the loaded model
+        # This function should return a list of confidence scores for each image in the batch
+        return [0.5] * len(image_batch)  # Placeholder implementation
