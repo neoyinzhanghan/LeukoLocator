@@ -38,7 +38,7 @@ for n in downsampling_factors:
     with tqdm(total=len(image_files), desc=f"Processing for factor {n}") as pbar:
         for i, batch in enumerate(list_of_batches):
             actor = resnet_model_actors[i % num_resnet_model_actors]
-            task = actor.async_predict_batch.remote(batch)
+            task = actor.predict_batch.remote(batch)
             tasks[task] = batch
 
         while tasks:
