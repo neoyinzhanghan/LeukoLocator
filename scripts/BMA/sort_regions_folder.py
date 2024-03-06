@@ -3,14 +3,12 @@ import pandas as pd
 from tqdm import tqdm
 
 regions_dir = "/Users/neo/Documents/Research/MODELS/results_bma_v4_regions_pooled"
-tmp_dir = "/Users/neo/Documents/Research/MODELS/sorted"
 plot_dir = "/Users/neo/Documents/Research/MODELS/plots"
-column_name = "RBI_2"
+column_name = "VoL_1"
 csv_path = os.path.join(regions_dir, "image_metrics.csv")
-resnet_path = os.path.join(regions_dir, "resnet_scores.csv")
+resnet_path = os.path.join(regions_dir, "image_metrics.csv")
 
 
-os.makedirs(tmp_dir, exist_ok=True)
 os.makedirs(plot_dir, exist_ok=True)
 
 # open the image_metrics.csv file, create symbolic links to the images in the regions_dir, make a symbolic link of all the images in regions_dir to the tmp_dir

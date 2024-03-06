@@ -25,6 +25,9 @@ resnet_scores = {}
 
 # Iterate over each downsampling factor
 for n in downsampling_factors:
+
+    ray.shutdown()
+    ray.init()  # Adjust based on your setup
     print(f"Processing with downsampling factor {n}...")
     
     # Create actors for this specific downsampling factor
@@ -57,6 +60,9 @@ for n in downsampling_factors:
                 except Exception as e:  # Consider specifying the exception if possible
                     print(f"Task for batch {tasks[done_id]} failed with error: {e}")
                 del tasks[done_id]
+
+        # do not continue with the for loop until all tasks are done
+        ray.get(list(tasks.keys()))
 
 # Write the collected ResNet scores to a CSV file
 fieldnames = ['Image Name'] + [f'ResNet_Score_{n}' for n in downsampling_factors]
