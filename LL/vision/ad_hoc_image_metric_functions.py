@@ -67,8 +67,14 @@ class ResNetModelActor:
         assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
         # Assume load_clf_model_cpu loads the model correctly and is adjusted for CPU or GPU usage as needed
         self.model = load_clf_model(checkpoint_path_dct[n])
+        self.n = n
 
     def predict_batch(self, image_paths):
 
         images = [Image.open(image_path) for image_path in image_paths]
+
+        n = self.n
+        # subsample the images by the factor of n
+        images = [image.resize((image.width // n, image.height // n), Image.ANTIALIAS) for image in images]
+
         return predict_batch(images, self.model)

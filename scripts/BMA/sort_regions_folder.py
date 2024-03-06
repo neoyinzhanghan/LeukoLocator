@@ -2,11 +2,11 @@ import os
 import pandas as pd
 from tqdm import tqdm
 
-regions_dir = "/Users/neo/Documents/Research/MODELS/results_bma_v4_regions_pooled"
+regions_dir = "/Users/neo/Documents/Research/MODELS/results_bma_v4_regions_pooled_subsampled"
 plot_dir = "/Users/neo/Documents/Research/MODELS/plots"
-column_name = "VoL_1"
+column_name = "ResNet_Score_1"
 csv_path = os.path.join(regions_dir, "image_metrics.csv")
-resnet_path = os.path.join(regions_dir, "image_metrics.csv")
+resnet_path = os.path.join(regions_dir, "resnet_scores.csv")
 
 
 os.makedirs(plot_dir, exist_ok=True)
@@ -35,8 +35,14 @@ for image_file in tqdm(image_files, desc="Processing Images"):
     if "ResNet" not in column_name:
         # get the column value of the image
         value = row[column_name].values[0]
+
+        # round value to 2 decimal places
+        value = round(value, 2)
     else:
         value = resnet_row[column_name].values[0]
+
+        # round value to 2 decimal places
+        value = round(value, 2)
 
     # new image name is value + _ + image_name
     new_image_name = f"{value}_{image_name}"
