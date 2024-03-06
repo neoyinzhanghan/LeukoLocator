@@ -12,7 +12,7 @@ print("Initializing Ray for ResNet confidence score...")
 ray.init()  # Adjust based on your setup
 print("Ray initialization done.")
 
-pooled_dir = "/media/hdd3/neo/results_bma_v4_regions_pooled"
+pooled_dir = "/media/hdd3/neo/results_bma_v4_regions_pooled_downsampled"
 output_csv = os.path.join(pooled_dir, "resnet_scores.csv")
 downsampling_factors = [1, 2, 4, 8, 16]
 
