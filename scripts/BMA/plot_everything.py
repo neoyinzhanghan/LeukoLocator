@@ -4,8 +4,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-df_path = "/Users/neo/Documents/Research/MODELS/results_bma_v4_regions_pooled/image_metrics.csv"
-save_dir = "/Users/neo/Documents/Research/MODELS/PLOTS_results_bma_v4_regions_pooled"
+df_path = "/Users/neo/Documents/Research/MODELS/results_bma_v4_regions_pooled/resnet_scores.csv"
+save_dir = "/Users/neo/Documents/Research/MODELS/PLOTS_ResNet_results_bma_v4_regions_pooled"
 
 os.makedirs(save_dir, exist_ok=True)
 
@@ -22,7 +22,6 @@ for column in df.columns:
 
 # delete the Image Name column, and all columns with name containing "ResNet"
 df = df.drop(columns=["Image Name"])
-df = df[df.columns.drop(list(df.filter(regex='ResNet')))]
 
 # get the columns of the dataframe
 columns = df.columns
