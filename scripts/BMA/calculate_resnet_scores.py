@@ -33,7 +33,7 @@ resnet_scores = {}
 with tqdm(total=len(image_files), desc="Processing Images for ResNet Scores") as pbar:
     for i, batch in enumerate(list_of_batches):
         actor = resnet_model_actors[i % num_resnet_model_actors]
-        task = actor.async_predict_batch.remote(batch)
+        task = actor.predict_batch.remote(batch)
         tasks[task] = batch
 
     while tasks:
