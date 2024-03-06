@@ -3,7 +3,7 @@
 #################
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_pb_test"
+dump_dir = "/media/hdd3/neo/resultsv6"
 
 ############################
 ### WSI Image Parameters ###
