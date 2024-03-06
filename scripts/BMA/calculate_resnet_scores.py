@@ -5,7 +5,7 @@ from tqdm.auto import tqdm
 
 from LL.vision.ad_hoc_image_metric_functions import ResNetModelActor
 
-ray.init()
+ray.init(num_cpus=12, num_gpus=3)
 
 def batch_process_images(image_paths, actor, batch_size=12):
     """Process images in batches and collect ResNet scores."""
@@ -23,10 +23,12 @@ downsampling_factors = [1, 2, 4, 8, 16]
 
 image_files = [os.path.join(pooled_dir, f) for f in os.listdir(pooled_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff'))]
 
-M = 10  # Specify the number of actors you want to use
+# Assuming M actors and you have 3 GPUs
+M = 3  # This matches the number of available GPUs
 
 # Create M sets of actors for each downsampling factor
-actor_sets = [{n: ResNetModelActor.remote(n) for n in downsampling_factors} for _ in range(M)]
+# Ensure each actor is allocated a maximum of 1 GPU.
+actor_sets = [[ResNetModelActor.options(num_gpus=1).remote(n) for n in downsampling_factors] for _ in range(M)]
 
 fieldnames = ['Image Name'] + [f'ResNet_{n}' for n in downsampling_factors]
 with open(output_csv, 'w', newline='') as csvfile:
@@ -36,9 +38,9 @@ with open(output_csv, 'w', newline='') as csvfile:
     for image_path in tqdm(image_files, desc="Processing Images"):
         row = {'Image Name': os.path.basename(image_path)}
         for n in downsampling_factors:
-            image_batch = [image_path]  # Placeholder for actual batch processing
+            image_batch = [image_path]
             # Launch tasks in parallel for all actor sets
-            futures = [actor_set[n].predict_batch.remote(image_batch) for actor_set in actor_sets]
+            futures = [actor_sets[i][n].predict_batch.remote(image_batch) for i in range(M)]
             # Wait for all tasks to complete
             scores = ray.get(futures)
             # Combine the results, e.g., averaging the scores
