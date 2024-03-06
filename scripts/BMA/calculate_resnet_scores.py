@@ -5,7 +5,7 @@ from tqdm.auto import tqdm
 
 # Assuming these are predefined
 from LL.vision.ad_hoc_image_metric_functions import ResNetModelActor
-from your_module import create_list_of_batches_from_list
+from LL.brain.utils import create_list_of_batches_from_list
 
 ray.shutdown()
 print("Initializing Ray for ResNet confidence score...")
