@@ -9,7 +9,7 @@ from LL.brain.utils import create_list_of_batches_from_list
 
 ray.shutdown()
 print("Initializing Ray for ResNet confidence score...")
-ray.init(num_gpus=3)  # Adjust based on your setup
+ray.init()  # Adjust based on your setup
 print("Ray initialization done.")
 
 pooled_dir = "/media/hdd3/neo/results_bma_v4_regions_pooled"
