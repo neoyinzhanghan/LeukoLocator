@@ -34,7 +34,7 @@ for n in downsampling_factors:
     resnet_model_actors = [ResNetModelActor.remote(n) for _ in range(num_resnet_model_actors)]
     
     # Assuming downsampling_factors influence batch creation or processing
-    list_of_batches = create_list_of_batches_from_list(image_files, batch_size=12)  # Adjust batch_size as needed
+    list_of_batches = create_list_of_batches_from_list(image_files, batch_size=5)  # Adjust batch_size as needed
 
     tasks = {}
     
