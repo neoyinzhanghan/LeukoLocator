@@ -66,9 +66,9 @@ class ResNetModelActor:
     def __init__(self, n):
         assert n in checkpoint_path_dct, f"Invalid downsampling factor: {n}"
         # Assume load_clf_model_cpu loads the model correctly and is adjusted for CPU or GPU usage as needed
-        self.model = load_clf_model_cpu(checkpoint_path_dct[n])
+        self.model = load_clf_model(checkpoint_path_dct[n])
 
     def predict_batch(self, image_paths):
 
         images = [Image.open(image_path) for image_path in image_paths]
-        return predict_batch_cpu(images, self.model)
+        return predict_batch(images, self.model)
