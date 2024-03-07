@@ -27,6 +27,7 @@ bma_fnames = [
 #         bma_fnames.remove(new_name)
 #     else:
 #         bma_fnames.remove(processed)
+num_processed = 0
 
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     print("Processing", bma_fname)
@@ -37,5 +38,8 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
 
     print("Saving to", bma_counter.save_dir)
 
-    import sys
-    sys.exit(0)
+    num_processed += 1
+
+    if num_processed >= 3:
+        import sys
+        sys.exit(0)
