@@ -716,7 +716,7 @@ class BMACounter:
 
         start_time = time.time()
 
-        self.fr_tracker.save_confidence_heatmap(self.top_view.image)
+        self.fr_tracker.save_confidence_heatmap(self.top_view.image, self.save_dir)
 
         diff_full_class_dict = self.differential.tally_diff_full_class_dict()
         diff_class_dict = self.differential.tally_dict()

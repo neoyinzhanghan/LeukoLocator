@@ -364,7 +364,7 @@ class FocusRegionsTracker:
         # Shutdown Ray
         ray.shutdown()
 
-    def save_confidence_heatmap(self, topview_img_pil):
+    def save_confidence_heatmap(self, topview_img_pil, save_dir):
         # Convert the PIL image to OpenCV format (BGR)
         topview_img_cv = cv2.cvtColor(np.array(topview_img_pil), cv2.COLOR_RGB2BGR)
 
@@ -396,4 +396,5 @@ class FocusRegionsTracker:
         # Convert back to PIL image in RGB format
         overlay_img_pil = Image.fromarray(cv2.cvtColor(overlay_img_cv, cv2.COLOR_BGR2RGB))
 
-        return overlay_img_pil
+        # save the overlay_img_pil in save_dir
+        overlay_img_pil.save(os.path.join(save_dir, "focus_regions", "confidence_heatmap.png"))
