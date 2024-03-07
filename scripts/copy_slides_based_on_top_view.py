@@ -31,7 +31,7 @@ for img_name in tqdm(os.listdir(topview_dir), "Copying slides"):
         # modified named is removing all -, _, ; and spaces
         modified_name = fname.replace("_", "").replace("-", "").replace(" ", "").replace(";", "")
 
-        modified_img_name = img_name.replace("_", "").replace("-", "").replace(" ", "").replace(";", "")
+        modified_img_name = img_name.replace("_", "").replace("-", "").replace(" ", "").replace(";", "") + '.ndpi'
 
         if modified_name.lower() == modified_img_name.lower():
             # copy the file to save_dir
