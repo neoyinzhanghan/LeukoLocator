@@ -1,7 +1,7 @@
 import os
 
 topview_dir = "/media/hdd3/neo/topviews_chosen"
-source_dir = "/media/hdd1/BMAs"
+source_dir = "/pesgisipth/NDPI"
 save_dir = "/media/hdd1/BMAs_chosen"
 
 # for all the images in topview_dir, there is a corresponding file in source_dir with same name but .ndpi extension
