@@ -104,7 +104,7 @@ class TopView:
         
         # make sure grid_rep is converted to PIL image
         grid_rep_pil = Image.fromarray(cv2.cvtColor(grid_rep, cv2.COLOR_BGR2RGB))
-        
+
         self.grid_rep = grid_rep_pil
 
     def is_peripheral_blood(self):
@@ -121,8 +121,11 @@ class TopView:
             list of tuples: Filtered list of coordinates.
         """
 
-        # make sure to get a cv2 format of the mask
-        mask_np = np.array(self.mask)
+        # make sure to get a cv2 format of the mask as a binary numpy array
+        mask_np = cv2.cvtColor(np.array(self.mask), cv2.COLOR_RGB2GRAY)
+
+        # make sure to convert mask_np to a binary mask
+        _, mask_np = cv2.threshold(mask_np, 127, 255, cv2.THRESH_BINARY)
 
         filtered_coordinates = []
 
