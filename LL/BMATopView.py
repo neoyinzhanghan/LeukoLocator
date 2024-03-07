@@ -101,7 +101,11 @@ class TopView:
                                 mask=mask,
                                 final_blue_mask=final_blue_mask,
                                 overlayed_image=overlayed_image)
-        self.grid_rep = grid_rep
+        
+        # make sure grid_rep is converted to PIL image
+        grid_rep_pil = Image.fromarray(grid_rep)
+
+        self.grid_rep = grid_rep_pil
 
     def is_peripheral_blood(self):
         """Return True iff the top view is a peripheral blood top view."""
