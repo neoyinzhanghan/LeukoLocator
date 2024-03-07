@@ -23,6 +23,8 @@ foci_sd_inc = 1
 
 min_VoL = 100  # 10
 search_view_downsample_rate = 8
+topview_downsampling_factor = 128
+topview_level = 7
 search_view_level = 3
 search_view_focus_regions_size = 64
 min_cell_VoL = 10

@@ -1,12 +1,13 @@
 import os
 from tqdm import tqdm
+import shutil
 
 topview_dir = "/media/hdd3/neo/topviews_chosen"
 source_dir = "/pesgisipth/NDPI"
 save_dir = "/media/hdd1/BMAs_chosen"
 
 # for all the images in topview_dir, there is a corresponding file in source_dir with same name but .ndpi extension
-# copy the corresponding .ndpi file to save_dir using rsync
+# copy the corresponding .ndpi file to save_dir using shutil
 
 # get a list of ndpi files in source_dir
 ndpi_files = [
@@ -34,9 +35,7 @@ for img_name in tqdm(os.listdir(topview_dir), "Copying slides"):
         modified_img_name = img_name.replace("_", "").replace("-", "").replace(" ", "").replace(";", "") + '.ndpi'
 
         if modified_name.lower() == modified_img_name.lower():
-            # copy the file to save_dir
-            os.system(f'rsync -av "{os.path.join(source_dir, fname)}" "{save_dir}"')
-            break
-
+            # copy the file to save_dir using shutil
+            shutil.copy2(os.path.join(source_dir, fname), save_dir)
 
     print("No corresponding .ndpi file found for", img_name)

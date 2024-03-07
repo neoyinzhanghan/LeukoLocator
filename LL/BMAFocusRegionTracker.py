@@ -18,6 +18,7 @@ from LL.brain.utils import *
 from LL.resources.BMAassumptions import *
 from LL.brain.BMARegionClfManager import RegionClfManager
 from LL.BMAFocusRegion import save_focus_region_batch
+from LL.resources.BMAassumptions import topview_downsampling_factor
 
 class FocusRegionsTracker:
     """A class representing a focus region tracker object that tracks the metrics, objects, files related to focus region filtering.
@@ -360,3 +361,11 @@ class FocusRegionsTracker:
 
         # Shutdown Ray
         ray.shutdown()
+
+    def save_confidence_heatmap(topview_img):
+        """ self.info_dct contains a column called coordinate which is (TL_x, TL_y, BR_x, BR_y) coordinate of the patch.
+        It also contains a column called adequate_confidence_score which is the confidence score of the patch.
+        Start with a blank image the same dimension as topview_img.
+        Visualize the confidence scores of the patches using a heatmap. Note that the coordinates need to be divided by 128 to get the pixel coordinates.
+        This is because the coordinates are currently at a higher magnification than the topview_img.
+        """
