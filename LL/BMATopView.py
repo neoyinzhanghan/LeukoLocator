@@ -100,8 +100,7 @@ class TopView:
         grid_rep = get_grid_rep(image=image,
                                 mask=mask,
                                 final_blue_mask=final_blue_mask,
-                                overlayed_image=overlayed_image,
-                                verbose=self.verbose)
+                                overlayed_image=overlayed_image)
         self.grid_rep = grid_rep
 
     def is_peripheral_blood(self):
