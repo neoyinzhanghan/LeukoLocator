@@ -362,10 +362,41 @@ class FocusRegionsTracker:
         # Shutdown Ray
         ray.shutdown()
 
-    def save_confidence_heatmap(topview_img):
+    def save_confidence_heatmap(self, topview_img):
         """ self.info_dct contains a column called coordinate which is (TL_x, TL_y, BR_x, BR_y) coordinate of the patch.
         It also contains a column called adequate_confidence_score which is the confidence score of the patch.
         Start with a blank image the same dimension as topview_img.
         Visualize the confidence scores of the patches using a heatmap. Note that the coordinates need to be divided by 128 to get the pixel coordinates.
         This is because the coordinates are currently at a higher magnification than the topview_img.
         """
+        
+        # Create a blank image (heatmap) with the same dimensions as topview_img, but with a single channel for simplicity
+        heatmap = np.zeros_like(topview_img[:,:,0])
+
+        # Iterate through the patches
+        for index, row in self.info_dct.iterrows():
+            # Extract the bounding box and confidence score
+            TL_x, TL_y, BR_x, BR_y = row['coordinate']
+            confidence_score = row['adequate_confidence_score']
+
+            # Adjust the coordinates for the downsampling factor
+            TL_x_adj = int(TL_x / self.topviews_downsample_factor)
+            TL_y_adj = int(TL_y / self.topviews_downsample_factor)
+            BR_x_adj = int(BR_x / self.topviews_downsample_factor)
+            BR_y_adj = int(BR_y / self.topviews_downsample_factor)
+
+            # Assign the confidence score to the corresponding region in the heatmap
+            # The score is normalized to 255 for visualization
+            heatmap[TL_y_adj:BR_y_adj, TL_x_adj:BR_x_adj] = np.uint8(confidence_score * 255)
+
+        # Apply a colormap to the heatmap for better visualization
+        heatmap_colored = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+
+        # Overlay the heatmap on the original topview image
+        overlay_img = cv2.addWeighted(topview_img, 0.7, heatmap_colored, 0.3, 0)
+
+        # Save or display the overlay image with heatmap
+        # For example, to display using OpenCV:
+        cv2.imshow("Confidence Heatmap Overlay", overlay_img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
