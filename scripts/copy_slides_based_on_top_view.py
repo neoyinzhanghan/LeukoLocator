@@ -37,3 +37,6 @@ for img_name in tqdm(os.listdir(topview_dir), "Copying slides"):
             # copy the file to save_dir
             os.system(f'rsync -av "{os.path.join(source_dir, fname)}" "{save_dir}"')
             break
+
+
+    print("No corresponding .ndpi file found for", img_name)
