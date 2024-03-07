@@ -28,11 +28,12 @@ for img_name in tqdm(os.listdir(topview_dir), "Copying slides"):
     # note that _ is interchangeable with ; and " " space
 
     for fname in ndpi_files:
-        modified_fname = fname.replace(";", "_").replace(" - ", "_")
-        if img_name == modified_fname:
+        # modified named is removing all -, _, ; and spaces
+        modified_name = fname.replace("_", "").replace("-", "").replace(" ", "").replace(";", "")
+
+        modified_img_name = img_name.replace("_", "").replace("-", "").replace(" ", "").replace(";", "")
+
+        if modified_name.lower() == modified_img_name.lower():
             # copy the file to save_dir
-            os.system(f'rsync -av "{source_dir}/{fname}" "{save_dir}"')
+            os.system(f'rsync -av "{os.path.join(source_dir, fname)}" "{save_dir}"')
             break
-    
-    
-    
