@@ -15,7 +15,7 @@ for img_name in os.listdir(topview_dir):
     
     # remove the .png extension
     img_name = img_name[:-4]
-    
+
     src_path = os.path.join(source_dir, img_name + ".ndpi")
     dst_path = os.path.join(save_dir, img_name + ".ndpi")
     os.system(f'rsync -av "{src_path}" "{dst_path}"')
