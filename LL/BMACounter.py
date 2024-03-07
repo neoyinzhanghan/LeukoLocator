@@ -20,7 +20,7 @@ from pathlib import Path
 # Within package imports ###########################################################################
 from LL.PBDifferential import Differential, to_count_dict
 from LL.FileNameManager import FileNameManager
-from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
+from LL.BMATopView import TopView, SpecimenError
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
 from LL.vision.processing import SlideError, read_with_timeout
@@ -239,6 +239,8 @@ class BMACounter:
                         (j + 1) * search_view_focus_regions_size,
                     )
                 )
+
+        focus_regions_coordinates = self.top_view.filter_coordinates_with_mask(focus_regions_coordinates)
 
         # # take the 300 focus regions from the middle of the list which is len(focus_regions_coordinates) // 2 - 150 to len(focus_regions_coordinates) // 2 + 150
         # half = 300 // 2
@@ -713,6 +715,8 @@ class BMACounter:
         """Save the results of the PBCounter object."""
 
         start_time = time.time()
+
+        self.fr_tracker.save_confidence_heatmap(self.top_view.image)
 
         diff_full_class_dict = self.differential.tally_diff_full_class_dict()
         diff_class_dict = self.differential.tally_dict()
