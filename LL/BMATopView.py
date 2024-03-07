@@ -120,6 +120,10 @@ class TopView:
         Returns:
             list of tuples: Filtered list of coordinates.
         """
+
+        # make sure to get a cv2 format of the mask
+        mask_np = np.array(self.mask)
+
         filtered_coordinates = []
 
         for box in coordinates:
@@ -129,9 +133,9 @@ class TopView:
             # Check if the box is within the mask area
             # Ensuring the coordinates are within the mask dimensions
             TL_x_adj, TL_y_adj = max(0, TL_x_adj), max(0, TL_y_adj)
-            BR_x_adj, BR_y_adj = min(self.mask.shape[1], BR_x_adj), min(self.mask.shape[0], BR_y_adj)
+            BR_x_adj, BR_y_adj = min(mask_np.shape[1], BR_x_adj), min(mask_np.shape[0], BR_y_adj)
 
-            if np.any(self.mask[TL_y_adj:BR_y_adj, TL_x_adj:BR_x_adj]):
+            if np.any(mask_np[TL_y_adj:BR_y_adj, TL_x_adj:BR_x_adj]):
                 # If any part of the box is within the mask, keep it
                 filtered_coordinates.append(box)
 
