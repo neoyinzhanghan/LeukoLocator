@@ -5,7 +5,7 @@ from tqdm import tqdm
 from LL.BMACounter import BMACounter
 from LL.resources.BMAassumptions import *
 
-bma_slides_dir = "/media/hdd1/BMAs"
+bma_slides_dir = "/media/hdd3/neo/BMAs_chosen"
 
 # traverse through all the ndpi files in the bma_slides_dir
 bma_fnames = [
@@ -28,18 +28,8 @@ bma_fnames = [
 #     else:
 #         bma_fnames.remove(processed)
 
-num_processed = 0
-
-# shuffle the list of bma_fnames
-random.shuffle(bma_fnames)
-
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     print("Processing", bma_fname)
-
-    if num_processed > 200:
-        print("Finished processing the set number of slides. Exiting ...")
-        import sys
-        sys.exit()
 
     try:    
 
@@ -48,8 +38,6 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
         bma_counter.tally_differential()
 
         print("Saving to", bma_counter.save_dir)
-
-        num_processed += 1
 
     except Exception as e:
         print("Error:", e)

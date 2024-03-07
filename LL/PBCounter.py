@@ -19,7 +19,7 @@ from pathlib import Path
 # Within package imports ###########################################################################
 from LL.resources.PBassumptions import *
 from LL.FileNameManager import FileNameManager
-from LL.TopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
+from LL.PBTopView import TopView, SpecimenError, RelativeBlueSignalTooWeakError
 from LL.SearchView import SearchView
 from LL.PBFocusRegion import *
 from LL.PBFocusRegionsTracker import FocusRegionsTracker
