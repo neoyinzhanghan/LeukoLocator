@@ -83,16 +83,24 @@ class TopView:
         if self.verbose:
             print("Printing various masks of the top view...")
 
+        # make sure image is converted to cv2 format
+        image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+
         mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(image, verbose=False)
 
-        self.mask = mask
-        self.overlayed_image = overlayed_image
-        self.blue_mask = final_blue_mask
+        # now make sure mask, overlayed_image and final_blue_mask are converted to PIL images
+        mask_pil = Image.fromarray(mask)
+        overlayed_image_pil = Image.fromarray(overlayed_image)
+        final_blue_mask_pil = Image.fromarray(final_blue_mask)
 
-        grid_rep = get_grid_rep(image=self.image,
-                                mask=self.mask,
-                                final_blue_mask=self.blue_mask,
-                                overlayed_image=self.overlayed_image,
+        self.mask = mask_pil
+        self.overlayed_image = overlayed_image_pil
+        self.blue_mask = final_blue_mask_pil
+
+        grid_rep = get_grid_rep(image=image,
+                                mask=mask,
+                                final_blue_mask=final_blue_mask,
+                                overlayed_image=overlayed_image,
                                 verbose=self.verbose)
         self.grid_rep = grid_rep
 
