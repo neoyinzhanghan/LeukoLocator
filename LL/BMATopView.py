@@ -142,6 +142,8 @@ class TopView:
                 # If any part of the box is within the mask, keep it
                 filtered_coordinates.append(box)
 
+        assert len(filtered_coordinates) > 0, "No coordinates are within the mask area."
+        
         return filtered_coordinates
 
     def save_images(self, save_dir):
