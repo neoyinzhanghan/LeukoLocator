@@ -378,10 +378,10 @@ class FocusRegionsTracker:
             confidence_score = row['adequate_confidence_score']
 
             # Adjust the coordinates for the downsampling factor
-            TL_x_adj = int(TL_x / self.topviews_downsample_factor)
-            TL_y_adj = int(TL_y / self.topviews_downsample_factor)
-            BR_x_adj = int(BR_x / self.topviews_downsample_factor)
-            BR_y_adj = int(BR_y / self.topviews_downsample_factor)
+            TL_x_adj = int(TL_x / topview_downsampling_factor)
+            TL_y_adj = int(TL_y / topview_downsampling_factor)
+            BR_x_adj = int(BR_x / topview_downsampling_factor)
+            BR_y_adj = int(BR_y / topview_downsampling_factor)
 
             # Assign the confidence score to the corresponding region in the heatmap
             # The score is normalized to 255 for visualization
