@@ -131,7 +131,7 @@ class TopView:
 
         for box in coordinates:
             # Adjust coordinates by downsampling factor
-            TL_x_adj, TL_y_adj, BR_x_adj, BR_y_adj = [int(coord / topview_downsampling_factor) for coord in box]
+            TL_x_adj, TL_y_adj, BR_x_adj, BR_y_adj = [int(coord / (topview_downsampling_factor//search_view_downsample_rate)) for coord in box]
 
             # Check if the box is within the mask area
             # Ensuring the coordinates are within the mask dimensions
@@ -143,7 +143,7 @@ class TopView:
                 filtered_coordinates.append(box)
 
         assert len(filtered_coordinates) > 0, "No coordinates are within the mask area."
-        
+
         return filtered_coordinates
 
     def save_images(self, save_dir):
