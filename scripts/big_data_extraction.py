@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from tqdm import tqdm
 from LL.PBCounter import PBCounter
-from LL.TopView import extract_top_view
+from LL.PBTopView import extract_top_view
 from LL.brain.SpecimenClf import *
 from pathlib import Path
 from openslide.lowlevel import OpenSlideError
