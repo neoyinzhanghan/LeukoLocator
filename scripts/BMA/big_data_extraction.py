@@ -36,3 +36,6 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     bma_counter.tally_differential()
 
     print("Saving to", bma_counter.save_dir)
+
+    import sys
+    sys.exit(0)
