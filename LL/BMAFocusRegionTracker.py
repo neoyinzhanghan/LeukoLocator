@@ -372,7 +372,7 @@ class FocusRegionsTracker:
         heatmap = np.zeros(topview_img_cv.shape[:2], dtype=np.uint8)
 
         # Iterate through the patches
-        for index, row in self.info_dct.iterrows():
+        for index, row in self.info_df.iterrows():
             # Extract the bounding box and confidence score
             TL_x, TL_y, BR_x, BR_y = row['coordinate']
             confidence_score = row['adequate_confidence_score']
