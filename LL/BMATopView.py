@@ -88,10 +88,10 @@ class TopView:
 
         mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(image, verbose=False)
 
-        # now make sure mask, overlayed_image and final_blue_mask are converted to PIL images
-        mask_pil = Image.fromarray(mask)
-        overlayed_image_pil = Image.fromarray(overlayed_image)
-        final_blue_mask_pil = Image.fromarray(final_blue_mask)
+        # now make sure mask, overlayed_image and final_blue_mask are converted to PIL images after converting to RGB
+        mask_pil = Image.fromarray(cv2.cvtColor(mask, cv2.COLOR_BGR2RGB))
+        overlayed_image_pil = Image.fromarray(cv2.cvtColor(overlayed_image, cv2.COLOR_BGR2RGB))
+        final_blue_mask_pil = Image.fromarray(cv2.cvtColor(final_blue_mask, cv2.COLOR_BGR2RGB))
 
         self.mask = mask_pil
         self.overlayed_image = overlayed_image_pil
@@ -103,8 +103,8 @@ class TopView:
                                 overlayed_image=overlayed_image)
         
         # make sure grid_rep is converted to PIL image
-        grid_rep_pil = Image.fromarray(grid_rep)
-
+        grid_rep_pil = Image.fromarray(cv2.cvtColor(grid_rep, cv2.COLOR_BGR2RGB))
+        
         self.grid_rep = grid_rep_pil
 
     def is_peripheral_blood(self):
