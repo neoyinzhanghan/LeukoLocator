@@ -31,17 +31,8 @@ bma_fnames = [
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     print("Processing", bma_fname)
 
-    try:    
+    bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
+    bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=False)
+    bma_counter.tally_differential()
 
-        bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
-        bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=False)
-        bma_counter.tally_differential()
-
-        print("Saving to", bma_counter.save_dir)
-
-    except Exception as e:
-        print("Error:", e)
-
-    except KeyboardInterrupt:
-        print("Interrupted")
-        break
+    print("Saving to", bma_counter.save_dir)
