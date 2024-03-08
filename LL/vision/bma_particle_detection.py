@@ -556,14 +556,6 @@ def marrow_boxing(mask, image, background_mask=None, box_ratio=0.1, output_dir=N
     # Convert the overlayed image to BGR format for OpenCV
     overlayed_image = cv2.cvtColor(overlayed_image, cv2.COLOR_RGB2BGR)
 
-    if output_dir is None:
-        # save to working directory
-        cv2.imwrite("marrow_boxing.png", overlayed_image)
-    else:
-        # save to output_path
-        output_path = os.path.join(output_dir, "marrow_boxing.png")
-        cv2.imwrite(output_path, overlayed_image)
-
     return new_mask, overlayed_image
 
 
