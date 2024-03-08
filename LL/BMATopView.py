@@ -88,6 +88,11 @@ class TopView:
 
         mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(image, verbose=False)
 
+        # if the mask is all black then change the mask to all white
+        if np.all(mask == 0):
+            mask = 255 * np.ones_like(mask)
+            print("User Warning: The mask is all black. Changing the mask to all white.")
+
         # now make sure mask, overlayed_image and final_blue_mask are converted to PIL images after converting to RGB
         mask_pil = Image.fromarray(cv2.cvtColor(mask, cv2.COLOR_BGR2RGB))
         overlayed_image_pil = Image.fromarray(cv2.cvtColor(overlayed_image, cv2.COLOR_BGR2RGB))
