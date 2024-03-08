@@ -460,7 +460,7 @@ def get_obstructor_mask(image, erosion_radius=25, median_blur_size=25, verbose=F
     return mask
 
 
-def marrow_boxing(mask, image, background_mask, box_ratio=0.1, output_dir=None, verbose=False):
+def marrow_boxing(mask, image, background_mask=None, box_ratio=0.1, output_dir=None, verbose=False):
     """ Put boxes based on mask from mask_path on image from image_path. If output_path is not None, save the image to output_path. 
     Else, save to working directory. If verbose is True, display the image. 
     The mask from background path is to remove the background from the marrow mask. """
@@ -508,7 +508,10 @@ def marrow_boxing(mask, image, background_mask, box_ratio=0.1, output_dir=None, 
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     # get the coordinates of all the black pixels in the background mask
-    background_black_pixels = np.where(background_mask == 0)
+    if background_mask is not None:
+        background_black_pixels = np.where(background_mask == 0)
+    else:
+        background_black_pixels = (np.array([]), np.array([]))
 
     # for each white pixel, set the corresponding pixel in the new mask to 0
     for i in range(len(background_black_pixels[0])):
@@ -574,7 +577,8 @@ def get_top_view_preselection_mask(image, verbose=False):
     obstructor_mask = get_obstructor_mask(image, verbose=verbose)
 
     # get the background mask
-    background_mask = get_background_mask(image, verbose=verbose)
+    background_mask = None
+    # background_mask = get_background_mask(image, verbose=verbose)
 
     # combine the two masks
     final_blue_mask = cv2.bitwise_and(high_blue, obstructor_mask)
@@ -594,33 +598,11 @@ def get_grid_rep(image, mask, overlayed_image, final_blue_mask):
 
     return grid
 
-def is_touch_prep(image, verbose=False, erosion_radius=75, median_blur_size=75):
-    """ Return whether or not the image (top view of a whole slide image) is a touch prep. """
-
-    background_mask = get_background_mask(
-        image, verbose=verbose, erosion_radius=erosion_radius, median_blur_size=median_blur_size)
-
-    if verbose:
-        # display the mask
-        plt.figure()
-        plt.title("Background Mask")
-        plt.imshow(background_mask, cmap="gray")
-        plt.show()
-
-    # if the white pixels in background mask  are less than 25% of the total pixels, then the image is a touch prep
-    non_removed_prop = np.sum(background_mask) / \
-        (np.prod(background_mask.shape) * 255)
-
-    return non_removed_prop < 0.25
-
-
 if __name__ == '__main__':
 
     from tqdm import tqdm
     image_rel_path = "/Users/neo/Documents/Research/results/ppt_BMA_pics/H18-841_S10_MSK6_2023-06-01_02.png"
     image = cv2.imread(image_rel_path)
-
-    print('Is touch prep:', is_touch_prep(image, verbose=True))
 
     # get the top view preselection mask
     mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(image, verbose=True)
@@ -631,15 +613,10 @@ if __name__ == '__main__':
     plt.imshow(mask, cmap="gray")
     plt.show()
 
-    touch_prep_path = "touch_prep_example.png"
-
-    image = cv2.imread(touch_prep_path)
-    print("Is touch prep:", is_touch_prep(image, verbose=True))
-
     ############################################################################################################
     # # get the top view preselection masks and save them
     image_dir = "/Users/neo/Documents/Research/DeepHeme/LLData/topviews_1k/BMA"
-    save_dir = "/Users/neo/Documents/Research/DeepHeme/LLData/topviews_1k_bma_particles"
+    save_dir = "/Users/neo/Documents/Research/DeepHeme/LLData/topviews_1k_bma_particles_no_bg_removal"
     error_images = []
     for image_name in tqdm(os.listdir(image_dir)):
 
