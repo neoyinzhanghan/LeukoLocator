@@ -23,10 +23,10 @@ for folder in tqdm(folders, desc="Copying folders"):
     folder_path = os.path.join(results_folder, folder)
     save_folder_path = os.path.join(save_folder, folder)
     os.makedirs(save_folder_path, exist_ok=True)
-    os.system(f"cp -r {folder_path} {save_folder_path}")
+    os.system(f"cp -r \"{folder_path} {save_folder_path}\"")
 
     # delete focus_regions/YOLO_df, focus_regions/inadequate, focus_regions/adequate
     focus_regions_path = os.path.join(save_folder_path, "focus_regions")
-    os.system(f"rm -r {os.path.join(focus_regions_path, 'YOLO_df')}")
-    os.system(f"rm -r {os.path.join(focus_regions_path, 'inadequate')}")
-    os.system(f"rm -r {os.path.join(focus_regions_path, 'adequate')}")
+    os.system(f"rm -r \"{os.path.join(focus_regions_path, 'YOLO_df')}\"")
+    os.system(f"rm -r \"{os.path.join(focus_regions_path, 'inadequate')}\"")
+    os.system(f"rm -r \"{os.path.join(focus_regions_path, 'adequate')}\"")
