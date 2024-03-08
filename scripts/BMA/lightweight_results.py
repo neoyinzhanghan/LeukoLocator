@@ -1,8 +1,8 @@
 import os
 from tqdm import tqdm
 
-results_folder = "/media/hdd3/neo/results_bma_results_bma_chosen_no_masking"
-save_folder = "/media/hdd3/neo/results_bma_results_bma_chosen_no_masking_LITE"
+results_folder = "/media/hdd3/neo/results_bma_chosen_no_masking"
+save_folder = "/media/hdd3/neo/results_bma_chosen_no_masking_LITE"
 
 os.makedirs(save_folder, exist_ok=True)
 
