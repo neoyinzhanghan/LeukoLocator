@@ -39,7 +39,3 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     print("Saving to", bma_counter.save_dir)
 
     num_processed += 1
-
-    if num_processed >= 3:
-        import sys
-        sys.exit(0)
