@@ -22,7 +22,7 @@ for folder in tqdm(folders, desc="Copying folders"):
     # make a carbon copy of the folder in the save_folder
     folder_path = os.path.join(results_folder, folder)
     save_folder_path = os.path.join(save_folder, folder)
-    os.system(f"cp -r \"{folder_path} {save_folder_path}\"")
+    os.system(f"cp -r \"{folder_path}\" \"{save_folder_path}\"")
 
     # delete focus_regions/YOLO_df, focus_regions/inadequate, focus_regions/adequate
     focus_regions_path = os.path.join(save_folder_path, "focus_regions")
