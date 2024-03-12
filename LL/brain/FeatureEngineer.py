@@ -22,7 +22,7 @@ class CellFeatureEngineer():
 
     def async_extract_batch(self, wbc_candidates):
 
-        images = [wbc_candidate.image for wbc_candidate in wbc_candidates]
+        images = [wbc_candidate.snap_shot for wbc_candidate in wbc_candidates]
         features = self.extractor.extract(images)
 
         for i, wbc_candidate in enumerate(wbc_candidates):
