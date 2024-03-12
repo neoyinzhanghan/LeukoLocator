@@ -876,7 +876,7 @@ class BMACounter:
             for arch in supported_feature_extraction_archs:
                 start_time = time.time()
                 for wbc_candidate in tqdm(self.wbc_candidates, desc=f"Saving {arch} features"):
-                    wbc_candidate._save_features(self.save_dir, arch)
+                    wbc_candidate._save_cell_feature(self.save_dir, arch)
                 
                 self.profiling_data[f"cell_feature_extraction_hoarding_time_{arch}"] = time.time() - start_time
 
@@ -919,7 +919,7 @@ class BMACounter:
                     for arch in supported_feature_extraction_archs
                 ]
             )
-            
+
             self.profiling_data["hoarding_time"] = (
                 self.profiling_data["high_mag_focus_regions_hoarding_time"]
                 + self.profiling_data["hoarding_focus_regions_time"]
