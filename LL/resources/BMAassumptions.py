@@ -91,6 +91,10 @@ HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
 
 specimen_clf_checkpoint_path = "/home/greg/Documents/neo/LLCKPTS/SClf.ckpt"
 
+
+feature_extractor_ckpt_dict = {"resnet50": "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"}
+supported_feature_extraction_archs = feature_extractor_ckpt_dict.keys()
+
 ######################
 ### Biology Config ###
 ######################

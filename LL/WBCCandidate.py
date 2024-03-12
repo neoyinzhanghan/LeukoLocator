@@ -6,6 +6,7 @@
 import os
 import pandas as pd
 import numpy as np
+import torch
 
 # Within package imports ###########################################################################
 from LL.vision.image_quality import VoL
@@ -33,7 +34,8 @@ class WBCCandidate:
     - cell_df_row: a pandas dataframe row of the cell_df of the PBCounter object containing this candidate
         - the dataframe should have the following columns: [cell_id, name, coords, confidence, VoL, cellnames[0], ..., cellnames[num_classes - 1]
 
-    -idx : the cell idx, None when initialized and will be assigned eventually
+    - idx : the cell idx, None when initialized and will be assigned eventually
+    - features : a dictionary of features of the candidate the key is a specific feature extraction architecture and the value is the feature vector
     """
 
     def __init__(
@@ -64,6 +66,8 @@ class WBCCandidate:
         self.softmax_vector = None
         self.name = None
         self.cell_df_row = None
+
+        self.features = {}
 
     def compute_cell_info(self):
         """Return a pandas dataframe row of the cell_df of the PBCounter object containing this candidate."""
@@ -165,6 +169,39 @@ class WBCCandidate:
                     cellnames[np.argmax(self.softmax_vector)],
                     self.name,
                 )
+            )
+    
+    def _save_cell_feature(self, save_dir, arch):
+        """ Save the feature vector to the save_dir/arch/class directory. 
+        
+        Precondition: the cell is classified and the feature vector is computed.
+        """
+
+        if self.softmax_vector is None:
+            raise CellNotClassifiedError("The softmax vector is not computed yet.")
+    
+        elif self.name is None:
+            raise CellNotClassifiedError("The name is not computed yet.")
+
+        else:
+            os.makedirs(
+                os.path.join(
+                    save_dir, arch), exist_ok=True
+            )
+            os.makedirs(
+                os.path.join(
+                    save_dir, arch, cellnames[np.argmax(self.softmax_vector)]
+                ),
+                exist_ok=True,
+            )
+            torch.save(
+                self.features[arch],
+                os.path.join(
+                    save_dir,
+                    arch,
+                    cellnames[np.argmax(self.softmax_vector)],
+                    self.name.replace(".jpg", ".pt"),
+                ),
             )
 
 

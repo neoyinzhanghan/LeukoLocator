@@ -23,6 +23,7 @@ from LL.FileNameManager import FileNameManager
 from LL.BMATopView import TopView, SpecimenError
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
+from LL.brain.FeatureEngineer import CellFeatureEngineer
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.WSICropManager import WSICropManager
 from LL.communication.write_config import *
@@ -678,38 +679,72 @@ class BMACounter:
             print(f"Shutting down Ray")
         ray.shutdown()
 
-        # for i, wbc_candidate in enumerate(self.wbc_candidates):
-        #     manager = task_managers[i % num_labellers]
-        #     task = manager.async_label_wbc_candidate.remote(wbc_candidate)
-        #     tasks[task] = wbc_candidate
-
-        # with tqdm(
-        #     total=len(self.wbc_candidates), desc="Classifying WBC candidates"
-        # ) as pbar:
-        #     while tasks:
-        #         done_ids, _ = ray.wait(list(tasks.keys()))
-
-        #         for done_id in done_ids:
-        #             try:
-        #                 wbc_candidate = ray.get(done_id)
-        #                 if wbc_candidate is not None:
-        #                     all_results.append(wbc_candidate)
-
-        #             except RayTaskError as e:
-        #                 print(
-        #                     f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
-        #                 )
-
-        #             pbar.update()
-        #             del tasks[done_id]
-        # if self.verbose:
-        #     print(f"Shutting down Ray")
-        # ray.shutdown()
-
         self.wbc_candidates = all_results
         self.differential = Differential(self.wbc_candidates)
 
         self.profiling_data["label_wbc_candidates_time"] = time.time() - start_time
+
+    def extract_features(self):
+        """ Extract features """
+        for arch in supported_feature_extraction_archs:
+            ckpt_path = feature_extractor_ckpt_dict[arch]
+            start_time = time.time()
+
+            if self.wbc_candidates == [] or self.wbc_candidates is None:
+                raise NoCellFoundError(
+                    "No WBC candidates found. Please run find_wbc_candidates() first. If problem persists, the slide may be problematic."
+                )
+            ray.shutdown()
+            # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+            ray.init()
+
+            list_of_batches = create_list_of_batches_from_list(
+                self.wbc_candidates, cell_clf_batch_size
+            )
+
+            if self.verbose:
+                print(f"Initializing CellFeatureEngineer for architecture {arch}")
+            task_managers = [
+                CellFeatureEngineer.remote(arch=arch, ckpt_path=ckpt_path) for _ in range(num_labellers)
+            ]
+
+            tasks = {}
+            all_results = []
+
+            for i, batch in enumerate(list_of_batches):
+                manager = task_managers[i % num_labellers]
+                task = manager.async_extract_batch.remote(batch)
+                tasks[task] = batch
+
+            with tqdm(
+                total=len(self.wbc_candidates), desc=f"Extract WBC candidates features for architecture {arch}"
+            ) as pbar:
+                while tasks:
+                    done_ids, _ = ray.wait(list(tasks.keys()))
+
+                    for done_id in done_ids:
+                        try:
+                            batch = ray.get(done_id)
+                            for wbc_candidate in batch:
+                                all_results.append(wbc_candidate)
+
+                                pbar.update()
+
+                        except RayTaskError as e:
+                            print(
+                                f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
+                            )
+
+                        del tasks[done_id]
+
+            if self.verbose:
+                print(f"Shutting down Ray")
+            ray.shutdown()
+
+            self.wbc_candidates = all_results
+            self.differential = Differential(self.wbc_candidates)
+
+            self.profiling_data[f"cell_feature_extraction_time_{arch}"] = time.time() - start_time
 
     def _save_results(self):
         """Save the results of the PBCounter object."""
@@ -838,6 +873,13 @@ class BMACounter:
 
             self.profiling_data["cells_hoarding_time"] = time.time() - start_time
 
+            for arch in supported_feature_extraction_archs:
+                start_time = time.time()
+                for wbc_candidate in tqdm(self.wbc_candidates, desc=f"Saving {arch} features"):
+                    wbc_candidate._save_features(self.save_dir, arch)
+                
+                self.profiling_data[f"cell_feature_extraction_hoarding_time_{arch}"] = time.time() - start_time
+
         else:
             self.profiling_data["cells_hoarding_time"] = 0
 
@@ -863,11 +905,27 @@ class BMACounter:
 
             # Save profiling data as a csv file
             self.profiling_data["total_time"] = sum(self.profiling_data.values())
+
+            self.profiling_data["total_feature_extraction_time"] = sum(
+                [
+                    self.profiling_data[f"cell_feature_extraction_time_{arch}"]
+                    for arch in supported_feature_extraction_archs
+                ]
+            )
+
+            self.profiling_data["total_features_hoarding_time"] = sum(
+                [
+                    self.profiling_data[f"cell_feature_extraction_hoarding_time_{arch}"]
+                    for arch in supported_feature_extraction_archs
+                ]
+            )
+            
             self.profiling_data["hoarding_time"] = (
                 self.profiling_data["high_mag_focus_regions_hoarding_time"]
                 + self.profiling_data["hoarding_focus_regions_time"]
                 + self.profiling_data["cells_hoarding_time"]
-            )
+                + self.profiling_data["total_features_hoarding_time"]
+            ) 
 
             self.profiling_data["total_non_hoarding_time"] = (
                 self.profiling_data["total_time"] - self.profiling_data["hoarding_time"]
