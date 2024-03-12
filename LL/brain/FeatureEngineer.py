@@ -15,6 +15,8 @@ class CellFeatureEngineer():
     """ # NOTE the design choice of having a generic feature engineer is that in the future we might do multiple feature extraction in parallel
 
     def __init__(self, arch, ckpt_path) -> None:
+        self.arch = arch
+        self.ckpt_path = ckpt_path
         if arch == "resnet50":
             self.extractor = ResNetExtractor(ckpt_path)
         else:
