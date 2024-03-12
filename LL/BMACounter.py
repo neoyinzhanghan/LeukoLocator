@@ -897,10 +897,10 @@ class BMACounter:
 
             if self.wbc_candidates is None:
                 self.find_wbc_candidates()
-                self.extract_features()
 
             if self.differential is None:
                 self.label_wbc_candidates()
+                self.extract_features()
 
             self._save_results()
 
