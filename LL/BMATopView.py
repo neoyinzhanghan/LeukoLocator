@@ -149,7 +149,7 @@ class TopView:
 
         assert len(filtered_coordinates) > 0, "No coordinates are within the mask area."
 
-        return coordinates # TO CHANGE BACK TODO
+        return filtered_coordinates
 
     def save_images(self, save_dir):
         """ Save the image, mask, overlayed image, blue_mask and grid representation of the top view in save_dir."""

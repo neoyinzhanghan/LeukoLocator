@@ -3,7 +3,7 @@
 #################
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_bma_chosen_no_masking"
+dump_dir = "/media/hdd3/neo/results_bma_chosen_2"
 
 ############################
 ### WSI Image Parameters ###
