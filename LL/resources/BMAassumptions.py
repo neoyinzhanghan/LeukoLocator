@@ -27,7 +27,7 @@ topview_downsampling_factor = 128
 topview_level = 7
 search_view_level = 3
 search_view_focus_regions_size = 64
-min_cell_VoL = 10
+min_cell_VoL = 0
 
 min_WMP = 0.5  # it use to be
 max_WMP = 0.7  # it use to be 0.9, but I think we can start reducing this a bit as there are too many regions from the periphery of the smear
