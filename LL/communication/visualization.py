@@ -4,11 +4,13 @@
 
 # Outside imports ##################################################################################
 from PIL import Image, ImageOps
+from PIL import Image, ImageDraw
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import cv2
 import numpy as np
+
 
 
 def annotate_focus_region(image, bboxes):
@@ -206,3 +208,39 @@ def save_bar_chart(
 
     # close the plot to free memory
     plt.close()
+
+
+def draw_dashed_rect(image, top_left, bottom_right, color="green", dash=(10, 10), width=3):
+    """
+    Draws a dashed rectangle on an image.
+
+    :param image: PIL Image object to draw on.
+    :param top_left: Tuple of (x, y) for the top left corner of the rectangle.
+    :param bottom_right: Tuple of (x, y) for the bottom right corner of the rectangle.
+    :param color: Color of the rectangle.
+    :param dash: Tuple of (dash_length, space_length) specifying the dash pattern.
+    :param width: Thickness of the dashed lines.
+    """
+    draw = ImageDraw.Draw(image)
+    x1, y1 = top_left
+    x2, y2 = bottom_right
+    dash_length, space_length = dash
+
+    # Define a function for drawing dashed lines
+    def draw_dashed_line(points, color, dash_length, space_length, width):
+        total_length = dash_length + space_length
+        for start in range(0, len(points), total_length):
+            end = min(start + dash_length, len(points))
+            line_points = points[start:end]
+            if line_points:
+                draw.line(line_points, fill=color, width=width)
+
+    # Generate the points for the sides of the rectangle
+    left_side = [(x1, y) for y in range(y1, y2, 1)]
+    right_side = [(x2, y) for y in range(y1, y2, 1)]
+    top_side = [(x, y1) for x in range(x1, x2, 1)]
+    bottom_side = [(x, y2) for x in range(x1, x2, 1)]
+
+    # Draw dashed lines for each side
+    for side in [left_side, right_side, top_side, bottom_side]:
+        draw_dashed_line(side, color, dash_length, space_length, width)

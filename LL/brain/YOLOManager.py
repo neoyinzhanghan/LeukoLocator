@@ -195,20 +195,27 @@ class YOLOManager:
 
             confidence = row["confidence"]
 
-            # check whether if a square of size snap_shot_size centered at the centroid is out of bound of focus_region.image
-            if (
-                centroid_x_intra_image - snap_shot_size // 2 < 0
-                or centroid_x_intra_image + snap_shot_size // 2 >= focus_regions_size
-                or centroid_y_intra_image - snap_shot_size // 2 < 0
-                or centroid_y_intra_image + snap_shot_size // 2 >= focus_regions_size
-            ):
-                continue  # if so, then skip this candidate
+            # # check whether if a square of size snap_shot_size centered at the centroid is out of bound of focus_region.image
+            # if (
+            #     centroid_x_intra_image - snap_shot_size // 2 < 0
+            #     or centroid_x_intra_image + snap_shot_size // 2 >= focus_regions_size
+            #     or centroid_y_intra_image - snap_shot_size // 2 < 0
+            #     or centroid_y_intra_image + snap_shot_size // 2 >= focus_regions_size
+            # ):
+            #     continue  # if so, then skip this candidate # TODO remove this is deprecated after padding
 
             # get the YOLO_bbox
             YOLO_bbox_intra_image = (row["TL_x"], row["TL_y"], row["BR_x"], row["BR_y"])
 
+            padded_YOLO_bbox_intra_image = (
+                YOLO_bbox_intra_image[0] + snap_shot_size // 2,
+                YOLO_bbox_intra_image[1] + snap_shot_size // 2,
+                YOLO_bbox_intra_image[2] + snap_shot_size // 2,
+                YOLO_bbox_intra_image[3] + snap_shot_size // 2
+            )
+
             # use YOLO_bbox_intra_image to crop the focus_region.image
-            YOLO_bbox_image = focus_region.image.crop(YOLO_bbox_intra_image)
+            YOLO_bbox_image = focus_region.padded_image.crop(padded_YOLO_bbox_intra_image)
 
             # get the snap_shot_bbox
             snap_shot_bbox_intra_image = (
@@ -218,8 +225,15 @@ class YOLOManager:
                 int(centroid_y_intra_image + snap_shot_size // 2),
             )
 
+            padded_snap_shot_bbox_intra_image = (
+                snap_shot_bbox_intra_image[0] + snap_shot_size // 2,
+                snap_shot_bbox_intra_image[1] + snap_shot_size // 2,
+                snap_shot_bbox_intra_image[2] + snap_shot_size // 2,
+                snap_shot_bbox_intra_image[3] + snap_shot_size // 2
+            )
+
             # use snap_shot_bbox to crop the focus_region.image
-            snap_shot = focus_region.image.crop(snap_shot_bbox_intra_image)
+            snap_shot = focus_region.padded_image.crop(padded_snap_shot_bbox_intra_image)
 
             # zero pad the YOLO_bbox_image to have square dimension of snap_shot_size
             padded_YOLO_bbox_image = zero_pad(YOLO_bbox_image, snap_shot_size)

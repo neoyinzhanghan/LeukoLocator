@@ -10,7 +10,7 @@ import pyvips
 # Within package imports ###########################################################################
 from LL.vision.image_quality import VoL
 from LL.BMAFocusRegion import FocusRegion
-from LL.resources.BMAassumptions import search_view_level, search_view_downsample_rate, search_view_focus_regions_size
+from LL.resources.PBassumptions import *
 
 
 # @ray.remote(num_cpus=num_cpus_per_cropper)
@@ -69,19 +69,21 @@ class WSICropManager:
         """Update the image of the focus region."""
 
         if focus_region.image is None:
-            image = self.crop(focus_region.coordinate)
+            padded_coordinate = (
+                focus_region.coordinate[0] - snap_shot_size // 2,
+                focus_region.coordinate[1] - snap_shot_size // 2,
+                focus_region.coordinate[2] + snap_shot_size // 2,
+                focus_region.coordinate[3] + snap_shot_size // 2,
+            )
+            padded_image = self.crop(padded_coordinate)
 
-        # vol = VoL(image) # TODO reconsidering whether the second VoL filtering is event necessary
-        # if vol < min_VoL:
-        #     return None
+            original_width, original_height = focus_region.coordinate[2] - focus_region.coordinate[0], focus_region.coordinate[3] - focus_region.coordinate[1]
 
-        # else:
-        #     focus_region.get_image(image)
-        #     focus_region.VoL = vol
-
-        #     return focus_region
-
-        focus_region.get_image(image)
+            unpadded_image = padded_image.crop(
+                (snap_shot_size // 2, snap_shot_size // 2, snap_shot_size // 2 + original_width, snap_shot_size // 2 + original_height)
+            )
+            
+            focus_region.get_image(unpadded_image, padded_image)
 
         return focus_region
 
