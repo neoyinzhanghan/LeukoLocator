@@ -80,7 +80,7 @@ region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf no normaliz
 # We do not need a confidence threshold because we take the top regions from the region classifier
 region_clf_conf_thres = 0
 
-YOLO_ckpt_path = "/home/greg/Documents/neo/HemeYolo-dev/HemeYolo_YOLOv8/runs/detect/train/weights/best.pt"
+YOLO_ckpt_path = "/media/hdd3/neo/MODELS/2024-03-13 YOLO BMA/runs/detect/train/weights/best.pt"
 # YOLO_ckpt_path = "/media/ssd1/neo/LLCKPTS/best.pt" # this one is for alpaca
 # YOLO_ckpt_path = "/media/hdd2/neo/LLCKPTS/best.pt" # this one is for bear
 YOLO_conf_thres = 0.25  # The calibration says 0.89 to do a 3% FNR control with pvalue less than 0.05 but we can afford to be more aggressive
