@@ -114,7 +114,7 @@ class FocusRegion:
             ]
 
             self.annotated_image = annotate_focus_region(
-                self.padded_image, self.padded_wbc_candidate_bboxes
+                self.padded_image, padded_wbc_candidate_bboxes
             )
 
             # Calculate the coordinates for the green rectangle
