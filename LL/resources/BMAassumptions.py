@@ -83,7 +83,7 @@ region_clf_conf_thres = 0
 YOLO_ckpt_path = "/media/hdd3/neo/MODELS/2024-03-13 YOLO BMA/runs/detect/train/weights/best.pt"
 # YOLO_ckpt_path = "/media/ssd1/neo/LLCKPTS/best.pt" # this one is for alpaca
 # YOLO_ckpt_path = "/media/hdd2/neo/LLCKPTS/best.pt" # this one is for bear
-YOLO_conf_thres = 0.25  # The calibration says 0.89 to do a 3% FNR control with pvalue less than 0.05 but we can afford to be more aggressive
+YOLO_conf_thres = 0.252525
 
 # HemeLabel_ckpt_path = "/media/ssd1/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
 # HemeLabel_ckpt_path = "/media/hdd2/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
