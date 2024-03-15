@@ -126,28 +126,10 @@ def get_feat_extract_augmentation_pipeline(image_size):
                     A.Blur(blur_limit=3, p=0.1),
                 ]
             ),
-            A.ShiftScaleRotate(
-                shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, p=0.2
-            ),
-            A.OneOf(
-                [
-                    A.OpticalDistortion(p=0.3),
-                    A.GridDistortion(p=0.1),
-                    A.IAAPiecewiseAffine(p=0.3),
-                ]
-            ),
-            A.OneOf(
-                [
-                    A.CLAHE(clip_limit=2),
-                    A.IAASharpen(),
-                    A.IAAEmboss(),
-                    A.RandomBrightnessContrast(),
-                ]
-            ),
             A.HueSaturationValue(p=0.3),
-            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         ]
     )
+
 
 num_augmentations_per_image = 5
 
