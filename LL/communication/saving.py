@@ -151,6 +151,12 @@ def save_augmented_cell_features(wbc_candidates, arch, save_dir):
     }
 
     for wbc_candidate in wbc_candidates:
+
+        print(wbc_candidate.augmented_features.keys())
+        import sys
+
+        sys.exit()
+
         augmented_feat_lst = wbc_candidate.augmented_features[
             arch
         ]  # this is a list of triples (augmentation_pipeline, augmented_image, feature)
