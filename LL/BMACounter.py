@@ -811,7 +811,7 @@ class BMACounter:
 
             for i, batch in enumerate(list_of_batches):
                 manager = task_managers[i % num_labellers]
-                task = manager.async_extract_batch.remote(batch)
+                task = manager.async_extract_batch_with_augmentation.remote(batch)
                 tasks[task] = batch
 
             with tqdm(

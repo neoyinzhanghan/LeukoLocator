@@ -106,17 +106,17 @@ class CellFeatureEngineer:
         # add the features to the wbc_candidates
         for wbc_candidate in wbc_candidates:
 
-            print(self.arch)
-            print(features[(wbc_candidate.focus_region_idx, wbc_candidate.local_idx)])
+            # print(self.arch)
+            # print(features[(wbc_candidate.focus_region_idx, wbc_candidate.local_idx)])
             wbc_candidate.augmented_features[self.arch] = features[
                 (wbc_candidate.focus_region_idx, wbc_candidate.local_idx)
             ]
 
-            print("Current augmented features: ")
-            print(wbc_candidate.augmented_features.keys())
+            # print("Current augmented features: ")
+            # print(wbc_candidate.augmented_features.keys())
 
-            import sys
+            # import sys
 
-            sys.exit()
+            # sys.exit()
 
         return wbc_candidates
