@@ -177,8 +177,9 @@ def save_augmented_cell_features(wbc_candidates, arch, save_dir):
         )
 
         # save the augmented feature tensor using the filename focus_region_idx-local_idx-augmentation_idx
-        for i, (augmentation_pipeline, augmented_image, feature) in enumerate(
-            augmented_feat_lst
+        for i, (augmentation_pipeline, augmented_image, feature) in tqdm(
+            enumerate(augmented_feat_lst),
+            desc=f"Saving augmented features for {cell_class}",
         ):
             # save the feature tensor which is currently as torch tensor you want to save as a .pt file
             torch.save(
