@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import random
 from tqdm import tqdm
+from LL.BMAFocusRegionTracker import NotEnoughFocusRegionsError
 from LL.BMACounter import BMACounter
 from LL.resources.BMAassumptions import *
 
@@ -24,17 +25,24 @@ bma_fnames = [fname for fname in os.listdir(bma_slides_dir) if fname.endswith(".
 #     else:
 #         bma_fnames.remove(processed)
 num_processed = 0
+bad_slides = []
 
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
-    if "H23-225;S12;MSKQ - 2023-06-12 16.34.12" not in bma_fname:
-        continue
 
     print("Processing", bma_fname)
 
-    bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
-    bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=False)
-    bma_counter.tally_differential()
+    try:
+        bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
+        bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=False)
+        bma_counter.tally_differential()
 
-    print("Saving to", bma_counter.save_dir)
+        print("Saving to", bma_counter.save_dir)
+
+    except NotEnoughFocusRegionsError:
+        print("Not enough focus regions")
+        bad_slides.append(bma_fname)
+        continue
 
     num_processed += 1
+
+print("Bad slides:", bad_slides)
