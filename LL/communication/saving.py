@@ -143,10 +143,11 @@ def save_wbc_candidates_sorted(
 def save_augmented_cell_features(wbc_candidates, arch, save_dir):
 
     # start building a dictionary for eventual convertion to a dataframe
-    # it should have the following columns: augmentation_idx, augmentation_pipeline, cell_class
+    # it should have the following columns: focus_regions_idx, local_idx, augmentation_idx, cell_class
     tracking_dict = {
+        "focus_regions_idx": [],
+        "local_idx": [],
         "augmentation_idx": [],
-        "augmentation_pipeline": [],
         "cell_class": [],
     }
 
@@ -193,9 +194,10 @@ def save_augmented_cell_features(wbc_candidates, arch, save_dir):
                 ),
             )
 
-            # add the augmentation_idx and the augmentation_pipeline to the tracking_dict
+            # add the tracking info to the tracking_dict
+            tracking_dict["focus_regions_idx"].append(focus_region_idx)
+            tracking_dict["local_idx"].append(local_idx)
             tracking_dict["augmentation_idx"].append(i)
-            tracking_dict["augmentation_pipeline"].append(str(augmentation_pipeline))
             tracking_dict["cell_class"].append(cell_class)
 
     # convert the tracking_dict to a dataframe
