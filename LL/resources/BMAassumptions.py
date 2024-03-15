@@ -46,6 +46,7 @@ min_num_regions_after_WMP_max_filter = 150
 max_num_regions_after_region_clf = 100
 max_num_cells = 3000
 min_num_cells = 10
+min_num_focus_regions = 25
 
 ###########################
 ### Parallel Processing ###
@@ -78,9 +79,11 @@ region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf no normaliz
 # region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 # region_clf_ckpt_path = "/media/hdd2/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for bear
 # We do not need a confidence threshold because we take the top regions from the region classifier
-region_clf_conf_thres = 0
+region_clf_conf_thres = 0.9
 
-YOLO_ckpt_path = "/media/hdd3/neo/MODELS/2024-03-13 YOLO BMA/runs/detect/train/weights/best.pt"
+YOLO_ckpt_path = (
+    "/media/hdd3/neo/MODELS/2024-03-13 YOLO BMA/runs/detect/train/weights/best.pt"
+)
 # YOLO_ckpt_path = "/media/ssd1/neo/LLCKPTS/best.pt" # this one is for alpaca
 # YOLO_ckpt_path = "/media/hdd2/neo/LLCKPTS/best.pt" # this one is for bear
 YOLO_conf_thres = 0.252525
@@ -92,8 +95,61 @@ HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
 specimen_clf_checkpoint_path = "/home/greg/Documents/neo/LLCKPTS/SClf.ckpt"
 
 
-feature_extractor_ckpt_dict = {"resnet50": "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"}
+feature_extractor_ckpt_dict = {
+    "resnet50": "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
+}
 supported_feature_extraction_archs = feature_extractor_ckpt_dict.keys()
+
+###########################
+### Augmentation Config ###
+###########################
+
+import albumentations as A
+
+
+def get_feat_extract_augmentation_pipeline(image_size):
+    """Returns a randomly chosen augmentation pipeline for SSL."""
+    return A.Compose(
+        [
+            A.Resize(image_size, image_size),
+            A.OneOf(
+                [
+                    A.HorizontalFlip(p=0.5),
+                    A.VerticalFlip(p=0.5),
+                    A.RandomRotate90(p=0.5),
+                ]
+            ),
+            A.OneOf(
+                [
+                    A.MotionBlur(p=0.2),
+                    A.MedianBlur(blur_limit=3, p=0.1),
+                    A.Blur(blur_limit=3, p=0.1),
+                ]
+            ),
+            A.ShiftScaleRotate(
+                shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, p=0.2
+            ),
+            A.OneOf(
+                [
+                    A.OpticalDistortion(p=0.3),
+                    A.GridDistortion(p=0.1),
+                    A.IAAPiecewiseAffine(p=0.3),
+                ]
+            ),
+            A.OneOf(
+                [
+                    A.CLAHE(clip_limit=2),
+                    A.IAASharpen(),
+                    A.IAAEmboss(),
+                    A.RandomBrightnessContrast(),
+                ]
+            ),
+            A.HueSaturationValue(p=0.3),
+            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+        ]
+    )
+
+num_augmentations_per_image = 5
 
 ######################
 ### Biology Config ###

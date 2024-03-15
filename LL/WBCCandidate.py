@@ -36,6 +36,7 @@ class WBCCandidate:
 
     - idx : the cell idx, None when initialized and will be assigned eventually
     - features : a dictionary of features of the candidate the key is a specific feature extraction architecture and the value is the feature vector
+    - augmented_features : a dictionary of augmented features of the candidate the key is a specific feature extraction architecture and the value is a list of triples (augmentation_pipeline, augmented_image, augmented_feature_vector)
     """
 
     def __init__(
@@ -68,6 +69,7 @@ class WBCCandidate:
         self.cell_df_row = None
 
         self.features = {}
+        self.augmented_features = {}
 
     def compute_cell_info(self):
         """Return a pandas dataframe row of the cell_df of the PBCounter object containing this candidate."""
@@ -170,28 +172,23 @@ class WBCCandidate:
                     self.name,
                 )
             )
-    
+
     def _save_cell_feature(self, save_dir, arch):
-        """ Save the feature vector to the save_dir/arch/class directory. 
-        
+        """Save the feature vector to the save_dir/arch/class directory.
+
         Precondition: the cell is classified and the feature vector is computed.
         """
 
         if self.softmax_vector is None:
             raise CellNotClassifiedError("The softmax vector is not computed yet.")
-    
+
         elif self.name is None:
             raise CellNotClassifiedError("The name is not computed yet.")
 
         else:
+            os.makedirs(os.path.join(save_dir, arch), exist_ok=True)
             os.makedirs(
-                os.path.join(
-                    save_dir, arch), exist_ok=True
-            )
-            os.makedirs(
-                os.path.join(
-                    save_dir, arch, cellnames[np.argmax(self.softmax_vector)]
-                ),
+                os.path.join(save_dir, arch, cellnames[np.argmax(self.softmax_vector)]),
                 exist_ok=True,
             )
             torch.save(

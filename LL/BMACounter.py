@@ -29,14 +29,15 @@ from LL.vision.BMAWSICropManager import WSICropManager
 from LL.communication.write_config import *
 from LL.communication.visualization import *
 from LL.brain.utils import *
+from LL.communication.saving import *
 from LL.brain.SpecimenClf import get_region_type
 from LL.SearchView import SearchView
 from LL.BMAFocusRegion import *
 from LL.BMAFocusRegionTracker import FocusRegionsTracker
 from LL.resources.BMAassumptions import *
 
-class BMACounter:
 
+class BMACounter:
     """A Class representing a Counter of WBCs inside a bone marrow aspirate (BMA)) whole slide image.
 
     === Class Attributes ===
@@ -124,7 +125,7 @@ class BMACounter:
                         + specimen_type
                         + "."
                     )
-                    
+
                     print(
                         "ERROR: The specimen is not Bone Marrow Aspirate. Instead, it is "
                         + specimen_type
@@ -153,7 +154,8 @@ class BMACounter:
                     os.rename(
                         self.save_dir,
                         os.path.join(
-                            dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                            dump_dir,
+                            "ERROR_" + Path(self.file_name_manager.wsi_path).stem,
                         ),
                     )
 
@@ -241,7 +243,9 @@ class BMACounter:
                     )
                 )
 
-        focus_regions_coordinates = self.top_view.filter_coordinates_with_mask(focus_regions_coordinates)
+        focus_regions_coordinates = self.top_view.filter_coordinates_with_mask(
+            focus_regions_coordinates
+        )
 
         # # take the 300 focus regions from the middle of the list which is len(focus_regions_coordinates) // 2 - 150 to len(focus_regions_coordinates) // 2 + 150
         # half = 300 // 2
@@ -347,15 +351,26 @@ class BMACounter:
                 padded_coordinate,
                 0,
                 (
-                    focus_region.coordinate[2] - focus_region.coordinate[0] + pad_size*2,
-                    focus_region.coordinate[3] - focus_region.coordinate[1] + pad_size*2,
+                    focus_region.coordinate[2]
+                    - focus_region.coordinate[0]
+                    + pad_size * 2,
+                    focus_region.coordinate[3]
+                    - focus_region.coordinate[1]
+                    + pad_size * 2,
                 ),
             )
 
             original_width = focus_region.coordinate[2] - focus_region.coordinate[0]
             original_height = focus_region.coordinate[3] - focus_region.coordinate[1]
 
-            unpadded_image = padded_image.crop((pad_size, pad_size, pad_size + original_width, pad_size + original_height))
+            unpadded_image = padded_image.crop(
+                (
+                    pad_size,
+                    pad_size,
+                    pad_size + original_width,
+                    pad_size + original_height,
+                )
+            )
 
             focus_region.get_image(unpadded_image, padded_image)
 
@@ -620,7 +635,8 @@ class BMACounter:
                 exist_ok=True,
             )
             os.makedirs(
-                os.path.join(self.save_dir, "focus_regions", "low_mag_selected"), exist_ok=True
+                os.path.join(self.save_dir, "focus_regions", "low_mag_selected"),
+                exist_ok=True,
             )
             for focus_region in tqdm(
                 self.focus_regions, desc="Saving focus regions high mag images"
@@ -700,7 +716,7 @@ class BMACounter:
         self.profiling_data["label_wbc_candidates_time"] = time.time() - start_time
 
     def extract_features(self):
-        """ Extract features """
+        """Extract features"""
         for arch in supported_feature_extraction_archs:
             ckpt_path = feature_extractor_ckpt_dict[arch]
             start_time = time.time()
@@ -720,7 +736,8 @@ class BMACounter:
             if self.verbose:
                 print(f"Initializing CellFeatureEngineer for architecture {arch}")
             task_managers = [
-                CellFeatureEngineer.remote(arch=arch, ckpt_path=ckpt_path) for _ in range(num_labellers)
+                CellFeatureEngineer.remote(arch=arch, ckpt_path=ckpt_path)
+                for _ in range(num_labellers)
             ]
 
             tasks = {}
@@ -732,7 +749,8 @@ class BMACounter:
                 tasks[task] = batch
 
             with tqdm(
-                total=len(self.wbc_candidates), desc=f"Extract WBC candidates features for architecture {arch}"
+                total=len(self.wbc_candidates),
+                desc=f"Extract WBC candidates features for architecture {arch}",
             ) as pbar:
                 while tasks:
                     done_ids, _ = ray.wait(list(tasks.keys()))
@@ -759,7 +777,75 @@ class BMACounter:
             self.wbc_candidates = all_results
             self.differential = Differential(self.wbc_candidates)
 
-            self.profiling_data[f"cell_feature_extraction_time_{arch}"] = time.time() - start_time
+            self.profiling_data[f"cell_feature_extraction_time_{arch}"] = (
+                time.time() - start_time
+            )
+
+    def extract_features_with_augmentation(self):
+        """Extract features with augmentation."""
+        for arch in supported_feature_extraction_archs:
+            ckpt_path = feature_extractor_ckpt_dict[arch]
+            start_time = time.time()
+
+            if self.wbc_candidates == [] or self.wbc_candidates is None:
+                raise NoCellFoundError(
+                    "No WBC candidates found. Please run find_wbc_candidates() first. If problem persists, the slide may be problematic."
+                )
+            ray.shutdown()
+            # ray.init(num_cpus=num_cpus, num_gpus=num_gpus)
+            ray.init()
+
+            list_of_batches = create_list_of_batches_from_list(
+                self.wbc_candidates, cell_clf_batch_size
+            )
+
+            if self.verbose:
+                print(f"Initializing CellFeatureEngineer for architecture {arch}")
+            task_managers = [
+                CellFeatureEngineer.remote(arch=arch, ckpt_path=ckpt_path)
+                for _ in range(num_labellers)
+            ]
+
+            tasks = {}
+            all_results = []
+
+            for i, batch in enumerate(list_of_batches):
+                manager = task_managers[i % num_labellers]
+                task = manager.async_extract_batch.remote(batch)
+                tasks[task] = batch
+
+            with tqdm(
+                total=len(self.wbc_candidates),
+                desc=f"Extract Augmented WBC candidates features for architecture {arch}",
+            ) as pbar:
+                while tasks:
+                    done_ids, _ = ray.wait(list(tasks.keys()))
+
+                    for done_id in done_ids:
+                        try:
+                            batch = ray.get(done_id)
+                            for wbc_candidate in batch:
+                                all_results.append(wbc_candidate)
+
+                                pbar.update()
+
+                        except RayTaskError as e:
+                            print(
+                                f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
+                            )
+
+                        del tasks[done_id]
+
+            if self.verbose:
+                print(f"Shutting down Ray")
+            ray.shutdown()
+
+            self.wbc_candidates = all_results
+            self.differential = Differential(self.wbc_candidates)
+
+            self.profiling_data[f"cell_feature_extraction_time_{arch}"] = (
+                time.time() - start_time
+            )
 
     def _save_results(self):
         """Save the results of the PBCounter object."""
@@ -890,10 +976,16 @@ class BMACounter:
 
             for arch in supported_feature_extraction_archs:
                 start_time = time.time()
-                for wbc_candidate in tqdm(self.wbc_candidates, desc=f"Saving {arch} features"):
+                for wbc_candidate in tqdm(
+                    self.wbc_candidates, desc=f"Saving {arch} features"
+                ):
                     wbc_candidate._save_cell_feature(self.save_dir, arch)
-                
-                self.profiling_data[f"cell_feature_extraction_hoarding_time_{arch}"] = time.time() - start_time
+
+                save_augmented_cell_features(self.wbc_candidates, arch, self.save_dir)
+
+                self.profiling_data[f"cell_feature_extraction_hoarding_time_{arch}"] = (
+                    time.time() - start_time
+                )
 
         else:
             self.profiling_data["cells_hoarding_time"] = 0
@@ -916,6 +1008,7 @@ class BMACounter:
             if self.differential is None:
                 self.label_wbc_candidates()
                 self.extract_features()
+                self.extract_features_with_augmentation()
 
             self._save_results()
 
@@ -941,7 +1034,7 @@ class BMACounter:
                 + self.profiling_data["hoarding_focus_regions_time"]
                 + self.profiling_data["cells_hoarding_time"]
                 + self.profiling_data["total_features_hoarding_time"]
-            ) 
+            )
 
             self.profiling_data["total_non_hoarding_time"] = (
                 self.profiling_data["total_time"] - self.profiling_data["hoarding_time"]

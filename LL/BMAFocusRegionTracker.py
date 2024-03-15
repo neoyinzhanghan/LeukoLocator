@@ -22,6 +22,22 @@ from LL.brain.BMARegionClfManager import RegionClfManager
 from LL.BMAFocusRegion import save_focus_region_batch
 from LL.resources.BMAassumptions import topview_downsampling_factor
 
+
+class NotEnoughFocusRegionsError(Exception):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(
+        self,
+        message="The number of focus regions after filtering is less than the minimum number of focus regions",
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+
 class FocusRegionsTracker:
     """A class representing a focus region tracker object that tracks the metrics, objects, files related to focus region filtering.
 
@@ -131,10 +147,15 @@ class FocusRegionsTracker:
             ].adequate_confidence_score
 
     def get_top_n_focus_regions(self, n=max_num_regions_after_region_clf):
-        """Return the top n focus regions with the highest confidence scores."""
+        """Return the top n focus regions with the highest confidence scores.
+        But first we need to automatically filter out the focus regions whose adequacy confidence scores are below the threshold.
+        """
 
         # get the top n focus regions using the info_df and return a list of focus regions idx
         # in descending order of confidence scores
+
+        # sort the info_df by confidence scores in descending order
+        # the top_n_idx is a list of the indices of the top n focus regions where selected is not False
 
         top_n_idx = self.info_df.sort_values(
             by=["adequate_confidence_score"], ascending=False
@@ -142,9 +163,18 @@ class FocusRegionsTracker:
 
         # add a column called "selected" which is True if the focus region is selected
         self.info_df["selected"] = False
-        self.info_df.loc[self.info_df["idx"].isin(top_n_idx), "selected"] = True
+
+        # set the selected column to True for the top n focus regions AND the confidence score is above the threshold
+        self.info_df.loc[
+            (self.info_df["idx"].isin(top_n_idx))
+            & (self.info_df["adequate_confidence_score"] > self.final_min_conf_thres),
+            "selected",
+        ] = True
 
         focus_regions = [self.focus_regions_dct[idx] for idx in top_n_idx]
+
+        if len(focus_regions) < min_num_focus_regions:
+            raise NotEnoughFocusRegionsError()
 
         return focus_regions
 
@@ -329,11 +359,15 @@ class FocusRegionsTracker:
         """Save the images of all focus regions in the focus_regions/all folder."""
 
         # create a folder called all in the focus_regions folder
-        os.makedirs(os.path.join(save_dir, "focus_regions", "inadequate"), exist_ok=True)
+        os.makedirs(
+            os.path.join(save_dir, "focus_regions", "inadequate"), exist_ok=True
+        )
         os.makedirs(os.path.join(save_dir, "focus_regions", "adequate"), exist_ok=True)
 
         focus_regions_lst = list(self.focus_regions_dct.values())
-        batches = create_list_of_batches_from_list(focus_regions_lst, batch_size=region_saving_batch_size)
+        batches = create_list_of_batches_from_list(
+            focus_regions_lst, batch_size=region_saving_batch_size
+        )
 
         # create a list of batch
 
@@ -342,13 +376,14 @@ class FocusRegionsTracker:
         ray.init()
         save_tasks = []
 
-
         for batch in batches:
             # Queue the task
             task = save_focus_region_batch.remote(batch, save_dir)
             save_tasks.append(task)
 
-        pbar = tqdm(total=len(focus_regions_lst), desc="Saving focus regions")  # total should be the number of batches
+        pbar = tqdm(
+            total=len(focus_regions_lst), desc="Saving focus regions"
+        )  # total should be the number of batches
         while save_tasks:
             # Wait for any of the tasks to complete
             done_ids, save_tasks = ray.wait(save_tasks)
@@ -374,8 +409,8 @@ class FocusRegionsTracker:
         # Iterate through the patches
         for index, row in self.info_df.iterrows():
             # Extract the bounding box and confidence score
-            TL_x, TL_y, BR_x, BR_y = row['coordinate']
-            confidence_score = row['adequate_confidence_score']
+            TL_x, TL_y, BR_x, BR_y = row["coordinate"]
+            confidence_score = row["adequate_confidence_score"]
 
             # Adjust the coordinates for the downsampling factor
             TL_x_adj = int(TL_x / topview_downsampling_factor)
@@ -398,7 +433,9 @@ class FocusRegionsTracker:
         overlay_img_cv = cv2.addWeighted(topview_img_cv, 0.7, heatmap_colored, 0.3, 0)
 
         # Convert back to PIL image in RGB format
-        overlay_img_pil = Image.fromarray(cv2.cvtColor(overlay_img_cv, cv2.COLOR_BGR2RGB))
+        overlay_img_pil = Image.fromarray(
+            cv2.cvtColor(overlay_img_cv, cv2.COLOR_BGR2RGB)
+        )
 
         # save the overlay_img_pil in save_dir
         overlay_img_pil.save(os.path.join(save_dir, "confidence_heatmap.png"))
