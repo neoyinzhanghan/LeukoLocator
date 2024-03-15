@@ -8,11 +8,7 @@ from LL.resources.BMAassumptions import *
 bma_slides_dir = "/media/hdd3/neo/BMAs_chosen"
 
 # traverse through all the ndpi files in the bma_slides_dir
-bma_fnames = [
-    fname
-    for fname in os.listdir(bma_slides_dir)
-    if fname.endswith(".ndpi")
-]
+bma_fnames = [fname for fname in os.listdir(bma_slides_dir) if fname.endswith(".ndpi")]
 
 # # get the list of all folder in dump_dir
 # processeds = [
@@ -30,6 +26,9 @@ bma_fnames = [
 num_processed = 0
 
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
+    if "H23-225;S12;MSKQ - 2023-06-12 16.34.12" not in bma_fname:
+        continue
+
     print("Processing", bma_fname)
 
     bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
