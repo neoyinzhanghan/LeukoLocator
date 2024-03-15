@@ -109,4 +109,9 @@ class CellFeatureEngineer:
                 (wbc_candidate.focus_region_idx, wbc_candidate.local_idx)
             ]
 
+            print(wbc_candidate.augmented_features.keys())
+
+            import sys
+            sys.exit()
+
         return wbc_candidates
