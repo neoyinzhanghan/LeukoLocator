@@ -167,7 +167,7 @@ class FocusRegionsTracker:
         # set the selected column to True for the top n focus regions AND the confidence score is above the threshold
         self.info_df.loc[
             (self.info_df["idx"].isin(top_n_idx))
-            & (self.info_df["adequate_confidence_score"] > self.final_min_conf_thres),
+            & (self.info_df["adequate_confidence_score"] > region_clf_conf_thres),
             "selected",
         ] = True
 
