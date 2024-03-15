@@ -4,6 +4,7 @@ from LL.brain.feature_extractors.ResNetExtractor import ResNetExtractor
 from LL.resources.BMAassumptions import (
     get_feat_extract_augmentation_pipeline,
     num_augmentations_per_image,
+    snap_shot_size
 )
 
 
@@ -23,7 +24,7 @@ def apply_augmentation(
         augmentation_list = []
 
         for _ in range(num_augmentations_per_image):
-            augmentation_pipeline = get_feat_extract_augmentation_pipeline()
+            augmentation_pipeline = get_feat_extract_augmentation_pipeline(snap_shot_size)
             augmented_image = augmentation_pipeline(image=image)["image"]
             augmentation_list.append(tuple([augmentation_pipeline, augmented_image]))
 
