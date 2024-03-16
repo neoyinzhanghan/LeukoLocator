@@ -4,6 +4,7 @@ import random
 from tqdm import tqdm
 from LL.BMAFocusRegionTracker import NotEnoughFocusRegionsError
 from LL.BMACounter import BMACounter
+from LL.vision.processing import SlideError
 from LL.resources.BMAassumptions import *
 
 bma_slides_dir = "/media/hdd3/neo/BMAs_chosen"
@@ -42,6 +43,10 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
         print("Not enough focus regions")
         bad_slides.append(bma_fname)
         continue
+
+    except SlideError:
+        print("Slide reading took too long")
+        bad_slides.append(bma_fname)
 
     num_processed += 1
 
