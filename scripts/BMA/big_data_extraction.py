@@ -41,11 +41,25 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     except NotEnoughFocusRegionsError:
         print("Not enough focus regions")
         bad_slides[bma_fname] = "Not enough focus regions"
+
+        # rename the folder to ERROR_ + folder name
+        os.rename(
+            bma_counter.save_dir,
+            os.path.join(bma_counter.save_dir, "ERROR_" + bma_counter.save_dir),
+        )
+
         continue
 
     except SlideError:
         print("Slide reading took too long")
         bad_slides[bma_fname] = "Slide reading took too long"
+
+        # rename the folder to ERROR_ + folder name
+        os.rename(
+            bma_counter.save_dir,
+            os.path.join(bma_counter.save_dir, "ERROR_" + bma_counter.save_dir),
+        )
+
         continue
 
 print("Bad slides:", bad_slides)
