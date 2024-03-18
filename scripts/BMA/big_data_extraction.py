@@ -6,6 +6,7 @@ from LL.BMAFocusRegionTracker import NotEnoughFocusRegionsError
 from LL.BMACounter import BMACounter
 from LL.vision.processing import SlideError
 from LL.resources.BMAassumptions import *
+from pathlib import Path
 
 bma_slides_dir = "/media/hdd3/neo/BMAs_chosen"
 
@@ -43,9 +44,13 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
         bad_slides[bma_fname] = "Not enough focus regions"
 
         # rename the folder to ERROR_ + folder name
+
+        old_file_path = bma_counter.save_dir
+        old_file_name = Path(old_file_path).name
+        new_file_name = "ERROR_" + old_file_name
         os.rename(
             bma_counter.save_dir,
-            os.path.join(bma_counter.save_dir, "ERROR_" + bma_counter.save_dir),
+            new_file_name,
         )
 
         continue
@@ -55,9 +60,13 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
         bad_slides[bma_fname] = "Slide reading took too long"
 
         # rename the folder to ERROR_ + folder name
+
+        old_file_path = bma_counter.save_dir
+        old_file_name = Path(old_file_path).name
+        new_file_name = "ERROR_" + old_file_name
         os.rename(
             bma_counter.save_dir,
-            os.path.join(bma_counter.save_dir, "ERROR_" + bma_counter.save_dir),
+            new_file_name,
         )
 
         continue
