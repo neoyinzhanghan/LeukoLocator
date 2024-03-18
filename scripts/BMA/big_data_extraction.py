@@ -47,10 +47,12 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
 
         old_file_path = bma_counter.save_dir
         old_file_name = Path(old_file_path).name
+        old_file_folder = Path(old_file_path).parent
         new_file_name = "ERROR_" + old_file_name
+        new_file_path = os.path.join(old_file_folder, new_file_name)
         os.rename(
             bma_counter.save_dir,
-            new_file_name,
+            new_file_path,
         )
 
         continue
@@ -63,10 +65,12 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
 
         old_file_path = bma_counter.save_dir
         old_file_name = Path(old_file_path).name
+        old_file_folder = Path(old_file_path).parent
         new_file_name = "ERROR_" + old_file_name
+        new_file_path = os.path.join(old_file_folder, new_file_name)
         os.rename(
             bma_counter.save_dir,
-            new_file_name,
+            new_file_path,
         )
 
         continue
