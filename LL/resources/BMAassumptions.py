@@ -63,7 +63,7 @@ num_focus_region_makers = 32
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 num_cpus_per_cropper = num_cpus // num_croppers
-allowed_reading_time = 20  # in seconds
+allowed_reading_time = 60  # in seconds
 
 region_cropping_batch_size = 512
 region_saving_batch_size = 512
