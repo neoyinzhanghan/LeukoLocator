@@ -25,7 +25,6 @@ bma_fnames = [fname for fname in os.listdir(bma_slides_dir) if fname.endswith(".
 #         bma_fnames.remove(new_name)
 #     else:
 #         bma_fnames.remove(processed)
-num_processed = 0
 bad_slides = {}
 
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
@@ -47,7 +46,6 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     except SlideError:
         print("Slide reading took too long")
         bad_slides[bma_fname] = "Slide reading took too long"
-
-    num_processed += 1
+        continue
 
 print("Bad slides:", bad_slides)
