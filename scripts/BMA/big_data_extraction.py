@@ -26,53 +26,50 @@ bma_fnames = [fname for fname in os.listdir(bma_slides_dir) if fname.endswith(".
 #         bma_fnames.remove(new_name)
 #     else:
 #         bma_fnames.remove(processed)
-bad_slides = {}
 
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
 
     print("Processing", bma_fname)
 
-    try:
-        bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
-        bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=False)
-        bma_counter.tally_differential()
+    # try:
+    bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
+    bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=True)
+    bma_counter.tally_differential()
 
-        print("Saving to", bma_counter.save_dir)
+    print("Saving to", bma_counter.save_dir)
 
-    except NotEnoughFocusRegionsError:
-        print("Not enough focus regions")
-        bad_slides[bma_fname] = "Not enough focus regions"
+    # except NotEnoughFocusRegionsError:
+    #     print("Not enough focus regions")
+    #     bad_slides[bma_fname] = "Not enough focus regions"
 
-        # rename the folder to ERROR_ + folder name
+    #     # rename the folder to ERROR_ + folder name
 
-        old_file_path = bma_counter.save_dir
-        old_file_name = Path(old_file_path).name
-        old_file_folder = Path(old_file_path).parent
-        new_file_name = "ERROR_" + old_file_name
-        new_file_path = os.path.join(old_file_folder, new_file_name)
-        os.rename(
-            bma_counter.save_dir,
-            new_file_path,
-        )
+    #     old_file_path = bma_counter.save_dir
+    #     old_file_name = Path(old_file_path).name
+    #     old_file_folder = Path(old_file_path).parent
+    #     new_file_name = "ERROR_" + old_file_name
+    #     new_file_path = os.path.join(old_file_folder, new_file_name)
+    #     os.rename(
+    #         bma_counter.save_dir,
+    #         new_file_path,
+    #     )
 
-        continue
+    #     continue
 
-    except SlideError:
-        print("Slide reading took too long")
-        bad_slides[bma_fname] = "Slide reading took too long"
+    # except SlideError:
+    #     print("Slide reading took too long")
+    #     bad_slides[bma_fname] = "Slide reading took too long"
 
-        # rename the folder to ERROR_ + folder name
+    #     # rename the folder to ERROR_ + folder name
 
-        old_file_path = bma_counter.save_dir
-        old_file_name = Path(old_file_path).name
-        old_file_folder = Path(old_file_path).parent
-        new_file_name = "ERROR_" + old_file_name
-        new_file_path = os.path.join(old_file_folder, new_file_name)
-        os.rename(
-            bma_counter.save_dir,
-            new_file_path,
-        )
+    #     old_file_path = bma_counter.save_dir
+    #     old_file_name = Path(old_file_path).name
+    #     old_file_folder = Path(old_file_path).parent
+    #     new_file_name = "ERROR_" + old_file_name
+    #     new_file_path = os.path.join(old_file_folder, new_file_name)
+    #     os.rename(
+    #         bma_counter.save_dir,
+    #         new_file_path,
+    #     )
 
-        continue
-
-print("Bad slides:", bad_slides)
+    #     continue
