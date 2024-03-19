@@ -315,19 +315,19 @@ class BMACounter:
 
         fr_tracker = FocusRegionsTracker(self.focus_regions)
 
-        fr_tracker.compute_resnet_confidence()
-        selected_focus_regions = fr_tracker.get_top_n_focus_regions()
-        fr_tracker.save_results(self.save_dir)
+        self.fr_tracker = fr_tracker
+
+        self.fr_tracker.compute_resnet_confidence()
+        selected_focus_regions = self.fr_tracker.get_top_n_focus_regions()
+        self.fr_tracker.save_results(self.save_dir)
 
         self.focus_regions = selected_focus_regions
 
         self.profiling_data["filtering_focus_regions_time"] = time.time() - start_time
 
-        self.fr_tracker = fr_tracker
-
         if self.hoarding:
             start_time = time.time()
-            fr_tracker.save_all_focus_regions(self.save_dir)
+            self.fr_tracker.save_all_focus_regions(self.save_dir)
             self.profiling_data["hoarding_focus_regions_time"] = (
                 time.time() - start_time
             )
