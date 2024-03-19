@@ -1115,6 +1115,12 @@ class BMACounter:
                     ),
                 )
 
+                print(Exception is NotEnoughFocusRegionsError)
+                print(Exception.isinstance(NotEnoughFocusRegionsError))
+
+                import sys
+                sys.exit()
+                
                 if Exception is NotEnoughFocusRegionsError:
                     self.fr_tracker.save_confidence_heatmap(
                         self.top_view.image, self.save_dir
