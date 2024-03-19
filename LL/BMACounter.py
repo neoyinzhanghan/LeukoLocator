@@ -1007,8 +1007,8 @@ class BMACounter:
 
             if self.differential is None:
                 self.label_wbc_candidates()
-                self.extract_features()
-                self.extract_features_with_augmentation()
+                # self.extract_features() # for now let's turn it off
+                # self.extract_features_with_augmentation() # for now let's turn it off
 
             self._save_results()
 
