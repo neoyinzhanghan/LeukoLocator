@@ -174,8 +174,8 @@ class FocusRegionsTracker:
         selected_idx = self.info_df[self.info_df["selected"]]["idx"]
         focus_regions = [self.focus_regions_dct[idx] for idx in selected_idx]
 
-        if len(focus_regions) < min_num_focus_regions:
-            raise NotEnoughFocusRegionsError()
+        # if len(focus_regions) < min_num_focus_regions:
+        #     raise NotEnoughFocusRegionsError()
 
         return focus_regions
 
