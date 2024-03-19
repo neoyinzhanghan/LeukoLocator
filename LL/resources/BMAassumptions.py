@@ -109,29 +109,63 @@ import albumentations as A
 
 def get_feat_extract_augmentation_pipeline(image_size):
     """Returns a randomly chosen augmentation pipeline for SSL."""
-    return A.Compose(
+
+    ## Simple augumentation to improtve the data generalibility
+    transform_shape = A.Compose(
         [
-            A.Resize(image_size, image_size),
-            A.OneOf(
-                [
-                    A.HorizontalFlip(p=0.5),
-                    A.VerticalFlip(p=0.5),
-                    A.RandomRotate90(p=0.5),
-                ]
+            A.ShiftScaleRotate(p=0.8),
+            A.HorizontalFlip(p=0.5),
+            A.VerticalFlip(p=0.5),
+            A.Affine(shear=(-10, 10), p=0.3),
+            A.ISONoise(
+                color_shift=(0.01, 0.02),
+                intensity=(0.05, 0.01),
+                always_apply=False,
+                p=0.2,
             ),
-            A.OneOf(
-                [
-                    A.MotionBlur(p=0.2),
-                    A.MedianBlur(blur_limit=3, p=0.1),
-                    A.Blur(blur_limit=3, p=0.1),
-                ]
-            ),
-            A.HueSaturationValue(p=0.3),
         ]
+    )
+    transform_color = A.Compose(
+        [
+            A.RandomBrightnessContrast(
+                contrast_limit=0.4, brightness_by_max=0.4, p=0.5
+            ),
+            A.CLAHE(p=0.3),
+            A.ColorJitter(p=0.2),
+            A.RandomGamma(p=0.2),
+        ]
+    )
+
+    # compose the two augmentation pipelines
+    return A.Compose(
+        [A.Resize(image_size, image_size), A.OneOf([transform_shape, transform_color])]
     )
 
 
 num_augmentations_per_image = 5
+
+# def get_feat_extract_augmentation_pipeline(image_size):
+#     """Returns a randomly chosen augmentation pipeline for SSL."""
+#     return A.Compose(
+#         [
+#             A.Resize(image_size, image_size),
+#             A.OneOf(
+#                 [
+#                     A.HorizontalFlip(p=0.5),
+#                     A.VerticalFlip(p=0.5),
+#                     A.RandomRotate90(p=0.5),
+#                 ]
+#             ),
+#             A.OneOf(
+#                 [
+#                     A.MotionBlur(p=0.2),
+#                     A.MedianBlur(blur_limit=3, p=0.1),
+#                     A.Blur(blur_limit=3, p=0.1),
+#                 ]
+#             ),
+#             A.HueSaturationValue(p=0.3),
+#         ]
+#     )
 
 ######################
 ### Biology Config ###

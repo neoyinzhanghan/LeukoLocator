@@ -679,7 +679,9 @@ class BMACounter:
             self.profiling_data["high_mag_focus_regions_hoarding_time"] = 0
 
         if len(self.focus_regions) < min_num_focus_regions:
-            raise NotEnoughFocusRegionsError
+            raise NotEnoughFocusRegionsError(
+                f"Too few focus regions found. min_num_focus_regions {min_num_focus_regions} is not reached by {len(self.focus_regions)} focus regions. Decrease min_num_focus_regions or check code and slide for error."
+            )
 
         # Check if the sum is below the minimum required number
         if total_detected < min_num_cells:
