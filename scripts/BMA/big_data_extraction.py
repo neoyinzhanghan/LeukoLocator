@@ -95,3 +95,6 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
     #     )
 
     #     continue
+
+    import sys
+    sys.exit()
