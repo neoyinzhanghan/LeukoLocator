@@ -33,7 +33,7 @@ from LL.communication.saving import *
 from LL.brain.SpecimenClf import get_region_type
 from LL.SearchView import SearchView
 from LL.BMAFocusRegion import *
-from LL.BMAFocusRegionTracker import FocusRegionsTracker
+from LL.BMAFocusRegionTracker import FocusRegionsTracker, NotEnoughFocusRegionsError
 from LL.resources.BMAassumptions import *
 
 
@@ -1085,8 +1085,10 @@ class BMACounter:
 
         except Exception as e:
             if self.continue_on_error:
-                print(f"An error has occured, and continue on error status is : {self.continue_on_error}")
-                
+                print(
+                    f"An error has occured, and continue on error status is : {self.continue_on_error}"
+                )
+
                 # if the save_dir does not exist, create it
                 os.makedirs(self.save_dir, exist_ok=True)
 
@@ -1112,6 +1114,73 @@ class BMACounter:
                         dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
                     ),
                 )
+
+                if Exception is NotEnoughFocusRegionsError:
+                    self.fr_tracker.save_confidence_heatmap(
+                        self.top_view.image, self.save_dir
+                    )
+
+                    if self.hoarding:
+                        start_time = time.time()
+                        self.fr_tracker.save_all_focus_regions(self.save_dir)
+                        self.profiling_data["hoarding_focus_regions_time"] = (
+                            time.time() - start_time
+                        )
+                    else:
+                        self.profiling_data["hoarding_focus_regions_time"] = 0
+
+                    # now for each focus region, we will find get the image
+
+                    start_time = time.time()
+
+                    for focus_region in tqdm(
+                        self.focus_regions,
+                        desc="Getting high magnification focus region images",
+                    ):
+                        wsi = openslide.OpenSlide(self.wsi_path)
+
+                        pad_size = snap_shot_size // 2
+
+                        padded_coordinate = (
+                            focus_region.coordinate[0] - pad_size,
+                            focus_region.coordinate[1] - pad_size,
+                            focus_region.coordinate[2] + pad_size,
+                            focus_region.coordinate[3] + pad_size,
+                        )
+                        padded_image = wsi.read_region(
+                            padded_coordinate,
+                            0,
+                            (
+                                focus_region.coordinate[2]
+                                - focus_region.coordinate[0]
+                                + pad_size * 2,
+                                focus_region.coordinate[3]
+                                - focus_region.coordinate[1]
+                                + pad_size * 2,
+                            ),
+                        )
+
+                        original_width = (
+                            focus_region.coordinate[2] - focus_region.coordinate[0]
+                        )
+                        original_height = (
+                            focus_region.coordinate[3] - focus_region.coordinate[1]
+                        )
+
+                        unpadded_image = padded_image.crop(
+                            (
+                                pad_size,
+                                pad_size,
+                                pad_size + original_width,
+                                pad_size + original_height,
+                            )
+                        )
+
+                        focus_region.get_image(unpadded_image, padded_image)
+
+                    self.profiling_data["getting_high_mag_images_time"] = (
+                        time.time() - start_time
+                    )
 
                 print(f"Error occurred and logged. Continuing to next WSI.")
 
