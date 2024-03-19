@@ -380,9 +380,6 @@ class BMACounter:
 
         self.profiling_data["getting_high_mag_images_time"] = time.time() - start_time
 
-        if len(self.focus_regions) < min_num_focus_regions:
-            raise NotEnoughFocusRegionsError
-
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""
 
@@ -660,6 +657,9 @@ class BMACounter:
 
         else:
             self.profiling_data["high_mag_focus_regions_hoarding_time"] = 0
+
+        if len(self.focus_regions) < min_num_focus_regions:
+            raise NotEnoughFocusRegionsError
 
     def label_wbc_candidates(self):
         """Update the labels of the wbc_candidates of the PBCounter object."""

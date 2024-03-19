@@ -186,13 +186,18 @@ class FocusRegionsTracker:
         Use save_hist_KDE_rug_plot
         """
 
-        # calculate the min confidence threshold for the selected focus regions
-        self.final_min_conf_thres = min(
-            self.info_df[self.info_df["selected"]]["adequate_confidence_score"]
-        )
+        # if nothing is selected, set self.final_min_conf_thres to 0, and self.final_min_VoL to 0
+        if len(self.info_df[self.info_df["selected"]]) == 0:
+            self.final_min_conf_thres = 0
+            self.final_min_VoL = 0
+        else:
+            # calculate the min confidence threshold for the selected focus regions
+            self.final_min_conf_thres = min(
+                self.info_df[self.info_df["selected"]]["adequate_confidence_score"]
+            )
 
-        # calculate the min VoL for the selected focus regions
-        self.final_min_VoL = min(self.info_df[self.info_df["selected"]]["VoL"])
+            # calculate the min VoL for the selected focus regions
+            self.final_min_VoL = min(self.info_df[self.info_df["selected"]]["VoL"])
 
         # # calculate the min WMP for the selected focus regions
         # self.final_min_WMP = min(self.info_df[self.info_df["selected"]]["WMP"])
