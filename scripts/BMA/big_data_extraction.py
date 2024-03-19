@@ -13,6 +13,22 @@ bma_slides_dir = "/media/hdd3/neo/BMAs_chosen"
 # traverse through all the ndpi files in the bma_slides_dir
 bma_fnames = [fname for fname in os.listdir(bma_slides_dir) if fname.endswith(".ndpi")]
 
+# get a list of all directories in the dump_dir
+dump_dirs = [
+    dname
+    for dname in os.listdir(dump_dir)
+    if os.path.isdir(os.path.join(dump_dir, dname))
+]
+
+
+def already_processed(fname, dump_dirs):
+    for dump_dir in dump_dirs:
+        if dump_dir in fname:
+            return True
+
+    return False
+
+
 # # get the list of all folder in dump_dir
 # processeds = [
 #     fname for fname in os.listdir(dump_dir) if os.path.isdir(os.path.join(dump_dir, fname))
@@ -28,6 +44,10 @@ bma_fnames = [fname for fname in os.listdir(bma_slides_dir) if fname.endswith(".
 #         bma_fnames.remove(processed)
 
 for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
+
+    if already_processed(bma_fname, dump_dirs):
+        print("Already processed", bma_fname)
+        continue
 
     print("Processing", bma_fname)
 

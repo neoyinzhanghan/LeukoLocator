@@ -1085,6 +1085,8 @@ class BMACounter:
 
         except Exception as e:
             if self.continue_on_error:
+                print(f"An error has occured, and continue on error status is : {self.continue_on_error}")
+                
                 # if the save_dir does not exist, create it
                 os.makedirs(self.save_dir, exist_ok=True)
 
