@@ -65,6 +65,7 @@ class BMACounter:
         hoarding: bool = False,
         continue_on_error: bool = False,
         ignore_specimen_type: bool = False,
+        extract_features: bool = False,
     ):
         """Initialize a PBCounter object."""
 
@@ -77,6 +78,7 @@ class BMACounter:
         self.continue_on_error = continue_on_error
         self.ignore_specimen_type = ignore_specimen_type
         self.wsi_path = wsi_path
+        self.extract_features = extract_features
 
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
@@ -717,6 +719,12 @@ class BMACounter:
 
     def extract_features(self):
         """Extract features"""
+        if not self.extract_features:
+            for arch in supported_feature_extraction_archs:
+                self.profiling_data[f"cell_feature_extraction_time_{arch}"] = 0
+
+            return None
+
         for arch in supported_feature_extraction_archs:
             ckpt_path = feature_extractor_ckpt_dict[arch]
             start_time = time.time()
@@ -783,6 +791,15 @@ class BMACounter:
 
     def extract_features_with_augmentation(self):
         """Extract features with augmentation."""
+
+        if not self.extract_features:
+            for arch in supported_feature_extraction_archs:
+                self.profiling_data[
+                    f"cell_augmented_feature_extraction_time_{arch}"
+                ] = 0
+
+            return None
+
         for arch in supported_feature_extraction_archs:
             ckpt_path = feature_extractor_ckpt_dict[arch]
             start_time = time.time()
@@ -843,7 +860,7 @@ class BMACounter:
             self.wbc_candidates = all_results
             self.differential = Differential(self.wbc_candidates)
 
-            self.profiling_data[f"cell_feature_extraction_time_{arch}"] = (
+            self.profiling_data[f"cell_augmented_feature_extraction_time_{arch}"] = (
                 time.time() - start_time
             )
 
@@ -974,18 +991,27 @@ class BMACounter:
 
             self.profiling_data["cells_hoarding_time"] = time.time() - start_time
 
-            for arch in supported_feature_extraction_archs:
-                start_time = time.time()
-                for wbc_candidate in tqdm(
-                    self.wbc_candidates, desc=f"Saving {arch} features"
-                ):
-                    wbc_candidate._save_cell_feature(self.save_dir, arch)
+            if self.extract_features:
+                for arch in supported_feature_extraction_archs:
+                    start_time = time.time()
+                    for wbc_candidate in tqdm(
+                        self.wbc_candidates, desc=f"Saving {arch} features"
+                    ):
+                        wbc_candidate._save_cell_feature(self.save_dir, arch)
 
-                save_augmented_cell_features(self.wbc_candidates, arch, self.save_dir)
+                    save_augmented_cell_features(
+                        self.wbc_candidates, arch, self.save_dir
+                    )
 
-                self.profiling_data[f"cell_feature_extraction_hoarding_time_{arch}"] = (
-                    time.time() - start_time
-                )
+                    self.profiling_data[
+                        f"cell_extracted_feature_hoarding_time_{arch}"
+                    ] = (time.time() - start_time)
+
+            else:
+                for arch in supported_feature_extraction_archs:
+                    self.profiling_data[
+                        f"cell_extracted_feature_hoarding_time_{arch}"
+                    ] = 0
 
         else:
             self.profiling_data["cells_hoarding_time"] = 0
@@ -1007,9 +1033,8 @@ class BMACounter:
 
             if self.differential is None:
                 self.label_wbc_candidates()
-                # self.extract_features() # for now let's turn it off
-                # self.extract_features_with_augmentation() # for now let's turn it off
-
+                self.extract_features()
+                self.extract_features_with_augmentation()
             self._save_results()
 
             # Save profiling data as a csv file
@@ -1020,11 +1045,18 @@ class BMACounter:
                     self.profiling_data[f"cell_feature_extraction_time_{arch}"]
                     for arch in supported_feature_extraction_archs
                 ]
+            ) + sum(
+                [
+                    self.profiling_data[
+                        f"cell_augmented_feature_extraction_time_{arch}"
+                    ]
+                    for arch in supported_feature_extraction_archs
+                ]
             )
 
             self.profiling_data["total_features_hoarding_time"] = sum(
                 [
-                    self.profiling_data[f"cell_feature_extraction_hoarding_time_{arch}"]
+                    self.profiling_data[f"cell_extracted_features_hoarding_time_{arch}"]
                     for arch in supported_feature_extraction_archs
                 ]
             )
