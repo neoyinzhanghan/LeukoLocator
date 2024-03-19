@@ -551,7 +551,12 @@ class BMACounter:
         # second compile the num_cells_per_region dataframe which can be found from len(focus_region.wbc_candidate_bboxes) for each focus_region in self.focus_regions
 
         # create a list of dictionaries
-        num_cells_per_region_df_list = []
+
+        num_cells_per_region_df_dct = {
+            "focus_region_idx": [],
+            "num_cells": [],
+        }
+        # num_cells_per_region_df_list = []
 
         for i in range(len(self.focus_regions)):
             # get the ith focus_region
@@ -560,13 +565,15 @@ class BMACounter:
             # get the number of cells detected in the focus_region
             num_cells = len(focus_region.wbc_candidate_bboxes)
 
-            # add the num_cells to the list
-            num_cells_per_region_df_list.append(
-                {"focus_region_idx": focus_region.idx, "num_cells": num_cells}
-            )
+            num_cells_per_region_df_dct["focus_region_idx"].append(focus_region.idx)
+            num_cells_per_region_df_dct["num_cells"].append(num_cells)
+            # # add the num_cells to the list
+            # num_cells_per_region_df_list.append(
+            #     {"focus_region_idx": focus_region.idx, "num_cells": num_cells}
+            # )
 
         # create the num_cells_per_region dataframe
-        num_cells_per_region_df = pd.DataFrame(num_cells_per_region_df_list)
+        num_cells_per_region_df = pd.DataFrame(num_cells_per_region_df_dct)
 
         # save the num_cells_per_region dataframe
         num_cells_per_region_df.to_csv(
