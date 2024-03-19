@@ -31,11 +31,10 @@ from LL.vision.PBWSICropManager import WSICropManager
 from LL.communication.write_config import *
 from LL.communication.visualization import *
 from LL.brain.utils import *
-from LL.brain.SpecimenClf import get_region_type
+from LL.brain.SpecimenClf import get_specimen_type
 
 
 class PBCounter:
-
     """A Class representing a Counter of WBCs inside a peripheral blood (PB) whole slide image.
 
     === Class Attributes ===
@@ -51,6 +50,8 @@ class PBCounter:
     - verbose : whether to print out the progress of the PBCounter object
     - hoarding : whether to hoard regions and cell images processed into permanent storage
     - continue_on_error : whether to continue processing the WSI if an error occurs
+    - ignore_specimen_type : whether to ignore the specimen type of the WSI
+    - do_extract_features : whether to extract features from the WSI
 
     - predicted_specimen_type: the predicted specimen type of the WSI
     """
@@ -62,6 +63,7 @@ class PBCounter:
         hoarding: bool = False,
         continue_on_error: bool = False,
         ignore_specimen_type: bool = False,
+        do_extract_features=False,
     ):
         """Initialize a PBCounter object."""
 
@@ -73,6 +75,12 @@ class PBCounter:
         self.hoarding = hoarding
         self.continue_on_error = continue_on_error
         self.ignore_specimen_type = ignore_specimen_type
+        self.do_extract_features = do_extract_features
+
+        if do_extract_features:
+            raise NotImplementedError(
+                "Feature extraction is not yet implemented for PB."
+            )
 
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
@@ -108,7 +116,7 @@ class PBCounter:
         )
 
         print("Checking Specimen Type")
-        specimen_type = get_region_type(top_view)
+        specimen_type = get_specimen_type(top_view)
 
         self.predicted_specimen_type = specimen_type
 

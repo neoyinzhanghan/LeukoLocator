@@ -147,7 +147,7 @@ for wsi_fname in tqdm(wsi_fnames, "Data Extraction In Progress: "):
                 wsi_path=os.path.join(MPBorIBMA_dir, wsi_fname),
             )
 
-            predicted_specimen_type = get_region_type(topview)
+            predicted_specimen_type = get_specimen_type(topview)
 
             print("Predicted Specimen Type:", predicted_specimen_type)
 

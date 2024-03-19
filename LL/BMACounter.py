@@ -30,12 +30,11 @@ from LL.communication.write_config import *
 from LL.communication.visualization import *
 from LL.brain.utils import *
 from LL.communication.saving import *
-from LL.brain.SpecimenClf import get_region_type
+from LL.brain.SpecimenClf import get_specimen_type
 from LL.SearchView import SearchView
 from LL.BMAFocusRegion import *
 from LL.BMAFocusRegionTracker import FocusRegionsTracker, NotEnoughFocusRegionsError
 from LL.resources.BMAassumptions import *
-
 
 class BMACounter:
     """A Class representing a Counter of WBCs inside a bone marrow aspirate (BMA)) whole slide image.
@@ -116,7 +115,7 @@ class BMACounter:
         )
 
         print("Checking Specimen Type")
-        specimen_type = get_region_type(top_view)
+        specimen_type = get_specimen_type(top_view)
 
         self.predicted_specimen_type = specimen_type
 

@@ -160,7 +160,7 @@ def predict_image(model, image):
     return class_dct[predictions.item()]
 
 
-def get_region_type(image_path):
+def get_specimen_type(image_path):
     # Load the model from the checkpoint
     model = load_model_from_checkpoint(
         specimen_clf_checkpoint_path,
