@@ -52,6 +52,8 @@ class BMACounter:
     - verbose : whether to print out the progress of the PBCounter object
     - hoarding : whether to hoard regions and cell images processed into permanent storage
     - continue_on_error : whether to continue processing the WSI if an error occurs
+    - ignore_specimen_type : whether to ignore the specimen type of the WSI
+    - do_extract_features : whether to extract features from the WBC candidates
     - fr_tracker : a FocusRegionsTracker object that tracks the focus regions
 
     - predicted_specimen_type: the predicted specimen type of the WSI
@@ -65,7 +67,7 @@ class BMACounter:
         hoarding: bool = False,
         continue_on_error: bool = False,
         ignore_specimen_type: bool = False,
-        extract_features: bool = False,
+        do_extract_features: bool = False,
     ):
         """Initialize a PBCounter object."""
 
@@ -78,7 +80,7 @@ class BMACounter:
         self.continue_on_error = continue_on_error
         self.ignore_specimen_type = ignore_specimen_type
         self.wsi_path = wsi_path
-        self.extract_features = extract_features
+        self.do_extract_features = do_extract_features
 
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
@@ -719,7 +721,7 @@ class BMACounter:
 
     def extract_features(self):
         """Extract features"""
-        if not self.extract_features:
+        if not self.do_extract_features:
             for arch in supported_feature_extraction_archs:
                 self.profiling_data[f"cell_feature_extraction_time_{arch}"] = 0
 
@@ -792,7 +794,7 @@ class BMACounter:
     def extract_features_with_augmentation(self):
         """Extract features with augmentation."""
 
-        if not self.extract_features:
+        if not self.do_extract_features:
             for arch in supported_feature_extraction_archs:
                 self.profiling_data[
                     f"cell_augmented_feature_extraction_time_{arch}"
@@ -991,7 +993,7 @@ class BMACounter:
 
             self.profiling_data["cells_hoarding_time"] = time.time() - start_time
 
-            if self.extract_features:
+            if self.do_extract_features:
                 for arch in supported_feature_extraction_archs:
                     start_time = time.time()
                     for wbc_candidate in tqdm(
