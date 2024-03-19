@@ -499,29 +499,49 @@ class BMACounter:
 
         ray.shutdown()
 
+        big_cell_df_dct = {
+            "local_idx": [],
+            "region_idx": [],
+            "confidence": [],
+            "VoL": [],
+            "TL_x": [],
+            "TL_y": [],
+            "BR_x": [],
+            "BR_y": [],
+        }
+
         big_cell_df_list = []
 
         for i in range(len(self.wbc_candidates)):
             # get the ith wbc_candidate
             wbc_candidate = self.wbc_candidates[i]
 
-            # get the cell_info of the wbc_candidate as a dictionary
-            cell_info = {
-                "local_idx": wbc_candidate.local_idx,
-                "region_idx": wbc_candidate.focus_region_idx,
-                "confidence": wbc_candidate.confidence,
-                "VoL": wbc_candidate.VoL,
-                "TL_x": wbc_candidate.YOLO_bbox[0],
-                "TL_y": wbc_candidate.YOLO_bbox[1],
-                "BR_x": wbc_candidate.YOLO_bbox[2],
-                "BR_y": wbc_candidate.YOLO_bbox[3],
-            }
+            big_cell_df_dct["local_idx"].append(wbc_candidate.local_idx)
+            big_cell_df_dct["region_idx"].append(wbc_candidate.focus_region_idx)
+            big_cell_df_dct["confidence"].append(wbc_candidate.confidence)
+            big_cell_df_dct["VoL"].append(wbc_candidate.VoL)
+            big_cell_df_dct["TL_x"].append(wbc_candidate.YOLO_bbox[0])
+            big_cell_df_dct["TL_y"].append(wbc_candidate.YOLO_bbox[1])
+            big_cell_df_dct["BR_x"].append(wbc_candidate.YOLO_bbox[2])
+            big_cell_df_dct["BR_y"].append(wbc_candidate.YOLO_bbox[3])
 
-            # add the cell_info to the list
-            big_cell_df_list.append(cell_info)
+            # # get the cell_info of the wbc_candidate as a dictionary
+            # cell_info = {
+            #     "local_idx": wbc_candidate.local_idx,
+            #     "region_idx": wbc_candidate.focus_region_idx,
+            #     "confidence": wbc_candidate.confidence,
+            #     "VoL": wbc_candidate.VoL,
+            #     "TL_x": wbc_candidate.YOLO_bbox[0],
+            #     "TL_y": wbc_candidate.YOLO_bbox[1],
+            #     "BR_x": wbc_candidate.YOLO_bbox[2],
+            #     "BR_y": wbc_candidate.YOLO_bbox[3],
+            # }
+
+            # # add the cell_info to the list
+            # big_cell_df_list.append(cell_info)
 
         # create the big cell dataframe
-        big_cell_df = pd.DataFrame(big_cell_df_list)
+        big_cell_df = pd.DataFrame(big_cell_df_dct)
 
         # save the big cell dataframe
         big_cell_df.to_csv(
