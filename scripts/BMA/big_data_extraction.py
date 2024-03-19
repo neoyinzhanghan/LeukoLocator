@@ -33,7 +33,9 @@ for bma_fname in tqdm(bma_fnames, desc="Processing BMA slides"):
 
     # try:
     bma_slide_path = os.path.join(bma_slides_dir, bma_fname)
-    bma_counter = BMACounter(bma_slide_path, hoarding=True, continue_on_error=True, do_extract_features=False)
+    bma_counter = BMACounter(
+        bma_slide_path, hoarding=True, continue_on_error=True, do_extract_features=False
+    )
     bma_counter.tally_differential()
 
     print("Saving to", bma_counter.save_dir)
