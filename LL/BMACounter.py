@@ -497,13 +497,6 @@ class BMACounter:
         # Sum the results
         total_detected = sum(num_detected_values)
 
-        # Check if the sum is below the minimum required number
-        if total_detected < min_num_cells:
-            raise TooFewCandidatesError(
-                f"Too few candidates found. min_num_cells {min_num_cells} is not reached by {total_detected} candidates. Decrease min_num_cells or check code and slide for error."
-                "Decrease min_num_cells or check code and slide for error."
-            )
-
         ray.shutdown()
 
         big_cell_df_list = []
@@ -660,6 +653,13 @@ class BMACounter:
 
         if len(self.focus_regions) < min_num_focus_regions:
             raise NotEnoughFocusRegionsError
+
+        # Check if the sum is below the minimum required number
+        if total_detected < min_num_cells:
+            raise TooFewCandidatesError(
+                f"Too few candidates found. min_num_cells {min_num_cells} is not reached by {total_detected} candidates. Decrease min_num_cells or check code and slide for error."
+                "Decrease min_num_cells or check code and slide for error."
+            )
 
     def label_wbc_candidates(self):
         """Update the labels of the wbc_candidates of the PBCounter object."""
@@ -1095,7 +1095,9 @@ class BMACounter:
                 # if the save_dir does not exist, create it
                 os.makedirs(self.save_dir, exist_ok=True)
 
-                if isinstance(e, NotEnoughFocusRegionsError):
+                if isinstance(e, NotEnoughFocusRegionsError) or isinstance(
+                    e, TooFewCandidatesError
+                ):
                     self.fr_tracker.save_confidence_heatmap(
                         self.top_view.image, self.save_dir
                     )
