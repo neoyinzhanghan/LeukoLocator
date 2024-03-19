@@ -1092,29 +1092,6 @@ class BMACounter:
                 # if the save_dir does not exist, create it
                 os.makedirs(self.save_dir, exist_ok=True)
 
-                # save the exception and profiling data
-                with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
-                    f.write(str(e))
-
-                # Save profiling data even in case of error
-                with open(
-                    os.path.join(self.save_dir, "runtime_data.yaml"), "w"
-                ) as file:
-                    yaml.dump(
-                        self.profiling_data,
-                        file,
-                        default_flow_style=False,
-                        sort_keys=False,
-                    )
-
-                # rename the save_dir name to "ERROR_" + save_dir
-                os.rename(
-                    self.save_dir,
-                    os.path.join(
-                        dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
-                    ),
-                )
-
                 if isinstance(e, NotEnoughFocusRegionsError):
                     self.fr_tracker.save_confidence_heatmap(
                         self.top_view.image, self.save_dir
@@ -1181,6 +1158,30 @@ class BMACounter:
                     self.profiling_data["getting_high_mag_images_time"] = (
                         time.time() - start_time
                     )
+
+
+                # save the exception and profiling data
+                with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
+                    f.write(str(e))
+
+                # Save profiling data even in case of error
+                with open(
+                    os.path.join(self.save_dir, "runtime_data.yaml"), "w"
+                ) as file:
+                    yaml.dump(
+                        self.profiling_data,
+                        file,
+                        default_flow_style=False,
+                        sort_keys=False,
+                    )
+
+                # rename the save_dir name to "ERROR_" + save_dir
+                os.rename(
+                    self.save_dir,
+                    os.path.join(
+                        dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                    ),
+                )
 
                 print(f"Error occurred and logged. Continuing to next WSI.")
 
