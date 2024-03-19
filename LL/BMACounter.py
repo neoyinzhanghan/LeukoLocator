@@ -1006,13 +1006,13 @@ class BMACounter:
                     )
 
                     self.profiling_data[
-                        f"cell_extracted_feature_hoarding_time_{arch}"
+                        f"cell_extracted_features_hoarding_time_{arch}"
                     ] = (time.time() - start_time)
 
             else:
                 for arch in supported_feature_extraction_archs:
                     self.profiling_data[
-                        f"cell_extracted_feature_hoarding_time_{arch}"
+                        f"cell_extracted_features_hoarding_time_{arch}"
                     ] = 0
 
         else:
