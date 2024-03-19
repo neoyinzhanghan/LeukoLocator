@@ -64,7 +64,7 @@ num_focus_region_makers = 32
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
 num_cpus_per_cropper = num_cpus // num_croppers
-allowed_reading_time = 20  # in seconds
+allowed_reading_time = 60  # in seconds
 
 region_clf_batch_size = 256
 cell_clf_batch_size = 256
@@ -94,7 +94,9 @@ HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
 
 specimen_clf_checkpoint_path = "/home/greg/Documents/neo/LLCKPTS/SClf.ckpt"
 
-feature_extractor_ckpt_dict = {"resnet50": "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"}
+feature_extractor_ckpt_dict = {
+    "resnet50": "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
+}
 supported_feature_extraction_archs = feature_extractor_ckpt_dict.keys()
 
 ######################
