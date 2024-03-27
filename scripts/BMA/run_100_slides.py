@@ -1,6 +1,6 @@
 import random
 import os
-import tqdm
+from tqdm import tqdm
 from LL.BMACounter import BMACounter
 from LL.resources.BMAassumptions import *
 
