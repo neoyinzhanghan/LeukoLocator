@@ -27,6 +27,8 @@ source_dir = "/media/hdd1/BMAs"
 # get a big list of all the slides in the source directory
 slides = os.listdir(source_dir)
 
+slides = slides[:100]
+
 # make sure to only keep things with ndpi extension
 slides = [slide for slide in slides if slide.endswith(".ndpi")]
 
@@ -38,7 +40,6 @@ sys.exit()
 
 # randomly shuffle the slides and select 100
 random.shuffle(slides)
-slides = slides[:100]
 
 for bma_fname in tqdm(slides, desc="Processing BMA slides"):
 
