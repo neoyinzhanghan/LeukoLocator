@@ -130,10 +130,6 @@ slides = [
 
 print(slides)
 
-import sys
-
-sys.exit()
-
 # randomly shuffle the slides and select 100
 random.shuffle(slides)
 
