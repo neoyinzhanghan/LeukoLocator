@@ -22,42 +22,40 @@ dump_dirs = [
 
 source_dir = "/media/hdd1/BMAs"
 
+"""Run the pipeline for 100 slides."""
 
-def run_100_slides():
-    """Run the pipeline for 100 slides."""
+# get a big list of all the slides in the source directory
+slides = os.listdir(source_dir)
 
-    # get a big list of all the slides in the source directory
-    slides = os.listdir(source_dir)
+# make sure to only keep things with ndpi extension
+slides = [slide for slide in slides if slide.endswith(".ndpi")]
 
-    # make sure to only keep things with ndpi extension
-    slides = [slide for slide in slides if slide.endswith(".ndpi")]
+print(slides)
 
-    print(slides)
+import sys
 
-    import sys
+sys.exit()
 
-    sys.exit()
+# randomly shuffle the slides and select 100
+random.shuffle(slides)
+slides = slides[:100]
 
-    # randomly shuffle the slides and select 100
-    random.shuffle(slides)
-    slides = slides[:100]
+for bma_fname in tqdm(slides, desc="Processing BMA slides"):
 
-    for bma_fname in tqdm(slides, desc="Processing BMA slides"):
+    if already_processed(bma_fname, dump_dirs):
+        print("Already processed", bma_fname)
+        continue
 
-        if already_processed(bma_fname, dump_dirs):
-            print("Already processed", bma_fname)
-            continue
+    print("Processing", bma_fname)
 
-        print("Processing", bma_fname)
+    # try:
+    bma_slide_path = os.path.join(source_dir, bma_fname)
+    bma_counter = BMACounter(
+        bma_slide_path,
+        hoarding=True,
+        continue_on_error=True,
+        do_extract_features=False,
+    )
+    bma_counter.tally_differential()
 
-        # try:
-        bma_slide_path = os.path.join(source_dir, bma_fname)
-        bma_counter = BMACounter(
-            bma_slide_path,
-            hoarding=True,
-            continue_on_error=True,
-            do_extract_features=False,
-        )
-        bma_counter.tally_differential()
-
-        print("Saving to", bma_counter.save_dir)
+    print("Saving to", bma_counter.save_dir)
