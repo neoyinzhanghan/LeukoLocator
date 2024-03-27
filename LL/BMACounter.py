@@ -36,6 +36,7 @@ from LL.BMAFocusRegion import *
 from LL.BMAFocusRegionTracker import FocusRegionsTracker, NotEnoughFocusRegionsError
 from LL.resources.BMAassumptions import *
 
+
 class BMACounter:
     """A Class representing a Counter of WBCs inside a bone marrow aspirate (BMA)) whole slide image.
 
@@ -67,6 +68,7 @@ class BMACounter:
         continue_on_error: bool = False,
         ignore_specimen_type: bool = False,
         do_extract_features: bool = False,
+        overwrite: bool = True,
     ):
         """Initialize a PBCounter object."""
 
@@ -80,6 +82,7 @@ class BMACounter:
         self.ignore_specimen_type = ignore_specimen_type
         self.wsi_path = wsi_path
         self.do_extract_features = do_extract_features
+        self.overwrite = overwrite
 
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
@@ -88,8 +91,14 @@ class BMACounter:
 
         self.save_dir = os.path.join(dump_dir, self.file_name_manager.stem)
 
-        # if the save_dir does not exist, create it
-        os.makedirs(self.save_dir, exist_ok=True)
+        # if the save_dir already exists, then delete it and make a new one
+        if os.path.exists(self.save_dir):
+            if self.overwrite:
+                os.system(f"rm -r {self.save_dir}")
+
+        else:
+            # if the save_dir does not exist, create it
+            os.makedirs(self.save_dir, exist_ok=True)
 
         # Processing the WSI
         try:

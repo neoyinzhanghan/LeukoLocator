@@ -64,6 +64,7 @@ class PBCounter:
         continue_on_error: bool = False,
         ignore_specimen_type: bool = False,
         do_extract_features=False,
+        overwrite: bool = True,
     ):
         """Initialize a PBCounter object."""
 
@@ -76,6 +77,7 @@ class PBCounter:
         self.continue_on_error = continue_on_error
         self.ignore_specimen_type = ignore_specimen_type
         self.do_extract_features = do_extract_features
+        self.overwrite = overwrite
 
         if do_extract_features:
             raise NotImplementedError(
@@ -89,8 +91,14 @@ class PBCounter:
 
         self.save_dir = os.path.join(dump_dir, self.file_name_manager.stem)
 
-        # if the save_dir does not exist, create it
-        os.makedirs(self.save_dir, exist_ok=True)
+        # if the save_dir already exists, then delete it and make a new one
+        if os.path.exists(self.save_dir):
+            if self.overwrite:
+                os.system(f"rm -r {self.save_dir}")
+
+        else:
+            # if the save_dir does not exist, create it
+            os.makedirs(self.save_dir, exist_ok=True)
 
         # Processing the WSI
         try:
