@@ -20,6 +20,9 @@ class SST:
         # print the head of the Accession Number column
         print(self.df["Accession Number"].head())
 
+        import sys
+        sys.exit()
+
     def get_dx(self, accession_number) -> str:
         """Get the diagnosis and sub-diagnosis of the slide."""
 
