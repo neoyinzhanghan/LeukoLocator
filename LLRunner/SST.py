@@ -40,7 +40,6 @@ class SST:
         # # if the number of rows is 0, raise AccessionNumberNotFoundError
         # if rows.empty:
         #     print(rows)
-        #     print("FUCKKKKKKKKK!!!")
         #     raise AccessionNumberNotFoundError(accession_number)
         
         # get the "General Dx" and "Sub Dx" columns

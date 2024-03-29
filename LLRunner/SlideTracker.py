@@ -47,6 +47,11 @@ class SlidePoolMetadataTracker:
             if slide.predicted_specimen_type == specimen_type
         ]
 
+    def print_all_dx(self) -> None:
+        """Print all the diagnoses."""
+        for slide in self.slide_metadata:
+            print(slide.Dx)
+
 
 if __name__ == "__main__":
 
@@ -63,6 +68,8 @@ if __name__ == "__main__":
 
     # get the all the slide metadata
     slide_pool_metadata_tracker = SlidePoolMetadataTracker(slide_paths)
+
+    slide_pool_metadata_tracker.print_all_dx()
 
     # what are all the slides with the diagnosis "AML" AND are predicted to be a bone marrow aspirate?
     aml_slides = slide_pool_metadata_tracker.get_slides_from_dx("AML")
