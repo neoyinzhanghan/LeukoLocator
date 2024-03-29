@@ -46,6 +46,10 @@ class SST:
         print(dx_box)
         print(subdx_box)
 
+        # get the dx and subdx as strings
+        dx_str = dx_box.iloc[0] if not dx_box.empty else None
+        subdx_str = subdx_box.iloc[0] if not subdx_box.empty else None
+
         import sys
 
         sys.exit()
