@@ -35,9 +35,12 @@ class SST:
         # find all the rows with the given accession number
         rows = self.df.loc[self.df["Accession Number"] == accession_number]
 
-        print(accession_number)
-        print(rows)
-
+        # if the rows are empty, raise AccessionNumberNotFoundError
+        if rows.empty:
+            raise AccessionNumberNotFoundError(
+                f"Accession Number {accession_number} not found in the slide scanning tracker."
+            )
+        
         # get the "General Dx" and "Sub Dx" columns
         dx_box = rows["General Dx"]
 
@@ -53,12 +56,6 @@ class SST:
 
         if not isinstance(subdx_str, str):
             subdx_str = None
-
-        # If the accession number is not found, raise AccessionNumberNotFoundError
-        if dx_str is None and subdx_str is None:
-            raise AccessionNumberNotFoundError(
-                f"Accession Number {accession_number} not found in the slide scanning tracker."
-            )
 
         return dx_str, subdx_str
 
