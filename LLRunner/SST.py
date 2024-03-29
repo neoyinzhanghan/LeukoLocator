@@ -50,6 +50,9 @@ class SST:
         dx_str = dx_box.iloc[0] if not dx_box.empty else None
         subdx_str = subdx_box.iloc[0] if not subdx_box.empty else None
 
+        print(dx_str)
+        print(subdx_str)
+
         import sys
 
         sys.exit()
