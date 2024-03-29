@@ -30,13 +30,13 @@ class SST:
         dx_box = self.df.loc[
             self.df["Accession Number"].str.strip().str.lower()
             == accession_number.lower(),
-            "Dx",
+            "General Dx",
         ]
 
         subdx_box = self.df.loc[
             self.df["Accession Number"].str.strip().str.lower()
             == accession_number.lower(),
-            "Sub-Dx",
+            "Sub Dx",
         ]
 
         # If the accession number is not found, raise AccessionNumberNotFoundError
