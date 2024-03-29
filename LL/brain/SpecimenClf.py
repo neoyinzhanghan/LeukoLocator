@@ -160,6 +160,40 @@ def predict_image(model, image):
     return class_dct[predictions.item()]
 
 
+def get_image_specimen_conf_dict(model, image):
+    """Return a dictionary, the keys are the specimen types and the values are the confidence scores."""
+
+    # Define the same transformations as used during training
+    transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Lambda(
+                lambda x: x[:3, :, :]
+            ),  # Keep only the first three channels
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
+    image = transform(image).unsqueeze(0)  # Add batch dimension
+
+    # Move the image tensor to the same device as the model
+    device = next(model.parameters()).device  # Get the device of the model
+    image = image.to(device)
+
+    # Perform inference
+    with torch.no_grad():
+        logits = model(image)
+        probabilities = F.softmax(logits, dim=1)
+
+    # Convert the probabilities to a dictionary
+    specimen_conf_dict = {
+        class_dct[i]: prob.item() for i, prob in enumerate(probabilities[0])
+    }
+
+    return specimen_conf_dict
+
+
 def get_specimen_type(image_path):
     # Load the model from the checkpoint
     model = load_model_from_checkpoint(
@@ -171,3 +205,15 @@ def get_specimen_type(image_path):
     region_type = predict_image(model, image_path)
 
     return region_type
+
+def calculate_specimen_conf(top_view):
+    # Load the model from the checkpoint
+    model = load_model_from_checkpoint(
+        specimen_clf_checkpoint_path,
+        num_classes=4,
+    )
+
+    # Perform inference
+    specimen_conf_dict = get_image_specimen_conf_dict(model, top_view)
+
+    return specimen_conf_dict

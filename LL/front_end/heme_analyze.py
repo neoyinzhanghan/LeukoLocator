@@ -1,9 +1,33 @@
 import openslide
 from LL.resources.BMAassumptions import topview_level
 from LL.vision.processing import read_with_timeout
-from LL.brain.SpecimenClf import get_specimen_type
+from LL.brain.SpecimenClf import get_specimen_type, calculate_specimen_conf
 from LL.PBCounter import PBCounter
 from LL.BMACounter import BMACounter
+
+
+def get_specimen_conf_dict(slide_path):
+    """Get the confidence score for each specimen type of the slide. """
+
+    try:
+        wsi = openslide.OpenSlide(slide_path)
+        top_view = read_with_timeout(
+            wsi, (0, 0), topview_level, wsi.level_dimensions[topview_level]
+        )
+
+        return calculate_specimen_conf(top_view)
+    
+    except Exception as e:
+        print(e)
+        print(
+            f"Could not get the confidence scores of {slide_path}, which means it will be classified as Others"
+        )
+        return {
+            "Bone Marrow Aspirate": 0,
+            "Peripheral Blood": 0,
+            "Manual Peripheral Blood or Inadequate Bone Marrow Aspirate": 0,
+            "Others": 2,
+        } ### We are going to record the confidence of Others as 2
 
 
 def classify_specimen_type(slide_path):
