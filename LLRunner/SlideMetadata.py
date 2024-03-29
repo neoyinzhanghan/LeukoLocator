@@ -28,6 +28,7 @@ class SlideMetadata:
         self.slide_name = Path(slide_path).name
         self.slide_ext = Path(slide_path).suffix
         self.accession_number = self.slide_stem.split(";")[0]
+        print(self.accession_number)
         self.recorded_specimen_type = sr.get_recorded_specimen_type(self.slide_name)
 
         if not run_classifier:
