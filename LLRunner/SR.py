@@ -17,25 +17,27 @@ class SR:
 
     def get_recorded_specimen_type(self, slide_name) -> str:
         """Get the specimen type of the slide."""
-        
+
         # Use .loc to locate the row
         specimen_type_box = self.df.loc[
             self.df.index.str.strip() == slide_name,
             "Part Description",
         ]
-        
+
         # If the slide name is not found, raise SlideNotFoundError
         if specimen_type_box.empty:
-            raise SlideNotFoundError(f"Slide name '{slide_name}' not found in the dataset.")
-        
+            raise SlideNotFoundError(
+                f"Slide name '{slide_name}' not found in the dataset."
+            )
+
         # If you expect only one match and want to get the single value as a string
         specimen_type_str = specimen_type_box.iloc[0]
 
-        print("Recorded Specimen Type String:", specimen_type_str)
+        # check if the specimen_type_str is a string
+        assert isinstance(
+            specimen_type_str, str
+        ), f"The specimen type is not a string. It is {type(specimen_type_str)}."
 
-        import sys
-        sys.exit()
-        
         # No need to check if specimen_type_str is None here as we already checked if the box is empty
 
         # Determine the specimen type based on the description
@@ -45,8 +47,9 @@ class SR:
             specimen_type = "PB"
         else:
             specimen_type = "Others"
-        
+
         return specimen_type
+
 
 sr = SR()
 
