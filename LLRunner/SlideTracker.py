@@ -94,8 +94,6 @@ if __name__ == "__main__":
     # get the all the slide metadata
     slide_pool_metadata_tracker = SlidePoolMetadataTracker(slide_paths)
 
-    slide_pool_metadata_tracker.print_all_dx()
-
     # what are all the slides with the diagnosis "AML" AND are predicted to be a bone marrow aspirate?
     aml_slides = slide_pool_metadata_tracker.get_slides_from_dx("AML")
     # what are all the slides with the diagnosis "Plasma cell myeloma" AND are predicted to be a bone marrow aspirate?
