@@ -29,10 +29,10 @@ class SlideMetadata:
         self.slide_ext = Path(slide_path).suffix
         self.accession_number = self.slide_stem.split(";")[0]
         self.recorded_specimen_type = sr.get_recorded_specimen_type(self.slide_name)
-        self.predicted_specimen_type = classify_specimen_type(self.slide_path)
-        conf_dct = get_specimen_conf_dict(self.slide_path)
-        self.bma_confidence = conf_dct["Bone Marrow Aspirate"]
-        self.pb_confidence = conf_dct["Peripheral Blood"]
+        self.predicted_specimen_type = None # classify_specimen_type(self.slide_path)
+        conf_dct = None # get_specimen_conf_dict(self.slide_path)
+        self.bma_confidence = None # conf_dct["Bone Marrow Aspirate"]
+        self.pb_confidence =  None # conf_dct["Peripheral Blood"]
         self.mpboribma_confidence = conf_dct[
             "Manual Peripheral Blood or Inadequate Bone Marrow Aspirate"
         ]
