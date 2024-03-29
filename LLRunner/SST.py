@@ -38,6 +38,14 @@ class SST:
         print(accession_number)
         print(rows)
 
+        # get the "General Dx" and "Sub Dx" columns
+        dx_box = rows["General Dx"]
+
+        subdx_box = rows["Sub Dx"]
+
+        print(dx_box)
+        print(subdx_box)
+
         import sys
 
         sys.exit()
