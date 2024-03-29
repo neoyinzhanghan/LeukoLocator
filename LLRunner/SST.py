@@ -35,8 +35,6 @@ class SST:
         # find all the rows with the given accession number
         rows = self.df.loc[self.df["Accession Number"] == accession_number]
 
-        print(rows)
-
         # # if the number of rows is 0, raise AccessionNumberNotFoundError
         # if rows.empty:
         #     print(rows)
