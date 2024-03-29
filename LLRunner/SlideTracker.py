@@ -75,20 +75,6 @@ if __name__ == "__main__":
     pcm_slides = slide_pool_metadata_tracker.get_slides_from_dx("Plasma cell myeloma")
     pcm_bma_slides = [slide for slide in pcm_slides if slide in bma_slides]
 
-    print("Slides with the diagnosis 'AML' and predicted to be a BMA:")
-    for slide in aml_bma_slides:
-        print(slide.slide_name)
-
-    print(
-        "\nSlides with the diagnosis 'Plasma cell myeloma' and predicted to be a BMA:"
-    )
-    for slide in pcm_bma_slides:
-        print(slide.slide_name)
-
-    print("\nSlides that could not be accessed:")
-    for slide_name in slide_pool_metadata_tracker.inaccessable_slides:
-        print(slide_name)
-
     # now put all of these slide info into a single dataframe, where one column is the slide path, and the other column is whether the slide is in aml_bma_slides, pcm_bma_slides, or inaccessable_slides
     import pandas as pd
 
