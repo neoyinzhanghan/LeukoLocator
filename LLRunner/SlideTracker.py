@@ -8,21 +8,23 @@ class SlidePoolMetadataTracker:
     """Class to keep track of slide metadata.
     === Class Attributes ===
     -- slide_metadata: a list of SlideMetadata objects
-    -- inaccessable_slides: a list of SlideMetadata objects that could not be accessed
+    -- no_recorded_specimen_type: a list of slide paths that do not have a recorded specimen type
+    -- no_recorded_dx: a list of slide paths that do not have a recorded diagnosis
     """
 
     def __init__(self, slide_paths) -> None:
         self.slide_metadata = []
-        self.inaccessable_slides = []
+        self.no_recorded_specimen_type = []
+        self.no_recorded_dx = []
         for slide_path in tqdm(slide_paths, desc="Compiling slides pool metadata"):
             try:
                 slide_metadata = SlideMetadata(slide_path)
                 self.slide_metadata.append(slide_metadata)
             except AccessionNumberNotFoundError as e:
-                self.inaccessable_slides.append(slide_path)
+                self.no_recorded_dx.append(slide_path)
                 print(f"Accession number not found for slide {slide_path}.")
             except SlideNotFoundError as e:
-                self.inaccessable_slides.append(slide_path)
+                self.no_recorded_specimen_type.append(slide_path)
                 print(f"Slide not found in the status results for slide {slide_path}.")
 
     def get_slides_from_dx(self, dx: str) -> list:
@@ -95,8 +97,10 @@ if __name__ == "__main__":
         slide_info.append((slide.slide_path, "AML_BMA"))
     for slide in pcm_bma_slides:
         slide_info.append((slide.slide_path, "PCM_BMA"))
-    for slide in slide_pool_metadata_tracker.inaccessable_slides:
-        slide_info.append((slide, "Inaccessable"))
+    for slide in slide_pool_metadata_tracker.no_recorded_specimen_type:
+        slide_info.append((slide, "No Recorded Specimen Type"))
+    for slide in slide_pool_metadata_tracker.no_recorded_dx:
+        slide_info.append((slide, "No Recorded Dx"))
 
     df = pd.DataFrame(slide_info, columns=["Slide Path", "Slide Type"])
 
