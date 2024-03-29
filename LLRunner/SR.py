@@ -36,7 +36,7 @@ class SR:
         # check if the specimen_type_str is a string
         assert isinstance(
             specimen_type_str, str
-        ), f"The specimen type is not a string. It is {type(specimen_type_str)}."
+        ), f"The specimen type is not a string. {specimen_type_str} is of type {type(specimen_type_str)}."
 
         # No need to check if specimen_type_str is None here as we already checked if the box is empty
 
