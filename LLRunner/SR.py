@@ -30,6 +30,11 @@ class SR:
         
         # If you expect only one match and want to get the single value as a string
         specimen_type_str = specimen_type_box.iloc[0]
+
+        print("Recorded Specimen Type String:", specimen_type_str)
+
+        import sys
+        sys.exit()
         
         # No need to check if specimen_type_str is None here as we already checked if the box is empty
 
