@@ -17,10 +17,11 @@ class SST:
         self.sheet_name = slide_scanning_tracker_sheet_name
         self.df = pd.read_excel(self.xlsx_path, sheet_name=self.sheet_name)
 
-        print(self.df.head())
+        # print(self.df.head())
 
-        import sys
-        sys.exit()
+        # import sys
+
+        # sys.exit()
 
         # # print the head of the Accession Number column as a list
         # print(self.df["Accession Number"].head().tolist())
@@ -31,22 +32,14 @@ class SST:
     def get_dx(self, accession_number) -> str:
         """Get the diagnosis and sub-diagnosis of the slide."""
 
-        # Use .loc to locate the row, make sure to strip and turn to lowercase after stringifying
-        dx_box = self.df.loc[
-            self.df["Accession Number"].str.strip().str.lower()
-            == accession_number.lower(),
-            "General Dx",
-        ]
+        # find all the rows with the given accession number
+        rows = self.df.loc[self.df["Accession Number"] == accession_number]
 
-        subdx_box = self.df.loc[
-            self.df["Accession Number"].str.strip().str.lower()
-            == accession_number.lower(),
-            "Sub Dx",
-        ]
-
-        print(dx_box, subdx_box)
+        print(accession_number)
+        print(rows)
 
         import sys
+
         sys.exit()
 
         # If the accession number is not found, raise AccessionNumberNotFoundError
