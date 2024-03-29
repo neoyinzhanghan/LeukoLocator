@@ -37,9 +37,6 @@ class SST:
 
         print(rows)
 
-        import sys
-        sys.exit()
-
         # # if the number of rows is 0, raise AccessionNumberNotFoundError
         # if rows.empty:
         #     print(rows)
