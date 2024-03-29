@@ -29,7 +29,7 @@ class SlidePoolMetadataTracker:
 
     def get_slides_from_dx(self, dx: str) -> list:
         """Get slides with the given diagnosis."""
-        return [slide for slide in self.slide_metadata if slide.recorded_specimen_types != None and slide.Dx.strip().lower() == dx.strip().lower()]
+        return [slide for slide in self.slide_metadata if slide.recorded_specimen_type != None and slide.Dx.strip().lower() == dx.strip().lower()]
 
     def get_slides_From_recorded_specimen_type(self, specimen_type: str) -> list:
         """Get slides with the given recorded specimen type."""
