@@ -98,22 +98,18 @@ if __name__ == "__main__":
 
     # what are all the slides with the diagnosis "AML" AND are predicted to be a bone marrow aspirate?
     aml_slides = slide_pool_metadata_tracker.get_slides_from_dx("AML")
-    bma_slides = slide_pool_metadata_tracker.get_slides_from_predicted_specimen_type(
-        "Bone Marrow Aspirate"
-    )
-    aml_bma_slides = [slide for slide in aml_slides if slide in bma_slides]
-
     # what are all the slides with the diagnosis "Plasma cell myeloma" AND are predicted to be a bone marrow aspirate?
     pcm_slides = slide_pool_metadata_tracker.get_slides_from_dx("Plasma cell myeloma")
-    pcm_bma_slides = [slide for slide in pcm_slides if slide in bma_slides]
 
-    # now put all of these slide info into a single dataframe, where one column is the slide path, and the other column is whether the slide is in aml_bma_slides, pcm_bma_slides, or inaccessable_slides
     import pandas as pd
 
+    assert len(aml_slides) > 0
+    assert len(pcm_slides) > 0
+
     slide_info = []
-    for slide in aml_bma_slides:
+    for slide in aml_slides:
         slide_info.append((slide.slide_path, "AML_BMA"))
-    for slide in pcm_bma_slides:
+    for slide in pcm_slides:
         slide_info.append((slide.slide_path, "PCM_BMA"))
     for slide in slide_pool_metadata_tracker.no_recorded_specimen_type:
         slide_info.append((slide, "No Recorded Specimen Type"))
