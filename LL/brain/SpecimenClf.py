@@ -1,6 +1,7 @@
 import os
 import torch
 import pytorch_lightning as pl
+import openslide
 from torch import nn
 from torch.nn import functional as F
 from torchvision import transforms
@@ -9,6 +10,8 @@ from torchvision.models import resnet50, ResNet50_Weights
 from torch.utils.data import DataLoader
 from PIL import Image
 from LL.resources.PBassumptions import specimen_clf_checkpoint_path
+from LL.resources.BMAassumptions import topview_level
+from LL.vision.processing import read_with_timeout
 
 class_dct = {
     0: "Bone Marrow Aspirate",
@@ -207,6 +210,7 @@ def get_specimen_type(image_path):
     return region_type
 
 def calculate_specimen_conf(top_view):
+
     # Load the model from the checkpoint
     model = load_model_from_checkpoint(
         specimen_clf_checkpoint_path,
