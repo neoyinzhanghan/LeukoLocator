@@ -39,6 +39,11 @@ class SST:
             "Sub Dx",
         ]
 
+        print(dx_box, subdx_box)
+
+        import sys
+        sys.exit()
+
         # If the accession number is not found, raise AccessionNumberNotFoundError
         if dx_box.empty and subdx_box.empty:
             raise AccessionNumberNotFoundError(accession_number)
