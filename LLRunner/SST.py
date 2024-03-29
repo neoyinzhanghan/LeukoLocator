@@ -26,15 +26,17 @@ class SST:
     def get_dx(self, accession_number) -> str:
         """Get the diagnosis and sub-diagnosis of the slide."""
 
-        # Use .loc to locate the row
+        # Use .loc to locate the row, make sure to strip and turn to lowercase after stringifying
         dx_box = self.df.loc[
-            self.df["Accession Number"] == accession_number,
-            "General Dx",
+            self.df["Accession Number"].str.strip().str.lower()
+            == accession_number.lower(),
+            "Dx",
         ]
 
         subdx_box = self.df.loc[
-            self.df["Accession Number"] == accession_number,
-            "Sub Dx",
+            self.df["Accession Number"].str.strip().str.lower()
+            == accession_number.lower(),
+            "Sub-Dx",
         ]
 
         # If the accession number is not found, raise AccessionNumberNotFoundError
