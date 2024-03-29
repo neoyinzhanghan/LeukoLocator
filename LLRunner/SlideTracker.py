@@ -84,5 +84,5 @@ if __name__ == "__main__":
         print(slide.slide_name)
 
     print("\nSlides that could not be accessed:")
-    for slide in slide_pool_metadata_tracker.inaccessable_slides:
-        print(slide.slide_name)
+    for slide_name in slide_pool_metadata_tracker.inaccessable_slides:
+        print(slide_name)
