@@ -17,8 +17,8 @@ class SST:
         self.sheet_name = slide_scanning_tracker_sheet_name
         self.df = pd.read_excel(self.xlsx_path, sheet_name=self.sheet_name)
 
-        # print the head of the Accession Number column
-        print(self.df["Accession Number"].head())
+        # print the head of the Accession Number column as a list
+        print(self.df["Accession Number"].head().tolist())
 
         import sys
         sys.exit()
