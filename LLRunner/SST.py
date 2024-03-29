@@ -35,11 +35,6 @@ class SST:
         # find all the rows with the given accession number
         rows = self.df.loc[self.df["Accession Number"] == accession_number]
 
-        # # if the number of rows is 0, raise AccessionNumberNotFoundError
-        # if rows.empty:
-        #     print(rows)
-        #     raise AccessionNumberNotFoundError(accession_number)
-        
         # get the "General Dx" and "Sub Dx" columns
         dx_box = rows["General Dx"]
 
@@ -55,6 +50,15 @@ class SST:
 
         if not isinstance(subdx_str, str):
             subdx_str = None
+
+        if dx_str is not None:
+            dx_str = dx_str.strip()
+
+        if subdx_str is not None:
+            subdx_str = subdx_str.strip()
+
+        if dx_str is None and subdx_str is None:
+            raise AccessionNumberNotFoundError(accession_number)
 
         return dx_str, subdx_str
 
