@@ -86,3 +86,19 @@ if __name__ == "__main__":
     print("\nSlides that could not be accessed:")
     for slide_name in slide_pool_metadata_tracker.inaccessable_slides:
         print(slide_name)
+
+    # now put all of these slide info into a single dataframe, where one column is the slide path, and the other column is whether the slide is in aml_bma_slides, pcm_bma_slides, or inaccessable_slides
+    import pandas as pd
+
+    slide_info = []
+    for slide in aml_bma_slides:
+        slide_info.append((slide.slide_path, "AML_BMA"))
+    for slide in pcm_bma_slides:
+        slide_info.append((slide.slide_path, "PCM_BMA"))
+    for slide in slide_pool_metadata_tracker.inaccessable_slides:
+        slide_info.append((slide, "Inaccessable"))
+
+    df = pd.DataFrame(slide_info, columns=["Slide Path", "Slide Type"])
+
+    # save the dataframe in /media/hdd3/neo
+    df.to_csv("/media/hdd3/neo/selected_slide_info.csv", index=False)
