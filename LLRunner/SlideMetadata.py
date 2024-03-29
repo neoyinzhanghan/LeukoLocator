@@ -30,6 +30,7 @@ class SlideMetadata:
         self.accession_number = self.slide_stem.split(";")[0]
         print(self.accession_number)
         self.recorded_specimen_type = sr.get_recorded_specimen_type(self.slide_name)
+        self.Dx, self.sub_Dx = sst.get_dx(self.accession_number)
 
         if not run_classifier:
             self.predicted_specimen_type = None # classify_specimen_type(self.slide_path)
@@ -45,4 +46,3 @@ class SlideMetadata:
             self.pb_confidence = self.conf_dct["Peripheral Blood"]
             self.mpboribma_confidence = self.conf_dct["Manual Peripheral Blood or Inadequate Bone Marrow Aspirate"]
             self.other_confidence = self.conf_dct["Others"]
-        self.Dx, self.sub_Dx = sst.get_dx(self.accession_number)

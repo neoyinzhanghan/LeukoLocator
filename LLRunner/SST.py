@@ -17,6 +17,9 @@ class SST:
         self.sheet_name = slide_scanning_tracker_sheet_name
         self.df = pd.read_excel(self.xlsx_path, sheet_name=self.sheet_name)
 
+        # print the head of the Accession Number column
+        print(self.df["Accession Number"].head())
+
     def get_dx(self, accession_number) -> str:
         """Get the diagnosis and sub-diagnosis of the slide."""
 
