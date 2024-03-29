@@ -50,6 +50,13 @@ class SST:
         dx_str = dx_box.iloc[0] if not dx_box.empty else None
         subdx_str = subdx_box.iloc[0] if not subdx_box.empty else None
 
+        # if they are not string types, convert them to None
+        if not isinstance(dx_str, str):
+            dx_str = None
+        
+        if not isinstance(subdx_str, str):
+            subdx_str = None
+
         print(dx_str)
         print(subdx_str)
 
