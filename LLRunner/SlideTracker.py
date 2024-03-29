@@ -1,17 +1,29 @@
 from LLRunner.SlideMetadata import SlideMetadata
+from LLRunner.SST import AccessionNumberNotFoundError
+from LLRunner.SR import SlideNotFoundError
 from tqdm import tqdm
+
 
 class SlidePoolMetadataTracker:
     """Class to keep track of slide metadata.
     === Class Attributes ===
     -- slide_metadata: a list of SlideMetadata objects
+    -- inaccessable_slides: a list of SlideMetadata objects that could not be accessed
     """
 
     def __init__(self, slide_paths) -> None:
         self.slide_metadata = []
+        self.inaccessable_slides = []
         for slide_path in tqdm(slide_paths, desc="Compiling slides pool metadata"):
-            slide_metadata = SlideMetadata(slide_path)
-            self.slide_metadata.append(slide_metadata)
+            try:
+                slide_metadata = SlideMetadata(slide_path)
+                self.slide_metadata.append(slide_metadata)
+            except AccessionNumberNotFoundError as e:
+                self.inaccessable_slides.append(slide_path)
+                print(f"Accession number not found for slide {slide_path}.")
+            except SlideNotFoundError as e:
+                self.inaccessable_slides.append(slide_path)
+                print(f"Slide not found in the status results for slide {slide_path}.")
 
     def get_slides_from_dx(self, dx: str) -> list:
         """Get slides with the given diagnosis."""
@@ -69,4 +81,8 @@ if __name__ == "__main__":
         "\nSlides with the diagnosis 'Plasma cell myeloma' and predicted to be a BMA:"
     )
     for slide in pcm_bma_slides:
+        print(slide.slide_name)
+
+    print("\nSlides that could not be accessed:")
+    for slide in slide_pool_metadata_tracker.inaccessable_slides:
         print(slide.slide_name)
