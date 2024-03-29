@@ -43,9 +43,6 @@ class SST:
 
         subdx_box = rows["Sub Dx"]
 
-        print(dx_box)
-        print(subdx_box)
-
         # get the dx and subdx as strings
         dx_str = dx_box.iloc[0] if not dx_box.empty else None
         subdx_str = subdx_box.iloc[0] if not subdx_box.empty else None
@@ -53,24 +50,15 @@ class SST:
         # if they are not string types, convert them to None
         if not isinstance(dx_str, str):
             dx_str = None
-        
+
         if not isinstance(subdx_str, str):
             subdx_str = None
 
-        print(dx_str)
-        print(subdx_str)
-
-        import sys
-
-        sys.exit()
-
         # If the accession number is not found, raise AccessionNumberNotFoundError
-        if dx_box.empty and subdx_box.empty:
-            raise AccessionNumberNotFoundError(accession_number)
-
-        # If you expect only one match and want to get the single value as a string
-        dx_str = dx_box.iloc[0] if not dx_box.empty else None
-        subdx_str = subdx_box.iloc[0] if not subdx_box.empty else None
+        if dx_str is None and subdx_str is None:
+            raise AccessionNumberNotFoundError(
+                f"Accession Number {accession_number} not found in the slide scanning tracker."
+            )
 
         return dx_str, subdx_str
 
