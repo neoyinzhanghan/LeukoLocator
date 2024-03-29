@@ -29,6 +29,10 @@ class SlideMetadata:
         self.slide_ext = Path(slide_path).suffix
         self.accession_number = self.slide_stem.split(";")[0]
         print(self.accession_number)
+
+        import sys
+        sys.exit()
+        
         self.recorded_specimen_type = sr.get_recorded_specimen_type(self.slide_name)
         self.Dx, self.sub_Dx = sst.get_dx(self.accession_number)
 
