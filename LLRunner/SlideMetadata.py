@@ -33,8 +33,6 @@ class SlideMetadata:
         conf_dct = None # get_specimen_conf_dict(self.slide_path)
         self.bma_confidence = None # conf_dct["Bone Marrow Aspirate"]
         self.pb_confidence =  None # conf_dct["Peripheral Blood"]
-        self.mpboribma_confidence = conf_dct[
-            "Manual Peripheral Blood or Inadequate Bone Marrow Aspirate"
-        ]
+        self.mpboribma_confidence = None #conf_dct["Manual Peripheral Blood or Inadequate Bone Marrow Aspirate"]
         self.other_confidence = conf_dct["Others"]
         self.Dx, self.sub_Dx = sst.get_dx(self.accession_number)
