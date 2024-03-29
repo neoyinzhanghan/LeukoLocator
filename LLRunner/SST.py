@@ -37,6 +37,8 @@ class SST:
 
         # if the rows are empty, raise AccessionNumberNotFoundError
         if rows.empty:
+
+            print("FUCK MY LIFE!!!!!!!!!!!!!!!!!!!!!!!!!!")
             raise AccessionNumberNotFoundError(
                 f"Accession Number {accession_number} not found in the slide scanning tracker."
             )
