@@ -3,7 +3,7 @@
 #################
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_bma_100_v1"
+dump_dir = "/media/hdd3/neo/results_bma_aml_v1"
 
 ############################
 ### WSI Image Parameters ###
@@ -46,7 +46,7 @@ min_num_regions_after_WMP_max_filter = 150
 max_num_regions_after_region_clf = 100
 max_num_cells = 3000
 min_num_cells = 10
-min_num_focus_regions = 15
+min_num_focus_regions = 25
 
 ###########################
 ### Parallel Processing ###
@@ -79,7 +79,7 @@ region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf no normaliz
 # region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 # region_clf_ckpt_path = "/media/hdd2/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for bear
 # We do not need a confidence threshold because we take the top regions from the region classifier
-region_clf_conf_thres = 0.9
+region_clf_conf_thres = 0.95
 
 YOLO_ckpt_path = (
     "/media/hdd3/neo/MODELS/2024-03-13 YOLO BMA/runs/detect/train/weights/best.pt"
