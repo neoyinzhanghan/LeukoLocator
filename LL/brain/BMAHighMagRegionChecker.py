@@ -274,7 +274,7 @@ def predict_image(model, image):
 @ray.remote(num_gpus=1)
 class BMAHighMagRegionChecker:
     def __init__(self, ckpt_path):
-        self.resnet_model = load_model_checkpoint(ckpt_path)
+        self.model = load_model_checkpoint(ckpt_path)
         self.model.eval()
         # move the model to the GPU
         self.model.to("cuda")
