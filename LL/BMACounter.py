@@ -34,7 +34,7 @@ from LL.brain.SpecimenClf import get_specimen_type
 from LL.SearchView import SearchView
 from LL.BMAFocusRegion import *
 from LL.BMAFocusRegionTracker import FocusRegionsTracker, NotEnoughFocusRegionsError
-from LL.brain.BMAHighMagRegionChecker import BMAHighMagRegionChecker
+from LL.brain.BMAHighMagRegionCheckTracker import BMAHighMagRegionCheckTracker
 from LL.resources.BMAassumptions import *
 
 
@@ -391,7 +391,7 @@ class BMACounter:
 
         start_time = time.time()
 
-        high_mag_check_tracker = BMAHighMagRegionChecker(
+        high_mag_check_tracker = BMAHighMagRegionCheckTracker(
             focus_regions=self.focus_regions
         )
 
