@@ -101,10 +101,10 @@ class BMAHighMagRegionCheckTracker:
             ):
                 good_focus_regions.append(focus_region)
 
-        if len(good_focus_regions) < min_num_focus_regions:
-            raise HighMagCheckFailedError(
-                f"Only {len(good_focus_regions)} good focus regions remain after the high magnification check, and the minimum number of focus regions required is {min_num_focus_regions}."
-            )
+        # if len(good_focus_regions) < min_num_focus_regions:
+        #     raise HighMagCheckFailedError(
+        #         f"Only {len(good_focus_regions)} good focus regions remain after the high magnification check, and the minimum number of focus regions required is {min_num_focus_regions}."
+        #     )
 
         return good_focus_regions
 
