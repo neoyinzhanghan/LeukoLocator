@@ -43,7 +43,7 @@ min_num_regions_within_foci_sd = 500
 min_num_regions_after_VoL_filter = 400
 min_num_regions_after_WMP_min_filter = 275
 min_num_regions_after_WMP_max_filter = 150
-max_num_regions_after_region_clf = 100
+max_num_regions_after_region_clf = 200
 max_num_cells = 3000
 min_num_cells = 10
 min_num_focus_regions = 25
@@ -99,6 +99,8 @@ feature_extractor_ckpt_dict = {
     "resnet50": "/media/hdd3/neo/resources/HemeLabel_weights.ckpt"
 }
 supported_feature_extraction_archs = feature_extractor_ckpt_dict.keys()
+
+high_mag_region_clf_ckpt_path = '/media/hdd3/neo/MODELS/2024-04-06 BMARegionClf 1000Epochs/lightning_logs/1/version_0/checkpoints/epoch=999-step=55000.ckpt'
 
 ###########################
 ### Augmentation Config ###
