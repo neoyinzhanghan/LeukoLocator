@@ -13,7 +13,7 @@ from torch import nn
 from pytorch_lightning.loggers import TensorBoardLogger
 from torchvision import transforms, datasets, models
 from torchmetrics import Accuracy, AUROC
-
+from PIL import Image
 
 default_config = {"lr": 3.56e-06}  # 3.56e-07
 num_epochs = 100
@@ -215,12 +215,6 @@ def train_model(downsample_factor):
         accelerator="gpu",  # 'ddp' for DistributedDataParallel
     )
     trainer.fit(model, data_module)
-
-
-from train import ResNetModel
-import torch
-from torchvision import transforms
-from PIL import Image
 
 
 def load_model_checkpoint(checkpoint_path):
