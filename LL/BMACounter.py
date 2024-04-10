@@ -34,6 +34,7 @@ from LL.brain.SpecimenClf import get_specimen_type
 from LL.SearchView import SearchView
 from LL.BMAFocusRegion import *
 from LL.BMAFocusRegionTracker import FocusRegionsTracker, NotEnoughFocusRegionsError
+from LL.brain.BMAHighMagRegionChecker import BMAHighMagRegionChecker
 from LL.resources.BMAassumptions import *
 
 
@@ -387,6 +388,29 @@ class BMACounter:
             focus_region.get_image(unpadded_image, padded_image)
 
         self.profiling_data["getting_high_mag_images_time"] = time.time() - start_time
+
+        start_time = time.time()
+
+        high_mag_check_tracker = BMAHighMagRegionChecker(
+            focus_regions=self.focus_regions
+        )
+
+        good_focus_regions = high_mag_check_tracker.get_good_focus_regions()
+
+        self.focus_regions = good_focus_regions
+
+        high_mag_check_tracker.save_results(self.save_dir)
+
+        self.profiling_data["high_mag_check_time"] = time.time() - start_time
+
+        if self.hoarding:
+            start_time = time.time()
+            high_mag_check_tracker.hoard_results(self.save_dir)
+            self.profiling_data["hoarding_high_mag_check_time"] = (
+                time.time() - start_time
+            )
+        else:
+            self.profiling_data["hoarding_high_mag_check_time"] = 0
 
     def find_wbc_candidates(self):
         """Update the wbc_candidates of the PBCounter object."""
@@ -1108,6 +1132,7 @@ class BMACounter:
                 + self.profiling_data["hoarding_focus_regions_time"]
                 + self.profiling_data["cells_hoarding_time"]
                 + self.profiling_data["total_features_hoarding_time"]
+                + self.profiling_data["hoarding_high_mag_check_time"]
             )
 
             self.profiling_data["total_non_hoarding_time"] = (

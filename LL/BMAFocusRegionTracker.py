@@ -352,6 +352,7 @@ class FocusRegionsTracker:
             "sd_resnet_confidence_score_selected": sd_adequate_confidence_score_selected,
             "sd_VoL_selected": sd_VoL_selected,
             # "sd_WMP_selected": sd_WMP_selected,
+            "num_selected_from_low_mag": len(self.info_df[self.info_df["selected"]]),
         }
 
         # save the dictionary as a csv file each row is a key-value pair

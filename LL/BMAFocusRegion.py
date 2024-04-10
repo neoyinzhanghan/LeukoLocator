@@ -28,6 +28,13 @@ class FocusRegion:
     - wbc_candidate_bboxes : a list of bbox of the WBC candidates in the level 0 view in the format of (TL_x, TL_y, BR_x, BR_y) in relative to the focus region
     - wbc_candidates : a list of wbc_candidates objects
     - YOLO_df : should contain the good bounding boxes relative location to the focus region, the absolute coordinate of the focus region, and the confidence score of the bounding box
+    - adequate_confidence_score : the confidence score of the region classification model
+    - downsampled_coordinate : the coordinate of the focus region in the downsampled view in the format of (TL_x, TL_y, BR_x, BR_y)
+    - downsampled_image : the downsampled image of the focus region
+    - padded_image : the padded image of the focus region
+    - image_mask_duo : one image where the downsampled image and mask are put side by side
+    - VoL_high_mag : the variance of the laplacian of the high magnification image of the focus region
+    - adequate_confidence_score_high_mag : the confidence score of the region classification model for the high magnification image
     """
 
     def __init__(self, downsampled_coordinate, downsampled_image, idx=None):
@@ -70,12 +77,15 @@ class FocusRegion:
 
         # Horizontally stack the two images
         # self.image_mask_duo = Image.fromarray(np.hstack((image_array, otsu_rgb)))
-            
+
         self.adequate_confidence_score = None
 
         self.wbc_candidate_bboxes = None
         self.wbc_candidates = None
         self.YOLO_df = None
+
+        VoL_high_mag = None
+        adequate_confidence_score_high_mag = None
 
     def get_image(self, image, padded_image):
         """Update the image of the focus region."""
@@ -83,7 +93,7 @@ class FocusRegion:
         # if the image is RGBA, convert it to RGB
         if image.mode == "RGBA":
             image = image.convert("RGB")
-        
+
         if padded_image.mode == "RGBA":
             padded_image = padded_image.convert("RGB")
 
@@ -100,7 +110,7 @@ class FocusRegion:
             return self.annotated_image
 
         else:
-            
+
             pad_size = snap_shot_size // 2
 
             padded_wbc_candidate_bboxes = [
@@ -119,10 +129,20 @@ class FocusRegion:
 
             # Calculate the coordinates for the green rectangle
             top_left = (pad_size, pad_size)
-            bottom_right = (pad_size + focus_regions_size, pad_size + focus_regions_size)
+            bottom_right = (
+                pad_size + focus_regions_size,
+                pad_size + focus_regions_size,
+            )
 
             # Draw the green rectangle
-            draw_dashed_rect(self.annotated_image, top_left, bottom_right, color='green', dash=(10,10), width=5)
+            draw_dashed_rect(
+                self.annotated_image,
+                top_left,
+                bottom_right,
+                color="green",
+                dash=(10, 10),
+                width=5,
+            )
 
             # Now self.annotated_image has the green rectangle drawn around the focus region
             return self.annotated_image
@@ -241,6 +261,7 @@ def sort_focus_regions(focus_regions):
         key=lambda focus_region: focus_region.resnet_confidence_score,
         reverse=True,
     )
+
 
 @ray.remote
 def save_focus_region_batch(focus_regions, save_dir):

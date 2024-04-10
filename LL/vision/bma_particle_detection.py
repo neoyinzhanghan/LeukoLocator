@@ -8,17 +8,16 @@ import os
 def last_min_before_last_max(local_minima, local_maxima, last_n=1):
     """Returns the last local minimum before the last local maximum"""
 
-
     if len(local_minima) == 0:
         raise ValueError("There are no local minima")
 
-    for i in range(len(local_minima)-1, -1, -1):
+    for i in range(len(local_minima) - 1, -1, -1):
         if local_minima[i] < local_maxima[-last_n]:
             return local_minima[i]
 
 
 def get_white_mask(image, verbose=False):
-    """ Return a mask covering the whitest region of the image. """
+    """Return a mask covering the whitest region of the image."""
 
     # Convert the image to grayscale
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -28,7 +27,7 @@ def get_white_mask(image, verbose=False):
     histogram = cv2.calcHist([gray_image], [0], None, [bins], [0, 256])
 
     # Calculate the bin midpoints
-    bin_midpoints = np.linspace(0, 256, bins+1)[1:] - (256/bins/2)
+    bin_midpoints = np.linspace(0, 256, bins + 1)[1:] - (256 / bins / 2)
 
     # Smooth out the histogram to remove small ups and downs but keep the large peaks
     histogram = cv2.GaussianBlur(histogram, (5, 5), 0)
@@ -53,20 +52,20 @@ def get_white_mask(image, verbose=False):
 
     # find the local minima
     local_minima = []
-    for i in range(1, len(histogram)-1):
+    for i in range(1, len(histogram) - 1):
 
-        if histogram[i-1] > histogram[i] < histogram[i+1]:
+        if histogram[i - 1] > histogram[i] < histogram[i + 1]:
             local_minima.append(bin_midpoints[i])
 
     # find the local maxima
     local_maxima = []
-    for i in range(0, len(histogram)-1):
+    for i in range(0, len(histogram) - 1):
 
         # if the index is the left most boundary, then no need to compare the left value
         if i == 0:
-            if histogram[i] > histogram[i+1]:
+            if histogram[i] > histogram[i + 1]:
                 local_maxima.append(bin_midpoints[i])
-        elif histogram[i-1] < histogram[i] > histogram[i+1]:
+        elif histogram[i - 1] < histogram[i] > histogram[i + 1]:
             local_maxima.append(bin_midpoints[i])
 
     if verbose:
@@ -79,16 +78,19 @@ def get_white_mask(image, verbose=False):
         plt.ylabel("# of Pixels")
         plt.plot(bin_midpoints, histogram)
         plt.xlim([0, 256])
-        plt.vlines(last_min_before_last_max(
-            local_minima, local_maxima), 0, max(histogram), colors="g")
+        plt.vlines(
+            last_min_before_last_max(local_minima, local_maxima),
+            0,
+            max(histogram),
+            colors="g",
+        )
         plt.vlines(local_minima, 0, 1000, colors="b")
         plt.vlines(local_maxima, 0, 3000, colors="r")
         plt.show()
 
     # get a mask that contains all pixels with intensity smaller than the first local minimum right after the first peak
     mask = np.zeros(gray_image.shape, dtype="uint8")
-    mask[gray_image > last_min_before_last_max(
-        local_minima, local_maxima)] = 255
+    mask[gray_image > last_min_before_last_max(local_minima, local_maxima)] = 255
 
     if verbose:
         # display the mask
@@ -101,7 +103,7 @@ def get_white_mask(image, verbose=False):
 
 
 def get_background_mask(image, erosion_radius=35, median_blur_size=35, verbose=False):
-    """ Returns a mask that covers the complement of the obstructor in the image. """
+    """Returns a mask that covers the complement of the obstructor in the image."""
 
     mask = get_white_mask(image, verbose=verbose)
 
@@ -137,7 +139,8 @@ def get_background_mask(image, erosion_radius=35, median_blur_size=35, verbose=F
     mask = cv2.bitwise_not(mask)
 
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
-        mask, connectivity=8)
+        mask, connectivity=8
+    )
     for i in range(1, num_labels):
         if stats[i, cv2.CC_STAT_AREA] < 15000:
             mask[labels == i] = 0
@@ -185,7 +188,14 @@ def get_threshold(img, prop_black=0.3, bins=1024):
 """ Apply a number of cv2 filters to the image specified in image_path. If verbose is True, the image will be displayed after each filter is applied, and the user will be prompted to continue. If verbose is False, the image will not be displayed, and the user will not be prompted to continue. """
 
 
-def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False):
+def get_high_blue_signal_mask(
+    image,
+    prop_black=0.75,
+    bins=1024,
+    median_blur_size=3,
+    dilation_kernel_size=9,
+    verbose=False,
+):
     """
     Return a mask that covers the high blue signal in the image.
     """
@@ -347,12 +357,19 @@ def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_siz
 def first_min_after_first_max(local_minima, local_maxima, first_n=2):
     """Returns the first local minimum after the first local maximum"""
     for i in range(len(local_minima)):
-        if local_minima[i] > local_maxima[first_n-1]:
+        if local_minima[i] > local_maxima[first_n - 1]:
             return local_minima[i]
 
 
-def get_obstructor_mask(image, erosion_radius=25, median_blur_size=25, verbose=False, first_n=2, apply_blur=False):
-    """ Returns a mask that covers the complement of the obstructor in the image. """
+def get_obstructor_mask(
+    image,
+    erosion_radius=25,
+    median_blur_size=25,
+    verbose=False,
+    first_n=2,
+    apply_blur=False,
+):
+    """Returns a mask that covers the complement of the obstructor in the image."""
 
     # Convert the image to grayscale
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -362,7 +379,7 @@ def get_obstructor_mask(image, erosion_radius=25, median_blur_size=25, verbose=F
     histogram = cv2.calcHist([gray_image], [0], None, [bins], [0, 256])
 
     # Calculate the bin midpoints
-    bin_midpoints = np.linspace(0, 256, bins+1)[1:] - (256/bins/2)
+    bin_midpoints = np.linspace(0, 256, bins + 1)[1:] - (256 / bins / 2)
 
     if apply_blur:
         # Apply a Gaussian blur to the function
@@ -388,20 +405,20 @@ def get_obstructor_mask(image, erosion_radius=25, median_blur_size=25, verbose=F
 
     # find the local minima
     local_minima = []
-    for i in range(1, len(histogram)-1):
+    for i in range(1, len(histogram) - 1):
 
-        if histogram[i-1] > histogram[i] < histogram[i+1]:
+        if histogram[i - 1] > histogram[i] < histogram[i + 1]:
             local_minima.append(bin_midpoints[i])
 
     # find the local maxima
     local_maxima = []
-    for i in range(0, len(histogram)-1):
+    for i in range(0, len(histogram) - 1):
 
         # if the index is the left most boundary, then no need to compare the left value
         if i == 0:
-            if histogram[i] > histogram[i+1]:
+            if histogram[i] > histogram[i + 1]:
                 local_maxima.append(bin_midpoints[i])
-        elif histogram[i-1] < histogram[i] > histogram[i+1]:
+        elif histogram[i - 1] < histogram[i] > histogram[i + 1]:
             local_maxima.append(bin_midpoints[i])
 
     if verbose:
@@ -414,16 +431,22 @@ def get_obstructor_mask(image, erosion_radius=25, median_blur_size=25, verbose=F
         plt.ylabel("# of Pixels")
         plt.plot(bin_midpoints, histogram)
         plt.xlim([0, 256])
-        plt.vlines(first_min_after_first_max(local_minima, local_maxima,
-                   first_n=first_n), 0, max(histogram), colors="g")
+        plt.vlines(
+            first_min_after_first_max(local_minima, local_maxima, first_n=first_n),
+            0,
+            max(histogram),
+            colors="g",
+        )
         plt.vlines(local_minima, 0, 1000, colors="b")
         plt.vlines(local_maxima, 0, 3000, colors="r")
         plt.show()
 
     # get a mask that contains all pixels with intensity smaller than the first local minimum right after the first peak
     mask = np.zeros(gray_image.shape, dtype="uint8")
-    mask[gray_image < first_min_after_first_max(
-        local_minima, local_maxima, first_n=first_n)] = 255
+    mask[
+        gray_image
+        < first_min_after_first_max(local_minima, local_maxima, first_n=first_n)
+    ] = 255
 
     if verbose:
         # display the mask
@@ -460,10 +483,12 @@ def get_obstructor_mask(image, erosion_radius=25, median_blur_size=25, verbose=F
     return mask
 
 
-def marrow_boxing(mask, image, background_mask=None, box_ratio=0.1, output_dir=None, verbose=False):
-    """ Put boxes based on mask from mask_path on image from image_path. If output_path is not None, save the image to output_path. 
-    Else, save to working directory. If verbose is True, display the image. 
-    The mask from background path is to remove the background from the marrow mask. """
+def marrow_boxing(
+    mask, image, background_mask=None, box_ratio=0.1, output_dir=None, verbose=False
+):
+    """Put boxes based on mask from mask_path on image from image_path. If output_path is not None, save the image to output_path.
+    Else, save to working directory. If verbose is True, display the image.
+    The mask from background path is to remove the background from the marrow mask."""
 
     # create a new mask, this new mask is constructed by added a box around each pixel in the original mask
     # the box is 2*box_radius+1 pixels wide centered at each pixel
@@ -487,8 +512,10 @@ def marrow_boxing(mask, image, background_mask=None, box_ratio=0.1, output_dir=N
         # the box is 2*box_radius+1 pixels wide centered at the current white pixel
         # the radius is a center proprotion of the minimum of the image width and height
         # the box is added to the new mask
-        new_mask[max(0, row-box_radius):min(new_mask.shape[0], row+box_radius+1),
-                 max(0, col-box_radius):min(new_mask.shape[1], col+box_radius+1)] = 255
+        new_mask[
+            max(0, row - box_radius) : min(new_mask.shape[0], row + box_radius + 1),
+            max(0, col - box_radius) : min(new_mask.shape[1], col + box_radius + 1),
+        ] = 255
 
     if verbose:
         # display the original mask and the new mask side by side
@@ -560,10 +587,15 @@ def marrow_boxing(mask, image, background_mask=None, box_ratio=0.1, output_dir=N
 
 
 def get_top_view_preselection_mask(image, verbose=False):
-    """ The input is a cv2 image which is a np array in BGR format. Output a binary mask used to region preselection. """
+    """The input is a cv2 image which is a np array in BGR format. Output a binary mask used to region preselection."""
 
     high_blue = get_high_blue_signal_mask(
-        image, prop_black=0.75, median_blur_size=3, dilation_kernel_size=9, verbose=verbose)
+        image,
+        prop_black=0.75,
+        median_blur_size=3,
+        dilation_kernel_size=9,
+        verbose=verbose,
+    )
 
     # get the obstructor mask
     obstructor_mask = get_obstructor_mask(image, verbose=verbose)
@@ -575,29 +607,37 @@ def get_top_view_preselection_mask(image, verbose=False):
     # combine the two masks
     final_blue_mask = cv2.bitwise_and(high_blue, obstructor_mask)
 
-    final_mask, overlayed_image = marrow_boxing(final_blue_mask, image,
-                               background_mask, box_ratio=0.12, verbose=verbose)
+    final_mask, overlayed_image = marrow_boxing(
+        final_blue_mask, image, background_mask, box_ratio=0.12, verbose=verbose
+    )
 
     return final_mask, overlayed_image, final_blue_mask
 
+
 def get_grid_rep(image, mask, overlayed_image, final_blue_mask):
     # construct the 2x2 grid
-    grid = np.zeros((2*image.shape[0], 2*image.shape[1], 3), dtype="uint8")
-    grid[:image.shape[0], :image.shape[1]] = image
-    grid[:image.shape[0], image.shape[1]:] = cv2.cvtColor(final_blue_mask, cv2.COLOR_GRAY2BGR)
-    grid[image.shape[0]:, :image.shape[1]] = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-    grid[image.shape[0]:, image.shape[1]:] = overlayed_image
+    grid = np.zeros((2 * image.shape[0], 2 * image.shape[1], 3), dtype="uint8")
+    grid[: image.shape[0], : image.shape[1]] = image
+    grid[: image.shape[0], image.shape[1] :] = cv2.cvtColor(
+        final_blue_mask, cv2.COLOR_GRAY2BGR
+    )
+    grid[image.shape[0] :, : image.shape[1]] = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+    grid[image.shape[0] :, image.shape[1] :] = overlayed_image
 
     return grid
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     from tqdm import tqdm
+
     image_rel_path = "/Users/neo/Documents/Research/results/ppt_BMA_pics/H18-841_S10_MSK6_2023-06-01_02.png"
     image = cv2.imread(image_rel_path)
 
     # get the top view preselection mask
-    mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(image, verbose=True)
+    mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(
+        image, verbose=True
+    )
 
     # display the mask
     plt.figure()
@@ -612,26 +652,30 @@ if __name__ == '__main__':
     error_images = []
     for image_name in tqdm(os.listdir(image_dir)):
 
-
         try:
             image_path = os.path.join(image_dir, image_name)
             image = cv2.imread(image_path)
-            mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(image, verbose=False)
+            mask, overlayed_image, final_blue_mask = get_top_view_preselection_mask(
+                image, verbose=False
+            )
             mask_path = os.path.join(save_dir, image_name)
-            
 
             # save the image, final_blue_mask, mask, and overlayed_image in a 2x2 grid as a single image
             # the image should be in the top left, the final_blue_mask should be in the top right
             # the mask should be in the bottom left, and the overlayed_image should be in the bottom right
             # the image should be displayed in color, the final_blue_mask and the mask should be displayed in grayscale
             # the overlayed_image should be displayed in color
-            
+
             # construct the 2x2 grid
-            grid = np.zeros((2*image.shape[0], 2*image.shape[1], 3), dtype="uint8")
-            grid[:image.shape[0], :image.shape[1]] = image
-            grid[:image.shape[0], image.shape[1]:] = cv2.cvtColor(final_blue_mask, cv2.COLOR_GRAY2BGR)
-            grid[image.shape[0]:, :image.shape[1]] = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-            grid[image.shape[0]:, image.shape[1]:] = overlayed_image
+            grid = np.zeros((2 * image.shape[0], 2 * image.shape[1], 3), dtype="uint8")
+            grid[: image.shape[0], : image.shape[1]] = image
+            grid[: image.shape[0], image.shape[1] :] = cv2.cvtColor(
+                final_blue_mask, cv2.COLOR_GRAY2BGR
+            )
+            grid[image.shape[0] :, : image.shape[1]] = cv2.cvtColor(
+                mask, cv2.COLOR_GRAY2BGR
+            )
+            grid[image.shape[0] :, image.shape[1] :] = overlayed_image
 
             # save the grid
             cv2.imwrite(mask_path, grid)
