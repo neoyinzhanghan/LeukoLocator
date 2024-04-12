@@ -64,11 +64,6 @@ class BMAHighMagRegionCheckTracker:
 
         self.focus_regions = new_focus_regions
 
-        print("Total number of focus regions:", len(self.focus_regions))
-
-        import sys
-        sys.exit()
-
         # populate the info_df with the information of the focus regions
         info_dct = {
             "idx": [],
