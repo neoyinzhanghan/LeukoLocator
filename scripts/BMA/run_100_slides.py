@@ -144,7 +144,7 @@ for bma_fname in tqdm(slides, desc="Processing BMA slides"):
     bma_counter = BMACounter(
         bma_slide_path,
         hoarding=True,
-        continue_on_error=False,
+        continue_on_error=True,
         do_extract_features=False,
     )
     bma_counter.tally_differential()

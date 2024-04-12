@@ -2,8 +2,8 @@ import os
 import shutil
 from tqdm import tqdm
 
-data_dir = "/Users/neo/Documents/Research/MODELS/results/results_bma_aml_v1_LITE"
-save_dir = "/Users/neo/Documents/Research/MODELS/results/cell_locations/AML"
+data_dir = "/Users/neo/Documents/Research/MODELS/results/results_bma_normal_v1_LITE"
+save_dir = "/Users/neo/Documents/Research/MODELS/results/cell_locations/normal"
 
 # first find all folders in the data_dir that does not start with name ERROR and is a directory
 folders = [
