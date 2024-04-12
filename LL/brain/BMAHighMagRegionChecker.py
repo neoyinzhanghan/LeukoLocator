@@ -265,6 +265,8 @@ def predict_image(model, image):
 
     with torch.no_grad():  # Inference without tracking gradients
         outputs = model(image)
+        # move the outputs to the CPU
+        outputs = outputs.cpu()
         # Assuming binary classification with softmax at the end
         confidence_score = torch.softmax(outputs, dim=1).numpy()[0]
 
