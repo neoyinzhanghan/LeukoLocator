@@ -43,7 +43,7 @@ print("Found", len(aml_slides), "AML slides")
 
 # randomly select 25 slides from the aml_slides
 random.seed(0)
-aml_slides = random.sample(aml_slides, 25)
+aml_slides = random.sample(aml_slides, 500)
 
 for slide_metadata in tqdm(aml_slides, "Processing AML Slides: "):
 
