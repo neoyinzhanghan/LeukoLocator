@@ -41,10 +41,6 @@ print("Found", len(aml_slides), "AML slides")
 # # what are all the slides with the diagnosis "Plasma cell myeloma" AND are predicted to be a bone marrow aspirate?
 # pcm_slides = slide_pool_metadata_tracker.get_slides_from_dx("Plasma cell myeloma")
 
-# randomly select 25 slides from the aml_slides
-random.seed(0)
-aml_slides = random.sample(aml_slides, 500)
-
 for slide_metadata in tqdm(aml_slides, "Processing AML Slides: "):
 
     bma_fname = slide_metadata.slide_name
