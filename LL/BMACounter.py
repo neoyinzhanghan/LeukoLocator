@@ -1229,6 +1229,7 @@ class BMACounter:
                 )
                 if os.path.exists(error_path) and os.listdir(error_path):
                     os.system(f"rm -r {error_path}")
+                    print("WOOHOO! REDUNDANT ERROR FOLDER DELETED!")
                 os.rename(
                     self.save_dir,
                     os.path.join(
