@@ -53,6 +53,7 @@ for slide_metadata in tqdm(aml_slides, "Processing AML Slides: "):
 
     # try:
     bma_slide_path = os.path.join(slides_folder, bma_fname)
+    
     bma_counter = BMACounter(
         bma_slide_path,
         hoarding=True,

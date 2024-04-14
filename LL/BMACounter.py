@@ -20,7 +20,7 @@ from pathlib import Path
 # Within package imports ###########################################################################
 from LL.PBDifferential import Differential, to_count_dict
 from LL.FileNameManager import FileNameManager
-from LL.BMATopView import TopView, SpecimenError
+from LL.BMATopView import TopView, SpecimenError, TopViewError
 from LL.brain.HemeLabelManager import HemeLabelManager
 from LL.brain.YOLOManager import YOLOManager
 from LL.brain.FeatureEngineer import CellFeatureEngineer
@@ -70,6 +70,7 @@ class BMACounter:
         ignore_specimen_type: bool = False,
         do_extract_features: bool = False,
         overwrite: bool = True,
+        error: bool = False,
     ):
         """Initialize a PBCounter object."""
 
@@ -84,6 +85,7 @@ class BMACounter:
         self.wsi_path = wsi_path
         self.do_extract_features = do_extract_features
         self.overwrite = overwrite
+        self.error = error
 
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
@@ -101,124 +103,152 @@ class BMACounter:
             # if the save_dir does not exist, create it
             os.makedirs(self.save_dir, exist_ok=True)
 
-        # Processing the WSI
         try:
+
+            # Processing the WSI
+            try:
+                if self.verbose:
+                    print(f"Opening WSI as {wsi_path}")
+
+                wsi = openslide.OpenSlide(wsi_path)
+            except Exception as e:
+                raise SlideError(e)
+
             if self.verbose:
-                print(f"Opening WSI as {wsi_path}")
+                print(f"Processing WSI top view as TopView object")
+            # Processing the top level image
+            top_level = topview_level
 
-            wsi = openslide.OpenSlide(wsi_path)
-        except Exception as e:
-            raise SlideError(e)
+            if self.verbose:
+                print(f"Obtaining top view image")
 
-        if self.verbose:
-            print(f"Processing WSI top view as TopView object")
-        # Processing the top level image
-        top_level = topview_level
+            # if the read_region takes longer than 10 seconds, then raise a SlideError
 
-        if self.verbose:
-            print(f"Obtaining top view image")
+            top_view = read_with_timeout(
+                wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
+            )
 
-        # if the read_region takes longer than 10 seconds, then raise a SlideError
+            print("Checking Specimen Type")
+            specimen_type = get_specimen_type(top_view)
 
-        top_view = read_with_timeout(
-            wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
-        )
+            self.predicted_specimen_type = specimen_type
 
-        print("Checking Specimen Type")
-        specimen_type = get_specimen_type(top_view)
+            if specimen_type != "Bone Marrow Aspirate":
+                if not self.ignore_specimen_type:
+                    if self.continue_on_error:
 
-        self.predicted_specimen_type = specimen_type
-
-        if specimen_type != "Bone Marrow Aspirate":
-            if not self.ignore_specimen_type:
-                if self.continue_on_error:
-
-                    e = SpecimenError(
-                        "The specimen is not Bone Marrow Aspirate. Instead, it is "
-                        + specimen_type
-                        + "."
-                    )
-
-                    print(
-                        "ERROR: The specimen is not Bone Marrow Aspirate. Instead, it is "
-                        + specimen_type
-                        + "."
-                    )
-
-                    # if the save_dir does not exist, create it
-                    os.makedirs(self.save_dir, exist_ok=True)
-
-                    # save the exception and profiling data
-                    with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
-                        f.write(str(e))
-
-                    # Save profiling data even in case of error
-                    with open(
-                        os.path.join(self.save_dir, "runtime_data.yaml"), "w"
-                    ) as file:
-                        yaml.dump(
-                            self.profiling_data,
-                            file,
-                            default_flow_style=False,
-                            sort_keys=False,
+                        e = SpecimenError(
+                            "The specimen is not Bone Marrow Aspirate. Instead, it is "
+                            + specimen_type
+                            + "."
                         )
 
-                    # rename the save_dir name to "ERROR_" + save_dir
-                    os.rename(
-                        self.save_dir,
-                        os.path.join(
+                        print(
+                            "ERROR: The specimen is not Bone Marrow Aspirate. Instead, it is "
+                            + specimen_type
+                            + "."
+                        )
+
+                        # if the save_dir does not exist, create it
+                        os.makedirs(self.save_dir, exist_ok=True)
+
+                        # save the exception and profiling data
+                        with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
+                            f.write(str(e))
+
+                        # Save profiling data even in case of error
+                        with open(
+                            os.path.join(self.save_dir, "runtime_data.yaml"), "w"
+                        ) as file:
+                            yaml.dump(
+                                self.profiling_data,
+                                file,
+                                default_flow_style=False,
+                                sort_keys=False,
+                            )
+
+                        # rename the save_dir name to "ERROR_" + save_dir
+                        os.rename(
+                            self.save_dir,
+                            os.path.join(
+                                dump_dir,
+                                "ERROR_" + Path(self.file_name_manager.wsi_path).stem,
+                            ),
+                        )
+
+                        print(f"Error occurred and logged. Continuing to next WSI.")
+
+                        # update the save_dir
+                        self.save_dir = os.path.join(
                             dump_dir,
                             "ERROR_" + Path(self.file_name_manager.wsi_path).stem,
-                        ),
-                    )
+                        )
 
-                    print(f"Error occurred and logged. Continuing to next WSI.")
-
-                    # update the save_dir
-                    self.save_dir = os.path.join(
-                        dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
-                    )
+                    else:
+                        raise SpecimenError(
+                            "The specimen is not Bone Marrow Aspirate. Instead, it is "
+                            + specimen_type
+                            + "."
+                        )
 
                 else:
-                    raise SpecimenError(
-                        "The specimen is not Bone Marrow Aspirate. Instead, it is "
+                    print(
+                        "USERWarning: The specimen is not Bone Marrow Aspirate. Instead, it is "
                         + specimen_type
                         + "."
                     )
 
-            else:
-                print(
-                    "USERWarning: The specimen is not Bone Marrow Aspirate. Instead, it is "
-                    + specimen_type
-                    + "."
+            # top_view = wsi.read_region(
+            #     (0, 0), top_level, wsi.level_dimensions[top_level])
+
+            top_view = top_view.convert("RGB")
+            top_view_downsampling_rate = wsi.level_downsamples[top_level]
+
+            try:
+                self.top_view = TopView(
+                    top_view,
+                    top_view_downsampling_rate,
+                    top_level,
+                    verbose=self.verbose,
+                )
+            except Exception as e:
+                raise TopViewError(e)
+
+            self.top_view.save_images(self.save_dir)
+
+            if self.verbose:
+                print(f"Processing WSI search view as SearchView object")
+            # Processing the search level image
+
+            if self.verbose:
+                print(f"Closing WSI")
+            wsi.close()
+
+            # The focus regions and WBC candidates are None until they are processed
+            self.focus_regions = None
+            self.wbc_candidates = None
+            self.fr_tracker = None
+            self.differential = None
+
+            self.profiling_data["init_time"] = time.time() - start_time
+
+        except Exception as e:
+            if self.continue_on_error:
+                print(f"Error occurred: {e}")
+                print(f"Continuing to next WSI.")
+
+                # remame the save_dir to "ERROR_" + save_dir
+                os.rename(
+                    self.save_dir,
+                    os.path.join(
+                        dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                    ),
                 )
 
-        # top_view = wsi.read_region(
-        #     (0, 0), top_level, wsi.level_dimensions[top_level])
-
-        top_view = top_view.convert("RGB")
-        top_view_downsampling_rate = wsi.level_downsamples[top_level]
-        self.top_view = TopView(
-            top_view, top_view_downsampling_rate, top_level, verbose=self.verbose
-        )
-
-        self.top_view.save_images(self.save_dir)
-
-        if self.verbose:
-            print(f"Processing WSI search view as SearchView object")
-        # Processing the search level image
-
-        if self.verbose:
-            print(f"Closing WSI")
-        wsi.close()
-
-        # The focus regions and WBC candidates are None until they are processed
-        self.focus_regions = None
-        self.wbc_candidates = None
-        self.fr_tracker = None
-        self.differential = None
-
-        self.profiling_data["init_time"] = time.time() - start_time
+                self.error = True
+            else:
+                self.error = True
+                raise e
 
     def find_focus_regions(self):
         """Return the focus regions of the highest magnification view."""
@@ -1084,6 +1114,10 @@ class BMACounter:
 
     def tally_differential(self):
         """Run all steps with time profiling and save the profiling data to YAML."""
+
+        if self.error == True:
+            print("Error occurred in previous run. Skipping this run.")
+            pass
         try:
             save_selected_variables_to_yaml(
                 selected_variable_names,
