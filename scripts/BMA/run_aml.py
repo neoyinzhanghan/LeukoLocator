@@ -47,19 +47,19 @@ for slide_metadata in tqdm(aml_slides, "Processing AML Slides: "):
 
     if already_processed(bma_fname, dump_dirs):
         print("Already processed", bma_fname)
-        continue
 
-    print("Processing", bma_fname)
+    else:
+        print("Processing", bma_fname)
 
-    # try:
-    bma_slide_path = os.path.join(slides_folder, bma_fname)
-    
-    bma_counter = BMACounter(
-        bma_slide_path,
-        hoarding=True,
-        continue_on_error=True,
-        do_extract_features=False,
-    )
-    bma_counter.tally_differential()
+        # try:
+        bma_slide_path = os.path.join(slides_folder, bma_fname)
 
-    print("Saving to", bma_counter.save_dir)
+        bma_counter = BMACounter(
+            bma_slide_path,
+            hoarding=True,
+            continue_on_error=True,
+            do_extract_features=False,
+        )
+        bma_counter.tally_differential()
+
+        print("Saving to", bma_counter.save_dir)

@@ -1227,6 +1227,9 @@ class BMACounter:
                 error_path = os.path.join(
                     dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
                 )
+
+                print(os.path.exists(error_path))
+                print(os.listdir(error_path))
                 if os.path.exists(error_path) and os.listdir(error_path):
                     os.system(f"rm -r {error_path}")
                     print("WOOHOO! REDUNDANT ERROR FOLDER DELETED!")
