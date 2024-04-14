@@ -239,12 +239,14 @@ class BMACounter:
                 print(f"Continuing to next WSI.")
 
                 # remame the save_dir to "ERROR_" + save_dir
-                error_path = os.path.join(dump_dir, "ERROR_" + self.file_name_manager.stem)
+                error_path = os.path.join(
+                    dump_dir, "ERROR_" + self.file_name_manager.stem
+                )
 
                 # if the error_path already exists, then delete it and make a new one
-                if os.path.exists(error_path):
+                if os.path.exists(error_path) and os.listdir(error_path):
                     os.system(f"rm -r {error_path}")
-                
+
                 os.rename(
                     self.save_dir,
                     os.path.join(
@@ -1225,8 +1227,8 @@ class BMACounter:
                 error_path = os.path.join(
                     dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
                 )
-                if os.path.exists(error_path):
-                    shutil.rmtree(error_path)
+                if os.path.exists(error_path) and os.listdir(error_path):
+                    os.system(f"rm -r {error_path}")
                 os.rename(
                     self.save_dir,
                     os.path.join(
