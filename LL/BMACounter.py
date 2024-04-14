@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import yaml
 import time
 import sys
+import shutil
 from PIL import Image
 from tqdm import tqdm
 from ray.exceptions import RayTaskError
@@ -1214,6 +1215,12 @@ class BMACounter:
                     )
 
                 # rename the save_dir name to "ERROR_" + save_dir
+                # if the ERROR folder already exists, delete it
+                error_path = os.path.join(
+                    dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
+                )
+                if os.path.exists(error_path):
+                    shutil.rmtree(error_path)
                 os.rename(
                     self.save_dir,
                     os.path.join(
