@@ -98,7 +98,7 @@ class BMACounter:
         # if the save_dir already exists, then delete it and make a new one
         if os.path.exists(self.save_dir):
             if self.overwrite:
-                os.system(f"rm -r {self.save_dir}")
+                os.system(f"rm -r \'{self.save_dir}\'")
 
         else:
             # if the save_dir does not exist, create it
@@ -245,7 +245,7 @@ class BMACounter:
 
                 # if the error_path already exists, then delete it and make a new one
                 if os.path.exists(error_path) and os.listdir(error_path):
-                    os.system(f"rm -r {error_path}")
+                    os.system(f"rm -r \'{error_path}\'")
 
                 os.rename(
                     self.save_dir,
