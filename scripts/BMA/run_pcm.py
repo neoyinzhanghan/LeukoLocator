@@ -33,15 +33,13 @@ slide_paths = [
 # get the all the slide metadata
 slide_pool_metadata_tracker = SlidePoolMetadataTracker(slide_paths)
 
-
-# what are all the slides with the diagnosis "Plasma cell myeloma" AND are predicted to be a bone marrow aspirate?
+# what are all the slides with the diagnosis "AML" AND are predicted to be a bone marrow aspirate?
 pcm_slides = slide_pool_metadata_tracker.get_slides_from_dx("Plasma cell myeloma")
 
 print("Found", len(pcm_slides), "PCM slides")
 
-# randomly select 25 slides from the aml_slides
-random.seed(0)
-pcm_slides = random.sample(pcm_slides, 25)
+# # what are all the slides with the diagnosis "Plasma cell myeloma" AND are predicted to be a bone marrow aspirate?
+# pcm_slides = slide_pool_metadata_tracker.get_slides_from_dx("Plasma cell myeloma")
 
 for slide_metadata in tqdm(pcm_slides, "Processing PCM Slides: "):
 
@@ -49,18 +47,19 @@ for slide_metadata in tqdm(pcm_slides, "Processing PCM Slides: "):
 
     if already_processed(bma_fname, dump_dirs):
         print("Already processed", bma_fname)
-        continue
 
-    print("Processing", bma_fname)
+    else:
+        print("Processing", bma_fname)
 
-    # try:
-    bma_slide_path = os.path.join(slides_folder, bma_fname)
-    bma_counter = BMACounter(
-        bma_slide_path,
-        hoarding=True,
-        continue_on_error=True,
-        do_extract_features=False,
-    )
-    bma_counter.tally_differential()
+        # try:
+        bma_slide_path = os.path.join(slides_folder, bma_fname)
 
-    print("Saving to", bma_counter.save_dir)
+        bma_counter = BMACounter(
+            bma_slide_path,
+            hoarding=True,
+            continue_on_error=True,
+            do_extract_features=False,
+        )
+        bma_counter.tally_differential()
+
+        print("Saving to", bma_counter.save_dir)
