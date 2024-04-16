@@ -79,13 +79,19 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     big_dict = {"slide_name": dname}
 
     for key, value in one_hot_differential.items():
-        big_dict[key] = value
+        big_dict[key] = int(
+            value * 100
+        )  # convert to percentage for easier reading and make it an integer
 
     for key, value in stacked_differential.items():
-        big_dict[key + "_stacked"] = value
+        big_dict[key + "_stacked"] = int(
+            value * 100
+        )  # convert to percentage for easier reading and make it an integer
 
     for key, value in grouped_differential.items():
-        big_dict[key + "_grouped"] = value
+        big_dict[key + "_grouped"] = int(
+            value * 100
+        )  # convert to percentage for easier reading and make it an integer
 
     for key, value in bma_info_row.items():
         big_dict[key] = value
