@@ -104,7 +104,7 @@ class BMACounter:
         os.makedirs(self.save_dir, exist_ok=True)
 
         try:
-            # Processing the WSI    
+            # Processing the WSI
             try:
                 if self.verbose:
                     print(f"Opening WSI as {wsi_path}")
