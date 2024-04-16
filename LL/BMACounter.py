@@ -198,34 +198,34 @@ class BMACounter:
                         + "."
                     )
 
-                # top_view = wsi.read_region(
-                #     (0, 0), top_level, wsi.level_dimensions[top_level])
+            # top_view = wsi.read_region(
+            #     (0, 0), top_level, wsi.level_dimensions[top_level])
 
-                top_view = top_view.convert("RGB")
-                top_view_downsampling_rate = wsi.level_downsamples[top_level]
+            top_view = top_view.convert("RGB")
+            top_view_downsampling_rate = wsi.level_downsamples[top_level]
 
-                try:
-                    self.top_view = TopView(
-                        top_view,
-                        top_view_downsampling_rate,
-                        top_level,
-                        verbose=self.verbose,
-                    )
-                except Exception as e:
-                    print(f"Error occurred: {e}")
-                    raise TopViewError(e)
+            try:
+                self.top_view = TopView(
+                    top_view,
+                    top_view_downsampling_rate,
+                    top_level,
+                    verbose=self.verbose,
+                )
+            except Exception as e:
+                print(f"Error occurred: {e}")
+                raise TopViewError(e)
 
-                self.top_view.save_images(self.save_dir)
+            self.top_view.save_images(self.save_dir)
 
-                if self.verbose:
-                    print(f"Processing WSI search view as SearchView object")
-                # Processing the search level image
+            if self.verbose:
+                print(f"Processing WSI search view as SearchView object")
+            # Processing the search level image
 
-                if self.verbose:
-                    print(f"Closing WSI")
-                wsi.close()
+            if self.verbose:
+                print(f"Closing WSI")
+            wsi.close()
 
-                self.profiling_data["init_time"] = time.time() - start_time
+            self.profiling_data["init_time"] = time.time() - start_time
 
         except Exception as e:
             if self.continue_on_error:
