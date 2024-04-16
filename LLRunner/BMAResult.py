@@ -29,7 +29,7 @@ class BMAResult:
         self.result_dir = result_dir
 
         if not self.error:
-            self.cell_info = pd.read_csv(result_dir / "cells" / "cell_info.csv")
+            self.cell_info = pd.read_csv(result_dir / "cells" / "cells_info.csv")
 
     def get_stacked_differential(self):
         """In the cell_info dataframe there are columns corresponding to each cell type in the list cellnames.
