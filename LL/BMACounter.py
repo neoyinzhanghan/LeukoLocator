@@ -88,6 +88,12 @@ class BMACounter:
         self.overwrite = overwrite
         self.error = error
 
+        # The focus regions and WBC candidates are None until they are processed
+        self.focus_regions = None
+        self.wbc_candidates = None
+        self.fr_tracker = None
+        self.differential = None
+
         if self.verbose:
             print(f"Initializing FileNameManager object for {wsi_path}")
         # Initialize the manager
@@ -218,12 +224,6 @@ class BMACounter:
                 if self.verbose:
                     print(f"Closing WSI")
                 wsi.close()
-
-                # The focus regions and WBC candidates are None until they are processed
-                self.focus_regions = None
-                self.wbc_candidates = None
-                self.fr_tracker = None
-                self.differential = None
 
                 self.profiling_data["init_time"] = time.time() - start_time
 
@@ -1125,7 +1125,7 @@ class BMACounter:
 
         if self.error == True:
             print("Error occurred in previous run. Skipping this run.")
-            pass
+            return None
         try:
             save_selected_variables_to_yaml(
                 selected_variable_names,
