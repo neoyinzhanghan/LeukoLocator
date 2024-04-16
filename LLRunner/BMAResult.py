@@ -106,3 +106,53 @@ class BMAResult:
 
         # return a dictionary with the grouped class as the key and the proportion of cells in that class as the value
         return grouped_differential.to_dict()
+
+    def get_raw_counts(self):
+        """
+        Return the raw counts of the cells in the cell_info dataframe after classifying the cells into the cellnames classes.
+        """
+
+        # classify the cells into the cellnames classes
+        self.cell_info["cell_class"] = self.cell_info[cellnames].idxmax(axis=1)
+
+        # get the raw counts of the cells in the cell_info dataframe
+        raw_counts = self.cell_info["cell_class"].value_counts()
+
+        # return a dictionary with the cell type as the key and the raw count of cells of that type as the value
+        return raw_counts.to_dict()
+
+    def get_grouped_raw_counts(self):
+        """
+        Return the raw counts of the cells in the cell_info dataframe after classifying the cells into the cellnames classes
+        after setting omitted class probabilities to 0 and removing all the cells in the removed classes.
+        The counts should be grouped based on the differential_group_dict.
+        """
+
+        # set the values of columns corresponding to the omitted classes to 0
+        self.cell_info[omitted_classes] = 0
+
+        # classify the cells into the cellnames classes
+        self.cell_info["cell_class"] = self.cell_info[cellnames].idxmax(axis=1)
+
+        # remove all the cells in the removed classes
+        self.cell_info = self.cell_info[
+            ~self.cell_info["cell_class"].isin(removed_classes)
+        ]
+
+        # give the cell a class from the differential_group_dict based on their cellname classes
+        self.cell_info["grouped_class"] = self.cell_info["cell_class"].apply(
+            lambda x: next(
+                (
+                    grouped_class
+                    for grouped_class in differential_group_dict
+                    if x in differential_group_dict[grouped_class]
+                ),
+                None,
+            )
+        )
+
+        # get the raw counts of the cells in the cell_info dataframe
+        grouped_raw_counts = self.cell_info["grouped_class"].value_counts()
+
+        # return a dictionary with the grouped class as the key and the raw count of cells in that class as the value
+        return grouped_raw_counts.to_dict()

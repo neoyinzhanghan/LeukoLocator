@@ -46,6 +46,12 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     # get the grouped differential
     grouped_differential = bma_result.get_grouped_differential()
 
+    # get the raw count
+    raw_count = bma_result.get_raw_counts()
+
+    # get the grouped raw count
+    grouped_raw_count = bma_result.get_grouped_raw_counts()
+
     # get the row from the BMA info
     bma_info_row = bma_info.get_row_from_slide_name(dname)
 
@@ -73,6 +79,8 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     # -- one_hot_differential: turn the one_hot_differential dictionary into a df row the column name is the key and the value is the value
     # -- stacked_differential: turn the stacked_differential dictionary into a df row the column name is the key + "_stacked" and the value is the value
     # -- grouped_differential: turn the grouped_differential dictionary into a df row the column name is the key + "_grouped" and the value is the value
+    # -- raw_count: turn the raw_count dictionary into a df row the column name is the key + "_count" and the value is the value
+    # -- grouped_raw_count: turn the grouped_raw_count dictionary into a df row the column name is the key + "_grouped_count" and the value is the value
     # -- bma_info_row: the row from the BMA info
     # Just make one big dictionary
 
@@ -92,6 +100,12 @@ for dname in tqdm(result_dirs, "Processing Results: "):
         big_dict[key + "_grouped"] = int(
             value * 100
         )  # convert to percentage for easier reading and make it an integer
+
+    for key, value in raw_count.items():
+        big_dict[key + "_count"] = value
+
+    for key, value in grouped_raw_count.items():
+        big_dict[key + "_grouped_count"] = value
 
     for key, value in bma_info_row.items():
         big_dict[key] = value
