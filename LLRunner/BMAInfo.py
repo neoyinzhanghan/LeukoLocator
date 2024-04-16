@@ -47,7 +47,9 @@ class BMAInfo:
         rows = self.df.loc[self.df["specnum_formatted"] == accession_number]
 
         # assert that either 0 or 1 rows are found
-        assert len(rows) <= 1, f"More than one row found for slide name {slide_name}."
+        if len(rows) > 1:
+            # get the rows with most recent accession_date
+            rows = rows.sort_values("accession_date", ascending=False).head(1)
 
         # if no rows are found, return None, else return the row
         if rows.empty:
