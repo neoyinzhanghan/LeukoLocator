@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from LLRunner.assumptions import cellnames
+from LLRunner.BMAassumptions import *
 
 
 class BMAResult:
@@ -61,3 +62,47 @@ class BMAResult:
 
         # return a dictionary with the cell type as the key and the proportion of cells predicted as that type as the value
         return one_hot_differential.to_dict()
+
+    def get_grouped_differential(
+        self,
+        omitted_classes=omitted_classes,
+        removed_classes=removed_classes,
+        differential_group_dict=differential_group_dict,
+    ):
+        """
+        First set the probability in the omitted classes to 0.
+        Then classify the cells into the cellnames classes and remove all the cells in the removed classes.
+        Finally, give the cell a class from the differential_group_dict based on their cellname classes.
+        (The differential_group_dict should map a grouped class to the a list of cellname classes that grouped class contains)
+        """
+
+        # set the values of columns corresponding to the omitted classes to 0
+        self.cell_info[omitted_classes] = 0
+
+        # classify the cells into the cellnames classes
+        self.cell_info["cell_class"] = self.cell_info[cellnames].idxmax(axis=1)
+
+        # remove all the cells in the removed classes
+        self.cell_info = self.cell_info[
+            ~self.cell_info["cell_class"].isin(removed_classes)
+        ]
+
+        # give the cell a class from the differential_group_dict based on their cellname classes
+        self.cell_info["grouped_class"] = self.cell_info["cell_class"].apply(
+            lambda x: next(
+                (
+                    grouped_class
+                    for grouped_class in differential_group_dict
+                    if x in differential_group_dict[grouped_class]
+                ),
+                None,
+            )
+        )
+
+        # get the proportion of cells in each grouped class
+        grouped_differential = self.cell_info["grouped_class"].value_counts(
+            normalize=True
+        )
+
+        # return a dictionary with the grouped class as the key and the proportion of cells in that class as the value
+        return grouped_differential.to_dict()
