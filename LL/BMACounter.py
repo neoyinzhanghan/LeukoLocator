@@ -111,6 +111,7 @@ class BMACounter:
 
                 wsi = openslide.OpenSlide(wsi_path)
             except Exception as e:
+                print(f"Error occurred: {e}")
                 raise SlideError(e)
 
             if self.verbose:
@@ -205,6 +206,7 @@ class BMACounter:
                         verbose=self.verbose,
                     )
                 except Exception as e:
+                    print(f"Error occurred: {e}")
                     raise TopViewError(e)
 
                 self.top_view.save_images(self.save_dir)
@@ -236,7 +238,7 @@ class BMACounter:
                 )
 
                 # if the error_path already exists, then delete it and make a new one
-                if os.path.exists(error_path) and os.listdir(error_path):
+                if os.path.exists(error_path):
                     os.system(f"rm -r '{error_path}'")
 
                 os.rename(
@@ -1225,11 +1227,8 @@ class BMACounter:
                     dump_dir, "ERROR_" + Path(self.file_name_manager.wsi_path).stem
                 )
 
-                print(os.path.exists(error_path))
-                print(os.listdir(error_path))
-                if os.path.exists(error_path) and os.listdir(error_path):
+                if os.path.exists(error_path):
                     os.system(f"rm -r '{error_path}'")
-                    print("WOOHOO! REDUNDANT ERROR FOLDER DELETED!")
                 os.rename(
                     self.save_dir,
                     os.path.join(
