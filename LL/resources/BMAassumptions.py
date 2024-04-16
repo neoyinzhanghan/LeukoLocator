@@ -100,7 +100,7 @@ feature_extractor_ckpt_dict = {
 }
 supported_feature_extraction_archs = feature_extractor_ckpt_dict.keys()
 
-high_mag_region_clf_ckpt_path = '/media/hdd3/neo/MODELS/2024-04-06 BMARegionClf 1000Epochs/lightning_logs/1/version_0/checkpoints/epoch=999-step=55000.ckpt'
+high_mag_region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-04-06 BMARegionClf 1000Epochs/lightning_logs/1/version_0/checkpoints/epoch=999-step=55000.ckpt"
 
 ###########################
 ### Augmentation Config ###

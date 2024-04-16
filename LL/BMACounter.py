@@ -98,15 +98,13 @@ class BMACounter:
         # if the save_dir already exists, then delete it and make a new one
         if os.path.exists(self.save_dir):
             if self.overwrite:
-                os.system(f"rm -r \'{self.save_dir}\'")
+                os.system(f"rm -r '{self.save_dir}'")
 
-        else:
-            # if the save_dir does not exist, create it
-            os.makedirs(self.save_dir, exist_ok=True)
+        # if the save_dir does not exist, create it
+        os.makedirs(self.save_dir, exist_ok=True)
 
         try:
-
-            # Processing the WSI
+            # Processing the WSI    
             try:
                 if self.verbose:
                     print(f"Opening WSI as {wsi_path}")
@@ -136,55 +134,55 @@ class BMACounter:
 
             if specimen_type != "Bone Marrow Aspirate":
                 if not self.ignore_specimen_type:
-                    if self.continue_on_error:
+                    # if self.continue_on_error:
 
-                        e = SpecimenError(
-                            "The specimen is not Bone Marrow Aspirate. Instead, it is "
-                            + specimen_type
-                            + "."
-                        )
+                    #     e = SpecimenError(
+                    #         "The specimen is not Bone Marrow Aspirate. Instead, it is "
+                    #         + specimen_type
+                    #         + "."
+                    #     )
 
-                        print(
-                            "ERROR: The specimen is not Bone Marrow Aspirate. Instead, it is "
-                            + specimen_type
-                            + "."
-                        )
+                    #     print(
+                    #         "ERROR: The specimen is not Bone Marrow Aspirate. Instead, it is "
+                    #         + specimen_type
+                    #         + "."
+                    #     )
 
-                        # if the save_dir does not exist, create it
-                        os.makedirs(self.save_dir, exist_ok=True)
+                    #     # if the save_dir does not exist, create it
+                    #     os.makedirs(self.save_dir, exist_ok=True)
 
-                        # save the exception and profiling data
-                        with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
-                            f.write(str(e))
+                    #     # save the exception and profiling data
+                    #     with open(os.path.join(self.save_dir, "error.txt"), "w") as f:
+                    #         f.write(str(e))
 
-                        # Save profiling data even in case of error
-                        with open(
-                            os.path.join(self.save_dir, "runtime_data.yaml"), "w"
-                        ) as file:
-                            yaml.dump(
-                                self.profiling_data,
-                                file,
-                                default_flow_style=False,
-                                sort_keys=False,
-                            )
+                    #     # Save profiling data even in case of error
+                    #     with open(
+                    #         os.path.join(self.save_dir, "runtime_data.yaml"), "w"
+                    #     ) as file:
+                    #         yaml.dump(
+                    #             self.profiling_data,
+                    #             file,
+                    #             default_flow_style=False,
+                    #             sort_keys=False,
+                    #         )
 
-                        # rename the save_dir name to "ERROR_" + save_dir
-                        os.rename(
-                            self.save_dir,
-                            os.path.join(
-                                dump_dir,
-                                "ERROR_" + Path(self.file_name_manager.wsi_path).stem,
-                            ),
-                        )
+                    #     # rename the save_dir name to "ERROR_" + save_dir
+                    #     os.rename(
+                    #         self.save_dir,
+                    #         os.path.join(
+                    #             dump_dir,
+                    #             "ERROR_" + Path(self.file_name_manager.wsi_path).stem,
+                    #         ),
+                    #     )
 
-                        print(f"Error occurred and logged. Continuing to next WSI.")
+                    #     print(f"Error occurred and logged. Continuing to next WSI.")
 
-                    else:
-                        raise SpecimenError(
-                            "The specimen is not Bone Marrow Aspirate. Instead, it is "
-                            + specimen_type
-                            + "."
-                        )
+                    # else:
+                    raise SpecimenError(
+                        "The specimen is not Bone Marrow Aspirate. Instead, it is "
+                        + specimen_type
+                        + "."
+                    )
 
                 else:
                     print(
@@ -193,39 +191,39 @@ class BMACounter:
                         + "."
                     )
 
-            # top_view = wsi.read_region(
-            #     (0, 0), top_level, wsi.level_dimensions[top_level])
+                # top_view = wsi.read_region(
+                #     (0, 0), top_level, wsi.level_dimensions[top_level])
 
-            top_view = top_view.convert("RGB")
-            top_view_downsampling_rate = wsi.level_downsamples[top_level]
+                top_view = top_view.convert("RGB")
+                top_view_downsampling_rate = wsi.level_downsamples[top_level]
 
-            try:
-                self.top_view = TopView(
-                    top_view,
-                    top_view_downsampling_rate,
-                    top_level,
-                    verbose=self.verbose,
-                )
-            except Exception as e:
-                raise TopViewError(e)
+                try:
+                    self.top_view = TopView(
+                        top_view,
+                        top_view_downsampling_rate,
+                        top_level,
+                        verbose=self.verbose,
+                    )
+                except Exception as e:
+                    raise TopViewError(e)
 
-            self.top_view.save_images(self.save_dir)
+                self.top_view.save_images(self.save_dir)
 
-            if self.verbose:
-                print(f"Processing WSI search view as SearchView object")
-            # Processing the search level image
+                if self.verbose:
+                    print(f"Processing WSI search view as SearchView object")
+                # Processing the search level image
 
-            if self.verbose:
-                print(f"Closing WSI")
-            wsi.close()
+                if self.verbose:
+                    print(f"Closing WSI")
+                wsi.close()
 
-            # The focus regions and WBC candidates are None until they are processed
-            self.focus_regions = None
-            self.wbc_candidates = None
-            self.fr_tracker = None
-            self.differential = None
+                # The focus regions and WBC candidates are None until they are processed
+                self.focus_regions = None
+                self.wbc_candidates = None
+                self.fr_tracker = None
+                self.differential = None
 
-            self.profiling_data["init_time"] = time.time() - start_time
+                self.profiling_data["init_time"] = time.time() - start_time
 
         except Exception as e:
             if self.continue_on_error:
@@ -239,7 +237,7 @@ class BMACounter:
 
                 # if the error_path already exists, then delete it and make a new one
                 if os.path.exists(error_path) and os.listdir(error_path):
-                    os.system(f"rm -r \'{error_path}\'")
+                    os.system(f"rm -r '{error_path}'")
 
                 os.rename(
                     self.save_dir,
@@ -249,6 +247,11 @@ class BMACounter:
                 )
 
                 self.error = True
+
+                # save the exception message as a txt file in the ERROR_save_dir
+                with open(os.path.join(error_path, "error.txt"), "w") as f:
+                    f.write(str(e))
+
             else:
                 self.error = True
                 raise e
@@ -1225,7 +1228,7 @@ class BMACounter:
                 print(os.path.exists(error_path))
                 print(os.listdir(error_path))
                 if os.path.exists(error_path) and os.listdir(error_path):
-                    os.system(f"rm -r \'{error_path}\'")
+                    os.system(f"rm -r '{error_path}'")
                     print("WOOHOO! REDUNDANT ERROR FOLDER DELETED!")
                 os.rename(
                     self.save_dir,
