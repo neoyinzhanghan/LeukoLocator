@@ -14,6 +14,8 @@ LL/PBTopView.py
 LL/SearchView.py
 LL/WBCCandidate.py
 LL/__init__.py
+LL/brain/BMAHighMagRegionCheckTracker.py
+LL/brain/BMAHighMagRegionChecker.py
 LL/brain/BMARegionClfManager.py
 LL/brain/FeatureEngineer.py
 LL/brain/FocusRegionMaker.py
@@ -50,6 +52,9 @@ LL/vision/image_quality.py
 LL/vision/masking.py
 LL/vision/processing.py
 LL/vision/region_clf_model.py
+LLRunner/BMAInfo.py
+LLRunner/BMAResult.py
+LLRunner/BMAassumptions.py
 LLRunner/SR.py
 LLRunner/SST.py
 LLRunner/SlideMetadata.py
