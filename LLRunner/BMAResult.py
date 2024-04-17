@@ -139,7 +139,12 @@ class BMAResult:
         ].mean()
 
         # return a dictionary with the grouped class as the key and the average probability of cells in that class as the value
-        return grouped_stacked_differential.to_dict()
+        prob_dict = grouped_stacked_differential.to_dict()
+
+        # normalize the probabilities so it sums to 1
+        prob_sum = sum(prob_dict.values())
+
+        return {key: value / prob_sum for key, value in prob_dict.items()}
 
     def get_raw_counts(self):
         """
