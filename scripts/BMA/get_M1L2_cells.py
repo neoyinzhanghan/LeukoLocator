@@ -4,8 +4,8 @@ import shutil
 from tqdm import tqdm
 from LLRunner.BMAassumptions import cellnames
 
-results_dir = "/media/hdd3/neo/results_bma_aml_v2"
-save_dir = "/media/hdd3/neo/cells_bma_aml_v2"
+results_dir = "/media/hdd3/neo/results_bma_pcm_v2"
+save_dir = "/media/hdd3/neo/cells_bma_pcm_v2"
 
 # Create directories if they don't exist
 os.makedirs(save_dir, exist_ok=True)
