@@ -52,6 +52,12 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     # get the grouped raw count
     grouped_raw_count = bma_result.get_grouped_raw_counts()
 
+    # get the grouped_stacked differential
+    grouped_stacked_differential = bma_result.get_grouped_stacked_differential()
+
+    # get the M1L2 results
+    M1L2_results = bma_result.get_M1L2_results()
+
     # get the row from the BMA info
     bma_info_row = bma_info.get_row_from_slide_name(dname)
 
@@ -87,25 +93,27 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     big_dict = {"slide_name": dname}
 
     for key, value in one_hot_differential.items():
-        big_dict[key] = int(
-            value * 100
-        )  # convert to percentage for easier reading and make it an integer
+        big_dict[key] = value * 100
 
     for key, value in stacked_differential.items():
-        big_dict[key + "_stacked"] = int(
-            value * 100
-        )  # convert to percentage for easier reading and make it an integer
+        big_dict[key + "_stacked"] = value * 100
 
     for key, value in grouped_differential.items():
-        big_dict[key + "_grouped"] = int(
-            value * 100
-        )  # convert to percentage for easier reading and make it an integer
+        big_dict[key + "_grouped"] = value * 100
 
     for key, value in raw_count.items():
         big_dict[key + "_count"] = value
 
     for key, value in grouped_raw_count.items():
         big_dict[key + "_grouped_count"] = value
+
+    for key, value in grouped_stacked_differential.items():
+        big_dict[key + "_grouped_stacked"] = value * 100
+
+    big_dict["M1L2"] = M1L2_results["M1L2"] * 100
+    big_dict["L2M1"] = M1L2_results["L2M1"] * 100
+    big_dict["M1L2_count"] = M1L2_results["M1L2_count"]
+    big_dict["L2M1_count"] = M1L2_results["L2M1_count"]
 
     for key, value in bma_info_row.items():
         big_dict[key] = value
