@@ -156,3 +156,10 @@ class BMAResult:
 
         # return a dictionary with the grouped class as the key and the raw count of cells in that class as the value
         return grouped_raw_counts.to_dict()
+
+    def get_M1L2_results(self):
+        """ Get the differential and count for cells where the top class is M1 and the second class is L2. 
+        Conversely, get the differential and count for cells where the top class is L2 and the second class is M1.
+
+        Store in a dictionary with keys `M1L2` and `L2M1`.
+        """
