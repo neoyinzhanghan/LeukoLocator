@@ -198,6 +198,14 @@ class BMAResult:
         Store in a dictionary with keys `M1L2` and `L2M1`, and `M1L2_count`, `L2M1_count` respectively.
         """
 
+        # make the column first which is the top class
+        self.cell_info["first"] = self.cell_info[cellnames].idxmax(axis=1)
+
+        # make the column second which is the second highest class
+        self.cell_info["second"] = self.cell_info[cellnames].apply(
+            lambda row: row.nlargest(2).index[-1], axis=1
+        )
+
         # get all the cells that have M1 as the top probability class and L2 as the second highest probability class
         M1L2_cells = self.cell_info[
             (self.cell_info["first"] == "M1") & (self.cell_info["second"] == "L2")
