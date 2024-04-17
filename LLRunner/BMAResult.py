@@ -126,7 +126,7 @@ class BMAResult:
         ]
 
         for grouped_class, cellnames_list in differential_group_dict.items():
-            self.cell_info[grouped_class + "_grouped_stacked"] = self.cell_info[
+            self.cell_info[grouped_class] = self.cell_info[
                 cellnames_list
             ].sum(axis=1)
 
