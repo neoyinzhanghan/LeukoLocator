@@ -126,12 +126,17 @@ class BMAResult:
         ]
 
         for grouped_class, cellnames_list in differential_group_dict.items():
-            self.cell_info[grouped_class] = self.cell_info[
+            self.cell_info[grouped_class + "_grouped_stacked"] = self.cell_info[
                 cellnames_list
             ].sum(axis=1)
 
         # get the average probability of cells in each grouped class
-        grouped_stacked_differential = self.cell_info[BMA_final_classes].mean()
+        grouped_stacked_differential = self.cell_info[
+            [
+                grouped_class + "_grouped_stacked"
+                for grouped_class in differential_group_dict
+            ]
+        ].mean()
 
         # return a dictionary with the grouped class as the key and the average probability of cells in that class as the value
         return grouped_stacked_differential.to_dict()

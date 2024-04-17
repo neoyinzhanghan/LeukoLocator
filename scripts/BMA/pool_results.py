@@ -108,7 +108,7 @@ for dname in tqdm(result_dirs, "Processing Results: "):
         big_dict[key + "_grouped_count"] = value
 
     for key, value in grouped_stacked_differential.items():
-        big_dict[key + "_grouped_stacked"] = value * 100
+        big_dict[key] = value * 100
 
     big_dict["M1L2"] = M1L2_results["M1L2"] * 100
     big_dict["L2M1"] = M1L2_results["L2M1"] * 100
