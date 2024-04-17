@@ -47,10 +47,10 @@ for subfolder in tqdm(subfolders, desc="Reading Data"):
         cell_name = row["name"]
         cell_path = os.path.join(subfolder, "cells", cell_name.split("-")[0], cell_name)  # Corrected path
         save_path = os.path.join(save_dir, "M1L2", cell_name)
-        shutil.copytree(cell_path, save_path)
+        shutil.copy(cell_path, save_path)
 
     for index, row in L2M1_cells_sample.iterrows():
         cell_name = row["name"]
         cell_path = os.path.join(subfolder, "cells", cell_name.split("-")[0], cell_name)  # Corrected path
         save_path = os.path.join(save_dir, "L2M1", cell_name)
-        shutil.copytree(cell_path, save_path)
+        shutil.copy(cell_path, save_path)
