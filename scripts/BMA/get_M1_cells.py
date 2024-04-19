@@ -41,7 +41,7 @@ for subfolder in tqdm(subfolders, desc="Reading Data"):
         cell_path = os.path.join(
             subfolder, "cells", cell_name.split("-")[0], cell_name
         )  # Corrected path
-        save_path = os.path.join(save_dir, cell_name.split(".")[0] + subfolder + ".jpg")
+        save_path = os.path.join(save_dir, cell_name.split(".")[0] + os.path.basename(subfolder).split(";")[0] + ".jpg")
         shutil.copy(cell_path, save_path)
 
     # Count the number of cells whose second class is cellname for cellname in cellnames
