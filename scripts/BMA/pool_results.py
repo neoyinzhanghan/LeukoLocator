@@ -9,7 +9,7 @@ from tqdm import tqdm
 start_time = time.time()
 bma_info = BMAInfo()
 
-result_dir = "/media/hdd3/neo/results_bma_pcm_v2"
+result_dir = "/media/hdd3/neo/results_bma_normal_v2"
 
 print(f"Pooling Results Directories In {result_dir}")
 # first get a list of all the directories in the result_dir that does not start with "ERROR_"
