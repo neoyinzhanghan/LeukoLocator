@@ -28,6 +28,7 @@ profiling_dict = {
     "general_dx": [],
     "sub_dx": [],
     "error": [],
+    "slide_file_size": [],
 }
 
 # get all the slide names which is all the files in the read only data directory that starts with the slide prefix and ends with the file extension
@@ -71,6 +72,9 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     )
 
     profiling_dict["slide_moving_time"].append(time.time() - start_time)
+
+    # get the file size of the slide in GB
+    slide_file_size = os.path.getsize(os.path.join(tmp_dir, slide_name)) / (1024**3)
     intermediate_time = time.time()
 
     tmp_slide_path = os.path.join(tmp_dir, slide_name)
