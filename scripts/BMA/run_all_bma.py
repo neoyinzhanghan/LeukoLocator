@@ -38,6 +38,8 @@ profiling_dict = {
 if os.path.exists(rsync_error_path):
     with open(rsync_error_path, "r") as f:
         rsync_error_slides = f.read().splitlines()
+else:
+    rsync_error_slides = []
 
 # get all the slide names which is all the files in the read only data directory that starts with the slide prefix and ends with the file extension
 slide_names = [
