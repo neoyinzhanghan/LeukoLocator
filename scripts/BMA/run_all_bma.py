@@ -1,6 +1,7 @@
 import os
 import time
 import pandas as pd
+import subprocess
 from LL.brain.SpecimenClf import predict_bma
 from LL.BMACounter import BMACounter
 from LL.resources.BMAassumptions import dump_dir
@@ -14,6 +15,7 @@ slide_prefix = "H"
 file_extension = ".ndpi"
 tmp_dir = "/media/hdd1/BMA_tmp"
 metadata_path = os.path.join(dump_dir, "run_metadata.csv")
+rsync_error_path = os.path.join(dump_dir, "rsync_error_slides.txt")
 
 profiling_dict = {
     "slide_name": [],
@@ -31,6 +33,11 @@ profiling_dict = {
     "error": [],
     "slide_file_size": [],
 }
+
+# read the rsync error slides from the rsync_error_path file (each line is a slide name)
+if os.path.exists(rsync_error_path):
+    with open(rsync_error_path, "r") as f:
+        rsync_error_slides = f.read().splitlines()
 
 # get all the slide names which is all the files in the read only data directory that starts with the slide prefix and ends with the file extension
 slide_names = [
@@ -52,7 +59,10 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     # check if the slide_name is already found in the metadata file, if so, print a message and continue to the next slide
     if os.path.exists(metadata_path):
         metadata_df = pd.read_csv(metadata_path)
-        if slide_name in metadata_df["slide_name"].values:
+        if (
+            slide_name in metadata_df["slide_name"].values
+            or slide_name in rsync_error_slides
+        ):
             print(f"Slide {slide_name} already processed. Skipping it.")
             continue
 
@@ -73,11 +83,33 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     except SlideNotFoundError:
         reported_specimen_type = "Others"
 
-    # rsync the slide to the tmp directory and report the rsync progress while doing so
+    command = [
+        "rsync",
+        "-av",
+        "--progress",
+        os.path.join(read_only_data_dir, slide_name),
+        tmp_dir,
+    ]
 
-    os.system(
-        f"rsync -av --progress '{os.path.join(read_only_data_dir, slide_name)}' '{tmp_dir}'"
-    )
+    try:
+        # Run command and capture output
+        result = subprocess.run(
+            command,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        print("Output:", result.stdout)
+    except subprocess.CalledProcessError as e:
+        print("rsync failed with error code:", e.returncode)
+        print("Error message:", e.stderr)
+
+        # write the slide name to the rsync_error_path file
+        with open(rsync_error_path, "a") as f:
+            f.write(slide_name + "\n")
+
+        continue
 
     profiling_dict["slide_moving_time"].append(time.time() - start_time)
 
