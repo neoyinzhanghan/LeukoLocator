@@ -34,6 +34,27 @@ profiling_dict = {
     "slide_file_size": [],
 }
 
+# populate the profiling dict with the slide names that are already in the metadata file
+if os.path.exists(metadata_path):
+    metadata_df = pd.read_csv(metadata_path)
+    for _, row in metadata_df.iterrows():
+        profiling_dict["slide_name"].append(row["slide_name"])
+        profiling_dict["accession_number"].append(row["accession_number"])
+        profiling_dict["predicted_specimen_type"].append(row["predicted_specimen_type"])
+        profiling_dict["reported_specimen_type"].append(row["reported_specimen_type"])
+        profiling_dict["bma_conf"].append(row["bma_conf"])
+        profiling_dict["total_processing_time"].append(row["total_processing_time"])
+        profiling_dict["slide_moving_time"].append(row["slide_moving_time"])
+        profiling_dict["slide_removing_time"].append(row["slide_removing_time"])
+        profiling_dict["specimen_prediction_time"].append(
+            row["specimen_prediction_time"]
+        )
+        profiling_dict["slide_processing_time"].append(row["slide_processing_time"])
+        profiling_dict["general_dx"].append(row["general_dx"])
+        profiling_dict["sub_dx"].append(row["sub_dx"])
+        profiling_dict["error"].append(row["error"])
+        profiling_dict["slide_file_size"].append(row["slide_file_size"])
+
 # read the rsync error slides from the rsync_error_path file (each line is a slide name)
 if os.path.exists(rsync_error_path):
     with open(rsync_error_path, "r") as f:
