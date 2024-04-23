@@ -117,6 +117,7 @@ class BMACounter:
 
                 wsi = openslide.OpenSlide(wsi_path)
             except Exception as e:
+                self.error = True
                 print(f"Error occurred: {e}")
                 raise SlideError(e)
 
@@ -212,6 +213,7 @@ class BMACounter:
                     verbose=self.verbose,
                 )
             except Exception as e:
+                self.error = True
                 print(f"Error occurred: {e}")
                 raise TopViewError(e)
 
@@ -228,6 +230,7 @@ class BMACounter:
             self.profiling_data["init_time"] = time.time() - start_time
 
         except Exception as e:
+            self.error = True
             if self.continue_on_error:
                 print(f"Error occurred: {e}")
                 print(f"Continuing to next WSI.")
@@ -343,6 +346,7 @@ class BMACounter:
                             pbar.update()
 
                     except RayTaskError as e:
+                        self.error = True
                         print(
                             f"Task for focus region {tasks[done_id]} failed with error: {e}"
                         )
@@ -510,6 +514,7 @@ class BMACounter:
                             pbar.update()
 
                     except RayTaskError as e:
+                        self.error = True
                         print(f"Task for focus {tasks[done_id]} failed with error: {e}")
 
                     del tasks[done_id]
@@ -806,6 +811,7 @@ class BMACounter:
                             pbar.update()
 
                     except RayTaskError as e:
+                        self.error = True 
                         print(
                             f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
                         )
@@ -876,6 +882,7 @@ class BMACounter:
                                 pbar.update()
 
                         except RayTaskError as e:
+                            self.error = True
                             print(
                                 f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
                             )
@@ -951,6 +958,7 @@ class BMACounter:
                                 pbar.update()
 
                         except RayTaskError as e:
+                            self.error = True
                             print(
                                 f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
                             )
@@ -1191,6 +1199,7 @@ class BMACounter:
         #     raise e
 
         except Exception as e:
+            self.error = True
             if self.continue_on_error:
                 print(
                     f"An error has occured, and continue on error status is : {self.continue_on_error}"

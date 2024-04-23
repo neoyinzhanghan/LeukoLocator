@@ -54,3 +54,7 @@ class SlideNotFoundError(Exception):
     def __init__(self, slide_name: str) -> None:
         self.slide_name = slide_name
         super().__init__(f"Slide {slide_name} not found in the status results.")
+
+
+if __name__ == "__main__":
+    print(sr.get_recorded_specimen_type("H22-391;S10;MSK1 - 2023-05-31 21.16.06.ndpi"))

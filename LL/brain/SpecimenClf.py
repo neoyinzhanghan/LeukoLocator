@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from PIL import Image
 from LL.resources.PBassumptions import specimen_clf_checkpoint_path
 from LL.resources.BMAassumptions import topview_level
-from LL.vision.processing import read_with_timeout
+from LL.vision.processing import SlideError, read_with_timeout
 
 class_dct = {
     0: "Bone Marrow Aspirate",
@@ -209,6 +209,7 @@ def get_specimen_type(image_path):
 
     return region_type
 
+
 def calculate_specimen_conf(top_view):
 
     # Load the model from the checkpoint
@@ -221,3 +222,54 @@ def calculate_specimen_conf(top_view):
     specimen_conf_dict = get_image_specimen_conf_dict(model, top_view)
 
     return specimen_conf_dict
+
+
+def predict_slide(wsi_path):
+
+    try:
+        wsi = openslide.OpenSlide(wsi_path)
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise SlideError(e)
+
+    top_level = topview_level
+
+    top_view = read_with_timeout(
+        wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
+    )
+
+    specimen_type = get_specimen_type(top_view)
+
+    return specimen_type
+
+
+def predict_bma(slide_path):
+    """Return True if the slide is a BMA slide, False otherwise.
+    Also return the confidence score of the BMA class."""
+
+    try:
+        wsi = openslide.OpenSlide(slide_path)
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise SlideError(e)
+
+    top_level = topview_level
+
+    top_view = read_with_timeout(
+        wsi, (0, 0), top_level, wsi.level_dimensions[top_level]
+    )
+
+    specimen_conf_dict = calculate_specimen_conf(top_view)
+
+    # if BMA is the most likely class and the confidence score is greater than 0.5, return True
+    conf_list = list(specimen_conf_dict.values())
+
+    # get the index of the argmax
+    argmax_idx = conf_list.index(max(conf_list))
+
+    # get the class name of the argmax
+    argmax_class = list(specimen_conf_dict.keys())[argmax_idx]
+
+    bma_conf = specimen_conf_dict["Bone Marrow Aspirate"]
+
+    return argmax_class, bma_conf
