@@ -1,7 +1,9 @@
 import os
 import time
+import pandas as pd
 from LL.brain.SpecimenClf import predict_bma
 from LL.BMACounter import BMACounter
+from LL.resources.BMAassumptions import dump_dir
 from LLRunner.SR import sr, SlideNotFoundError
 from LLRunner.SST import sst, AccessionNumberNotFoundError
 from tqdm import tqdm
@@ -59,9 +61,9 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         reported_specimen_type = "Others"
 
     # rsync the slide to the tmp directory and report the rsync progress while doing so
-    
+
     os.system(
-        f"rsync -av --progress \'{os.path.join(read_only_data_dir, slide_name)} {tmp_dir}\'"
+        f"rsync -av --progress '{os.path.join(read_only_data_dir, slide_name)}' '{tmp_dir}'"
     )
 
     tmp_slide_path = os.path.join(tmp_dir, slide_name)
@@ -72,7 +74,7 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         print(f"Slide {slide_name} is not a BMA slide. Removing it from tmp.")
 
         # delete the slide from the tmp directory
-        os.system(f"rm \'{tmp_slide_path}\'")
+        os.system(f"rm '{tmp_slide_path}'")
 
         print(f"Slide {slide_name} removed from tmp.")
         # continue to the next slide and make sure the tqdm progress bar is updated
@@ -86,6 +88,10 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         profiling_dict["general_dx"].append(general_dx)
         profiling_dict["sub_dx"].append(sub_dx)
         profiling_dict["error"].append("Not BMA")
+
+        # save the profiling dict to a csv file in the dump_dir as run_metadata.csv, overwriting the file if it already exists
+        profiling_df = pd.DataFrame(profiling_dict)
+        profiling_df.to_csv(os.path.join(dump_dir, "run_metadata.csv"), index=False)
 
         continue
 
@@ -110,3 +116,18 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     profiling_dict["general_dx"].append(general_dx)
     profiling_dict["sub_dx"].append(sub_dx)
     profiling_dict["error"].append("None")
+
+    # delete the slide from the tmp directory
+    os.system(f"rm '{tmp_slide_path}'")
+
+    print(f"Slide {slide_name} removed from tmp. Processing finished.")
+
+    # save the profiling dict to a csv file in the dump_dir as run_metadata.csv, overwriting the file if it already exists
+    profiling_df = pd.DataFrame(profiling_dict)
+    profiling_df.to_csv(os.path.join(dump_dir, "run_metadata.csv"), index=False)
+
+# save the profiling dict to a csv file in the dump_dir as run_metadata.csv, overwriting the file if it already exists
+profiling_df = pd.DataFrame(profiling_dict)
+profiling_df.to_csv(os.path.join(dump_dir, "run_metadata.csv"), index=False)
+
+print("All slides processed.")
