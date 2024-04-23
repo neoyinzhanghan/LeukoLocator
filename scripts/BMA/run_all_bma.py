@@ -59,9 +59,9 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         reported_specimen_type = "Others"
 
     # rsync the slide to the tmp directory and report the rsync progress while doing so
-
+    
     os.system(
-        f"rsync -av --progress {os.path.join(read_only_data_dir, slide_name)} {tmp_dir}"
+        f"rsync -av --progress \'{os.path.join(read_only_data_dir, slide_name)} {tmp_dir}\'"
     )
 
     tmp_slide_path = os.path.join(tmp_dir, slide_name)
@@ -72,7 +72,7 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         print(f"Slide {slide_name} is not a BMA slide. Removing it from tmp.")
 
         # delete the slide from the tmp directory
-        os.system(f"rm {tmp_slide_path}")
+        os.system(f"rm \'{tmp_slide_path}\'")
 
         print(f"Slide {slide_name} removed from tmp.")
         # continue to the next slide and make sure the tqdm progress bar is updated
