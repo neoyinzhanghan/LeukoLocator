@@ -13,6 +13,7 @@ read_only_data_dir = "/pesgisipth/NDPI"
 slide_prefix = "H"
 file_extension = ".ndpi"
 tmp_dir = "/media/hdd1/BMA_tmp"
+metadata_path = os.path.join(dump_dir, "run_metadata.csv")
 
 profiling_dict = {
     "slide_name": [],
@@ -48,6 +49,13 @@ def _is_bma(predicted_specimen_type, reported_specimen_type):
 
 for slide_name in tqdm(slide_names, desc="Processing Slides:"):
 
+    # check if the slide_name is already found in the metadata file, if so, print a message and continue to the next slide
+    if os.path.exists(metadata_path):
+        metadata_df = pd.read_csv(metadata_path)
+        if slide_name in metadata_df["slide_name"].values:
+            print(f"Slide {slide_name} already processed. Skipping it.")
+            continue
+
     start_time = time.time()
 
     print(f"Processing slide: {slide_name}")
@@ -80,7 +88,11 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
 
     tmp_slide_path = os.path.join(tmp_dir, slide_name)
 
-    predicted_specimen_type, bma_conf = predict_bma(tmp_slide_path)
+    try:
+        predicted_specimen_type, bma_conf = predict_bma(tmp_slide_path)
+    except Exception as e:
+        print(f"Error processing slide {slide_name}. Error: {e}")
+        predicted_specimen_type = "Others"
 
     profiling_dict["specimen_prediction_time"].append(time.time() - intermediate_time)
     intermediate_time = time.time()
