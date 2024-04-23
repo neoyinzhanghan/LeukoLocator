@@ -21,6 +21,10 @@ profiling_dict = {
     "reported_specimen_type": [],
     "bma_conf": [],
     "total_processing_time": [],
+    "slide_moving_time": [],
+    "slide_removing_time": [],
+    "specimen_prediction_time": [],
+    "slide_processing_time": [],
     "general_dx": [],
     "sub_dx": [],
     "error": [],
@@ -66,15 +70,27 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         f"rsync -av --progress '{os.path.join(read_only_data_dir, slide_name)}' '{tmp_dir}'"
     )
 
+    profiling_dict["slide_moving_time"].append(time.time() - start_time)
+    intermediate_time = time.time()
+
     tmp_slide_path = os.path.join(tmp_dir, slide_name)
 
     predicted_specimen_type, bma_conf = predict_bma(tmp_slide_path)
 
+    profiling_dict["specimen_prediction_time"].append(time.time() - intermediate_time)
+    intermediate_time = time.time()
+
     if not _is_bma(predicted_specimen_type, reported_specimen_type):
         print(f"Slide {slide_name} is not a BMA slide. Removing it from tmp.")
 
+        profiling_dict["slide_processing_time"].append(time.time() - intermediate_time)
+        intermediate_time = time.time()
+
         # delete the slide from the tmp directory
         os.system(f"rm '{tmp_slide_path}'")
+
+        profiling_dict["slide_removing_time"].append(time.time() - intermediate_time)
+        intermediate_time = time.time()
 
         print(f"Slide {slide_name} removed from tmp.")
         # continue to the next slide and make sure the tqdm progress bar is updated
@@ -105,6 +121,14 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     )
     bma_counter.tally_differential()
 
+    profiling_dict["slide_processing_time"].append(time.time() - intermediate_time)
+    intermediate_time = time.time()
+
+    # delete the slide from the tmp directory
+    os.system(f"rm '{tmp_slide_path}'")
+
+    profiling_dict["slide_removing_time"].append(time.time() - intermediate_time)
+
     print("Saving to", bma_counter.save_dir)
 
     profiling_dict["slide_name"].append(slide_name)
@@ -116,9 +140,6 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     profiling_dict["general_dx"].append(general_dx)
     profiling_dict["sub_dx"].append(sub_dx)
     profiling_dict["error"].append("None")
-
-    # delete the slide from the tmp directory
-    os.system(f"rm '{tmp_slide_path}'")
 
     print(f"Slide {slide_name} removed from tmp. Processing finished.")
 
