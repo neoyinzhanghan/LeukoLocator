@@ -41,7 +41,7 @@ slide_names = [
 def _is_bma(predicted_specimen_type, reported_specimen_type):
     return (
         predicted_specimen_type == "Bone Marrow Aspirate"
-        and reported_specimen_type == "BMA"
+        or reported_specimen_type == "BMA"
     )
 
 
@@ -139,7 +139,7 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     profiling_dict["total_processing_time"].append(time.time() - start_time)
     profiling_dict["general_dx"].append(general_dx)
     profiling_dict["sub_dx"].append(sub_dx)
-    profiling_dict["error"].append("None")
+    profiling_dict["error"].append(bma_counter.error)
 
     print(f"Slide {slide_name} removed from tmp. Processing finished.")
 
