@@ -118,6 +118,7 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         hoarding=True,
         continue_on_error=True,
         do_extract_features=False,
+        ignore_specimen_type=True,
     )
     bma_counter.tally_differential()
 
