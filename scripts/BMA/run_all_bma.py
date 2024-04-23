@@ -93,6 +93,7 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     except Exception as e:
         print(f"Error processing slide {slide_name}. Error: {e}")
         predicted_specimen_type = "Others"
+        bma_conf = 0
 
     profiling_dict["specimen_prediction_time"].append(time.time() - intermediate_time)
     intermediate_time = time.time()
