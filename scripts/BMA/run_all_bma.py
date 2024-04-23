@@ -74,7 +74,8 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     profiling_dict["slide_moving_time"].append(time.time() - start_time)
 
     # get the file size of the slide in GB
-    slide_file_size = os.path.getsize(os.path.join(tmp_dir, slide_name)) / (1024**3)
+    slide_file_size = os.path.getsize(os.path.join(tmp_dir, slide_name))
+    profiling_dict["slide_file_size"].append(slide_file_size)
     intermediate_time = time.time()
 
     tmp_slide_path = os.path.join(tmp_dir, slide_name)
