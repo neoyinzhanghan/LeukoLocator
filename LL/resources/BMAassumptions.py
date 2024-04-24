@@ -79,7 +79,7 @@ region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf no normaliz
 # region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 # region_clf_ckpt_path = "/media/hdd2/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for bear
 # We do not need a confidence threshold because we take the top regions from the region classifier
-region_clf_conf_thres = 0.95
+region_clf_conf_thres = 0.9
 
 YOLO_ckpt_path = (
     "/media/hdd3/neo/MODELS/2024-03-13 YOLO BMA/runs/detect/train/weights/best.pt"
