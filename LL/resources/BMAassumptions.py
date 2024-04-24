@@ -3,7 +3,7 @@
 #################
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_bma_all_v2"
+dump_dir = "/media/hdd3/neo/results_bma_all_v2_rerun"
 
 ############################
 ### WSI Image Parameters ###
@@ -43,7 +43,7 @@ min_num_regions_within_foci_sd = 500
 min_num_regions_after_VoL_filter = 400
 min_num_regions_after_WMP_min_filter = 275
 min_num_regions_after_WMP_max_filter = 150
-max_num_regions_after_region_clf = 200
+max_num_regions_after_region_clf = 1000
 max_num_cells = 3000
 min_num_cells = 10
 min_num_focus_regions = 25

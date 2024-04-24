@@ -2,6 +2,7 @@ import os
 import time
 import pandas as pd
 import subprocess
+import openslide
 from LL.brain.SpecimenClf import predict_bma
 from LL.BMACounter import BMACounter
 from LL.resources.BMAassumptions import dump_dir
@@ -32,6 +33,7 @@ profiling_dict = {
     "sub_dx": [],
     "error": [],
     "slide_file_size": [],
+    "mpp": [],
 }
 
 # populate the profiling dict with the slide names that are already in the metadata file
@@ -54,6 +56,7 @@ if os.path.exists(metadata_path):
         profiling_dict["sub_dx"].append(row["sub_dx"])
         profiling_dict["error"].append(row["error"])
         profiling_dict["slide_file_size"].append(row["slide_file_size"])
+        profiling_dict["mpp"].append(row["mpp"])
 
 # read the rsync error slides from the rsync_error_path file (each line is a slide name)
 if os.path.exists(rsync_error_path):
@@ -71,10 +74,7 @@ slide_names = [
 
 
 def _is_bma(predicted_specimen_type, reported_specimen_type):
-    return (
-        predicted_specimen_type == "Bone Marrow Aspirate"
-        or reported_specimen_type == "BMA"
-    )
+    return predicted_specimen_type == "Bone Marrow Aspirate"
 
 
 for slide_name in tqdm(slide_names, desc="Processing Slides:"):
@@ -142,6 +142,14 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
     intermediate_time = time.time()
 
     tmp_slide_path = os.path.join(tmp_dir, slide_name)
+
+    try:
+        # open the slide to get the mpp
+        slide = openslide.OpenSlide(tmp_slide_path)
+        mpp = float(slide.properties[openslide.PROPERTY_NAME_MPP_X])
+    except Exception as e:
+        print(f"Error processing slide {slide_name}. Error: {e}")
+        mpp = None
 
     try:
         predicted_specimen_type, bma_conf = predict_bma(tmp_slide_path)
