@@ -75,11 +75,12 @@ YOLO_batch_size = 32
 ### Models Configurations ###
 #############################
 
-region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf no normalization/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt"
+region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-04-25 BMARegionClf Low Mag w Aug 500 Epochs/8/version_0/checkpoints/epoch=499-step=27500.ckpt"
+# region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-02-29 Region Clf no normalization/lightning_logs/8/version_0/checkpoints/epoch=99-step=8200.ckpt"
 # region_clf_ckpt_path = "/media/ssd1/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for alpaca
 # region_clf_ckpt_path = "/media/hdd2/neo/LLCKPTS/epoch=99-step=10300.ckpt" # This one is for bear
 # We do not need a confidence threshold because we take the top regions from the region classifier
-region_clf_conf_thres = 0.9
+region_clf_conf_thres = 0.85
 
 YOLO_ckpt_path = (
     "/media/hdd3/neo/MODELS/2024-03-13 YOLO BMA/runs/detect/train/weights/best.pt"
@@ -100,7 +101,7 @@ feature_extractor_ckpt_dict = {
 }
 supported_feature_extraction_archs = feature_extractor_ckpt_dict.keys()
 
-high_mag_region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-04-06 BMARegionClf 1000Epochs/lightning_logs/1/version_0/checkpoints/epoch=999-step=55000.ckpt"
+high_mag_region_clf_ckpt_path = "/media/hdd3/neo/MODELS/2024-04-24 BMARegionClf High Mag w Aug/1/version_0/checkpoints/epoch=199-step=11000.ckpt"
 
 ###########################
 ### Augmentation Config ###
