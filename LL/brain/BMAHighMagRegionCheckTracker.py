@@ -96,8 +96,8 @@ class BMAHighMagRegionCheckTracker:
 
         for focus_region in self.focus_regions:
             if (
-                focus_region.VoL_high_mag > 7
-                and focus_region.adequate_confidence_score_high_mag > 0.5
+                focus_region.VoL_high_mag > 8
+                and focus_region.adequate_confidence_score_high_mag > 0.3
             ):
                 good_focus_regions.append(focus_region)
 
