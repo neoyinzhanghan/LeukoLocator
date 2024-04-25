@@ -151,6 +151,8 @@ for slide_name in tqdm(slide_names, desc="Processing Slides:"):
         print(f"Error processing slide {slide_name}. Error: {e}")
         mpp = None
 
+    profiling_dict["mpp"].append(mpp)
+
     try:
         predicted_specimen_type, bma_conf = predict_bma(tmp_slide_path)
     except Exception as e:
