@@ -29,32 +29,30 @@ os.makedirs(save_dir, exist_ok=True)
 metadata = {
     "original_image_path": [],
     "slide_name": [],
-    "cell_name": [],
     "idx": [],
 }
 
 current_index = 0
 
 for subfolder in tqdm(subfolders, desc="Reading Data"):
-    cells_df = pd.read_csv(os.path.join(subfolder, "cells/cells_info.csv"))
+    # get all the jpg files in the L2 folder
+    lymphocytes = [
+        f.path
+        for f in os.scandir(os.path.join(subfolder, "cells/L2"))
+        if f.name.endswith(".jpg")
+    ]
 
-    lymphocytes = cells_df[cells_df["first"] == "L2"]
+    # randomly take num_per_slide lymphocytes from each slide, if there are less than num_per_slide lymphocytes, take all of them
+    lymphocytes = lymphocytes[:num_per_slide]
 
-    if len(lymphocytes) < num_per_slide:
-        num_per_slide = len(lymphocytes)
-
-    lymphocytes = lymphocytes.sample(num_per_slide)
-
-    for index, row in lymphocytes.iterrows():
-        cell_name = row["name"]
-        cell_path = os.path.join(subfolder, "cells", "L2", cell_name)
+    for lymphocyte in lymphocytes:
+        # save the lymphocyte in the save_dir
         save_path = os.path.join(save_dir, f"{current_index}.jpg")
+        shutil.copy(lymphocyte, save_path)
 
-        shutil.copy(cell_path, save_path)
-
-        metadata["original_image_path"].append(cell_path)
+        # save the metadata
+        metadata["original_image_path"].append(lymphocyte)
         metadata["slide_name"].append(subfolder)
-        metadata["cell_name"].append(cell_name)
         metadata["idx"].append(current_index)
 
         current_index += 1
