@@ -31,6 +31,12 @@ class BMAResult:
         if not self.error:
             self.cell_info = pd.read_csv(result_dir / "cells" / "cells_info.csv")
 
+            # compute the max probability score among the cellnames
+            self.cell_info["max_prob"] = self.cell_info[cellnames].max(axis=1)
+
+            # only keeps the cells with a max probability score greater than 0.6927
+            self.cell_info = self.cell_info[self.cell_info["max_prob"] > 0.6927]
+
     def get_stacked_differential(self):
         """In the cell_info dataframe there are columns corresponding to each cell type in the list cellnames.
         Take the average of the probabilities for each cell type and return a dictionary with the cell type as the key and the average probability as the value.
