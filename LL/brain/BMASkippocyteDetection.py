@@ -246,11 +246,16 @@ def predict_image(image, model, device="cpu"):
 
     # Make predictions
     with torch.no_grad():
-        outputs = model(image)
-        probabilities = torch.softmax(outputs, dim=1)
-        class1_prob = probabilities[0][1].item()  # Get the probability of class 1
+        # first add a batch dimension
+        image = image.unsqueeze(0)
 
-    return class1_prob
+        # get the prediction
+        prediction = model(image)
+
+        # get the probability
+        probability = F.softmax(prediction, dim=1)
+
+    return probability[0][1].item()
 
 
 if __name__ == "__main__":
