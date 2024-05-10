@@ -41,7 +41,7 @@ for result_folder in tqdm(result_folders, desc="Processsing Results Folders:"):
     cells_info["skippocyte_score"] = None
 
     # for each row in cells_info, get the label and name column
-    for idx, row in cells_info.iterrows():
+    for idx, row in tqdm(cells_info.iterrows(), desc="Processing Images:"):
         image_path = os.path.join(
             data_dir, result_folder, "cells", row["label"], row["name"]
         )
