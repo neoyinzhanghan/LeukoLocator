@@ -228,12 +228,18 @@ def train_model(downsample_factor):
 
 def load_model(model_path, num_classes=2, device="cpu"):
     # Load the model path based on the lightning checkpoint
-    model = ResNetModel.load_from_checkpoint(checkpoint_path=model_path, num_classes=num_classes)
+    model = ResNetModel.load_from_checkpoint(
+        checkpoint_path=model_path, num_classes=num_classes
+    )
     model.eval()
     return model
 
 
 def predict_image(image, model, device="cpu"):
+
+    # Preprocess image in to a tensor
+    image = transforms.ToTensor()(image)
+
     # Move image to the appropriate device (CPU or GPU)
     image = image.to(device)
     model = model.to(device)
