@@ -229,7 +229,7 @@ def train_model(downsample_factor):
 def load_model(model_path, num_classes=2, device="cpu"):
     # Load the model path based on the lightning checkpoint
     model = ResNetModel(num_classes=num_classes)
-    model.load_from_checkpoint(model)
+    model.load_from_checkpoint(model_path)
     model.eval()
     return model
 
