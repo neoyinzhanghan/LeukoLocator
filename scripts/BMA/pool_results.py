@@ -4,12 +4,15 @@ import time
 from LLRunner.BMAInfo import BMAInfo
 from LLRunner.BMAResult import BMAResult
 from tqdm import tqdm
+from LL.brain.BMASkippocyteDetection import load_model, predict_image
 
 
 start_time = time.time()
 bma_info = BMAInfo()
 
 result_dir = "/media/hdd3/neo/results_bma_normal_v2"
+model_path = ""
+device = "gpu"
 
 print(f"Pooling Results Directories In {result_dir}")
 # first get a list of all the directories in the result_dir that does not start with "ERROR_"

@@ -144,7 +144,6 @@ def get_feat_extract_augmentation_pipeline(image_size):
         [A.Resize(image_size, image_size), A.OneOf([transform_shape, transform_color])]
     )
 
-
 num_augmentations_per_image = 5
 
 # def get_feat_extract_augmentation_pipeline(image_size):
