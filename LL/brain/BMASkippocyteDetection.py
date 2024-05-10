@@ -255,7 +255,7 @@ def predict_image(image, model, device="cpu"):
         # get the probability
         probability = F.softmax(prediction, dim=1)
 
-    return probability[0][1].item()
+    return 1 - probability[0][1].item()
 
 
 if __name__ == "__main__":

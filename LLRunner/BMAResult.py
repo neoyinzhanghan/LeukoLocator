@@ -29,13 +29,15 @@ class BMAResult:
         self.result_dir = result_dir
 
         if not self.error:
-            self.cell_info = pd.read_csv(result_dir / "cells" / "cells_info.csv")
+            self.cell_info = pd.read_csv(result_dir / "skippocytes" / "cells_info.csv")
 
             # compute the max probability score among the cellnames
             self.cell_info["max_prob"] = self.cell_info[cellnames].max(axis=1)
 
             # only keeps the cells with a max probability score greater than 0.6927
             self.cell_info = self.cell_info[self.cell_info["max_prob"] > 0.6927]
+
+            # only keeps the cells where skippocyte_score is less than 0.5
 
     def get_stacked_differential(self):
         """In the cell_info dataframe there are columns corresponding to each cell type in the list cellnames.

@@ -42,20 +42,24 @@ for result_folder in tqdm(result_folders, desc="Processsing Results Folders:"):
 
     # for each row in cells_info, get the label and name column
     for idx, row in tqdm(cells_info.iterrows(), desc="Processing Cell Images:"):
-        image_path = os.path.join(
-            data_dir, result_folder, "cells", row["label"], row["name"]
-        )
 
-        image = Image.open(image_path)
-        prediction = predict_image(image, model, device="cuda")
-
-        cells_info.loc[idx, "skippocyte_score"] = prediction
-
-        if prediction > 0.5:
-            # copy the image to result_folder/skippocytes using shutil
-            os.system(
-                f"cp \"{image_path}\" \"{os.path.join(data_dir, result_folder, 'skippocytes')}\""
+        if row["label"] == "M1":
+            image_path = os.path.join(
+                data_dir, result_folder, "cells", row["label"], row["name"]
             )
+
+            image = Image.open(image_path)
+            prediction = predict_image(image, model, device="cuda")
+
+            cells_info.loc[idx, "skippocyte_score"] = prediction
+
+            if prediction > 0.5:
+                # copy the image to result_folder/skippocytes using shutil
+                os.system(
+                    f"cp \"{image_path}\" \"{os.path.join(data_dir, result_folder, 'skippocytes')}\""
+                )
+        else:
+            cells_info.loc[idx, "skippocyte_score"] = 0
 
     # save the updated cells_info to cells_info.csv in skippocytes folder
     cells_info.to_csv(
