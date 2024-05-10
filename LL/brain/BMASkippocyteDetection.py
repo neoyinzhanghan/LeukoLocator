@@ -226,29 +226,15 @@ def train_model(downsample_factor):
     trainer.fit(model, data_module)
 
 
-def load_model(model_path, num_classes=2):
-    # Initialize the model
-    model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
-    model.fc = nn.Linear(model.fc.in_features, num_classes)
-
-    # Load the saved model weights
-    model.load_state_dict(torch.load(model_path))
-    model.eval()  # Set the model to evaluation mode
+def load_model(model_path, num_classes=2, device="cpu"):
+    # Load the model path based on the lightning checkpoint
+    model = ResNetModel(num_classes=num_classes)
+    model.load_from_checkpoint(model)
+    model.eval()
     return model
 
 
 def predict_image(image, model, device="cpu"):
-    # Define the transformations
-    transform = transforms.Compose(
-        [
-            transforms.Resize((224, 224)),  # Resize to the input size of the model
-            transforms.ToTensor(),  # Convert the image to a tensor
-        ]
-    )
-
-    # Apply the transformations
-    image = transform(image).unsqueeze(0)  # Add batch dimension
-
     # Move image to the appropriate device (CPU or GPU)
     image = image.to(device)
     model = model.to(device)
