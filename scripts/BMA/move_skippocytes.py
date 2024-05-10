@@ -4,7 +4,7 @@ from PIL import Image
 from LL.brain.BMASkippocyteDetection import load_model, predict_image
 from tqdm import tqdm
 
-data_dir = "/media/hdd3/neo/results_bma_normal_v2"
+data_dir = "/media/hdd3/neo/results_bma_aml_v2"
 
 load_model_path = "/media/hdd3/neo/MODELS/2024-05-08 blast skippocyte v1/1/version_0/checkpoints/epoch=499-step=36500.ckpt"
 
