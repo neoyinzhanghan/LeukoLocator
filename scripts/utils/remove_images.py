@@ -2,7 +2,7 @@ import os
 import shutil
 from tqdm import tqdm
 
-data_dir = "/media/hdd3/neo/results_bma_normal_v2"
+data_dir = "/media/hdd3/neo/results_bma_pcm_v2"
 
 folders_to_remove = [
     "too_high_WMP",
