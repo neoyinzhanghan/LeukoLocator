@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 data_dir = "/media/hdd3/neo/results_bma_normal_v2"
 
-load_model_path = "/media/hdd3/neo/skippocyte_model.pth"
+load_model_path = "/media/hdd3/neo/MODELS/2024-05-08 blast skippocyte v1/1/version_0/checkpoints/epoch=499-step=36500.ckpt"
 
 # first load the model
 model = load_model(load_model_path)
