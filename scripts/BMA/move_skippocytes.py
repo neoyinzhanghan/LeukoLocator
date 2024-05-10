@@ -9,7 +9,7 @@ data_dir = "/media/hdd3/neo/results_bma_normal_v2"
 load_model_path = "/media/hdd3/neo/MODELS/2024-05-08 blast skippocyte v1/1/version_0/checkpoints/epoch=499-step=36500.ckpt"
 
 # first load the model
-model = load_model(load_model_path)
+model = load_model(load_model_path, device="cuda")
 
 # get the list of all subdirectories in the data_dir that does not start with ERROR
 
@@ -47,7 +47,7 @@ for result_folder in tqdm(result_folders, desc="Processsing Results Folders:"):
         )
 
         image = Image.open(image_path)
-        prediction = predict_image(image, model)
+        prediction = predict_image(image, model, device="cuda")
 
         cells_info.loc[idx, "skippocyte_score"] = prediction
 
