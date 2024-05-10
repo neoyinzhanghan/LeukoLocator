@@ -54,7 +54,7 @@ for result_folder in tqdm(result_folders, desc="Processsing Results Folders:"):
         if prediction > 0.5:
             # copy the image to result_folder/skippocytes using shutil
             os.system(
-                f"cp {image_path} {os.path.join(data_dir, result_folder, 'skippocytes')}"
+                f"cp \"{image_path} {os.path.join(data_dir, result_folder, 'skippocytes')}\""
             )
 
     # save the updated cells_info to cells_info.csv in skippocytes folder
