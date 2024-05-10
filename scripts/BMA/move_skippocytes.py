@@ -26,10 +26,10 @@ for result_folder in tqdm(result_folders, desc="Processsing Results Folders:"):
 
     # remove result_folder/skippocytes
     if os.path.exists(os.path.join(data_dir, result_folder, "skippocytes")):
-        os.system(f"rm -r {os.path.join(data_dir, result_folder, 'skippocytes')}")
+        os.system(f"rm -r \"{os.path.join(data_dir, result_folder, 'skippocytes')}\"")
 
     # create result_folder/skippocytes
-    os.system(f"mkdir {os.path.join(data_dir, result_folder, 'skippocytes')}")
+    os.system(f"mkdir \"{os.path.join(data_dir, result_folder, 'skippocytes')}\"")
 
     # open the cells_info.csv file
     cells_info_path = os.path.join(data_dir, result_folder, "cells", "cells_info.csv")
