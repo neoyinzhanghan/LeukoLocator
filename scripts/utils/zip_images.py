@@ -25,5 +25,5 @@ for result_folder in tqdm(result_folders, desc="Parital Zipping Results Folders:
         )
 
         if os.path.exists(folder_path):
-            # remove the folder
+            shutil.make_archive(folder_path, "zip", folder_path)
             shutil.rmtree(folder_path)
