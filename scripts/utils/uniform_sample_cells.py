@@ -27,8 +27,13 @@ BMA_folders = [
 # check if any of the folders do not contain a cells subfolder
 num_bad = 0
 bad = []
-for folder in tqdm(PB_folders + BMA_folders, desc="Sanity checking folders"):
+for folder in tqdm(PB_folders, desc="Sanity checking PB folders"):
     if not os.path.exists(os.path.join(PB_dir, folder, "cells")):
+        num_bad += 1
+        bad.append(folder)
+
+for folder in tqdm(BMA_folders, desc="Sanity checking BMA folders"):
+    if not os.path.exists(os.path.join(BMA_dir, folder, "cells")):
         num_bad += 1
         bad.append(folder)
 
