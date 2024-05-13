@@ -65,6 +65,11 @@ for i in tqdm(
 
     images = [f for f in os.listdir(cell_type_folder) if f.endswith(".jpg")]
 
+    while len(images) == 0:
+        cell_type = random.choice(cell_types)
+        cell_type_folder = os.path.join(cells_folder, cell_type)
+        images = [f for f in os.listdir(cell_type_folder) if f.endswith(".jpg")]
+
     image = random.choice(images)
 
     # copy the image to the save_dir, the new image name should be the current index dot jpg
