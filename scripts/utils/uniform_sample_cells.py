@@ -24,6 +24,20 @@ BMA_folders = [
     if not f.startswith("ERROR") and os.path.isdir(os.path.join(BMA_dir, f))
 ]
 
+# check if any of the folders do not contain a cells subfolder
+num_bad = 0
+bad = []
+for folder in tqdm(PB_folders + BMA_folders, desc="Sanity checking folders"):
+    if not os.path.exists(os.path.join(PB_dir, folder, "cells")):
+        num_bad += 1
+        bad.append(folder)
+
+print(f"Found {num_bad} bad folders: {bad}")
+print(bad)
+if len(bad) > 0:
+    raise ValueError("Found bad folders")
+
+
 metadata = {
     "idx": [],
     "original_path": [],
