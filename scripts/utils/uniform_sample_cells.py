@@ -100,3 +100,5 @@ for i in tqdm(
     metadata["original_path"].append(image_path)
     metadata["cell_type"].append(cell_type)
     metadata["slide_folder"].append(folder)
+
+    current_index += 1
