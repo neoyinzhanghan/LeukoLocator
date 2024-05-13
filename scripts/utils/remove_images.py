@@ -2,7 +2,7 @@ import os
 import shutil
 from tqdm import tqdm
 
-data_dir = "/media/hdd3/neo/resultsv5"
+data_dir = "/media/hdd3/neo/results_bma_all_v2_rerun"
 
 folders_to_remove = [
     "too_high_WMP",
@@ -14,7 +14,7 @@ folders_to_remove = [
     "adequate",
 ]
 
-# get all the subdirectories in the data_dir that does not start
+# get all the subdirectories in the data_dir    
 result_folders = [f for f in os.listdir(data_dir)]
 
 for result_folder in tqdm(result_folders, desc="Parital Removing Results Folders:"):

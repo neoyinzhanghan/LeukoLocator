@@ -67,6 +67,7 @@ class BMACounter:
         wsi_path: str,
         verbose: bool = False,
         hoarding: bool = False,
+        extra_hoarding: bool = False,
         continue_on_error: bool = False,
         ignore_specimen_type: bool = False,
         do_extract_features: bool = False,
@@ -376,7 +377,7 @@ class BMACounter:
 
         self.profiling_data["filtering_focus_regions_time"] = time.time() - start_time
 
-        if self.hoarding:
+        if self.extra_hoarding: # if extra hoarding is True, then save the focus regions
             start_time = time.time()
             self.fr_tracker.save_all_focus_regions(self.save_dir)
             self.profiling_data["hoarding_focus_regions_time"] = (
