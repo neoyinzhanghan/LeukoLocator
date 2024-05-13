@@ -8,6 +8,8 @@ BMA_dir = "/media/hdd3/neo/"
 
 save_dir = "/media/hdd3/neo/200K_cells"
 
+os.makedirs(save_dir, exist_ok=True)
+
 # get all the subdirectories in the PB_dir that does not start with ERROR
 PB_folders = [
     f
