@@ -3,8 +3,8 @@ import random
 import shutil
 from tqdm import tqdm
 
-PB_dir = "/media/hdd3/neo/"
-BMA_dir = "/media/hdd3/neo/"
+PB_dir = "/media/hdd3/neo/resultsv5"
+BMA_dir = "/media/hdd3/neo/results_bma_all_v2_rerun"
 
 save_dir = "/media/hdd3/neo/200K_cells"
 
