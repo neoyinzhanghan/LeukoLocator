@@ -49,7 +49,7 @@ for subfolder in tqdm(subfolders, desc="Finding Skippocytes"):
     )
     skippocytes = cells_info[cells_info["skippocyte_score"] > 0.5]
 
-    for index, row in skippocytes.iterrows():
+    for index, row in tqdm(skippocytes.iterrows(), desc="Processing Cells"):
         cellname = row["name"]
         cell_path = os.path.join(subfolder, "cells", cellname.split("-")[0], cellname)
         save_path = os.path.join(subfolder, "skippocytes", cellname)
