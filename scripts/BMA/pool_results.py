@@ -56,8 +56,8 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     # get the grouped_stacked differential
     grouped_stacked_differential = bma_result.get_grouped_differential()
 
-    # get the M1L2 results
-    M1L2_results = bma_result.get_M1L2_results()
+    # # get the M1L2 results
+    # M1L2_results = bma_result.get_M1L2_results()
 
     # get the row from the BMA info
     bma_info_row = bma_info.get_row_from_slide_name(dname)
@@ -111,10 +111,10 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     for key, value in grouped_stacked_differential.items():
         big_dict[key] = value * 100
 
-    big_dict["M1L2"] = M1L2_results["M1L2"] * 100
-    big_dict["L2M1"] = M1L2_results["L2M1"] * 100
-    big_dict["M1L2_count"] = M1L2_results["M1L2_count"]
-    big_dict["L2M1_count"] = M1L2_results["L2M1_count"]
+    # big_dict["M1L2"] = M1L2_results["M1L2"] * 100
+    # big_dict["L2M1"] = M1L2_results["L2M1"] * 100
+    # big_dict["M1L2_count"] = M1L2_results["M1L2_count"]
+    # big_dict["L2M1_count"] = M1L2_results["L2M1_count"]
 
     for key, value in bma_info_row.items():
         big_dict[key] = value
