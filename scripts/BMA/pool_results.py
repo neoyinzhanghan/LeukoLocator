@@ -56,8 +56,8 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     # get the grouped_stacked differential
     grouped_stacked_differential = bma_result.get_grouped_stacked_differential()
 
-    # # get the M1L2 results
-    # M1L2_results = bma_result.get_M1L2_results()
+    # get the M1L2 results
+    M1L2_results = bma_result.get_M1L2_results()
 
     # get the row from the BMA info
     bma_info_row = bma_info.get_row_from_slide_name(dname)
