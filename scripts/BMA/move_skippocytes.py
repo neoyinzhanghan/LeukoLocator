@@ -39,17 +39,22 @@ model = load_model(model_path)
 for subfolder in tqdm(subfolders, desc="Finding Skippocytes"):
     cells_info = pd.read_csv(os.path.join(subfolder, "cells", "cells_info.csv"))
 
-    cells_info["skippocyte_score"] = cells_info["name"].apply(
-        lambda cellname: predict_image(
-            Image.open(
-                os.path.join(subfolder, "cells", cellname.split("-")[0], cellname)
-            ),
-            model,
-        )
-    )
-    skippocytes = cells_info[cells_info["skippocyte_score"] > 0.5]
+    for index, row in tqdm(cells_info.iterrows(), desc="Computing Skippocyte Scores"):
+        cellname = row["name"]
 
-    for index, row in tqdm(skippocytes.iterrows(), desc="Processing Cells"):
+        cellclass = cellname.split("-")[0]
+
+        cell_path = os.path.join(subfolder, "cells", cellname.split("-")[0], cellname)
+
+        if cellclass == "M1":
+            image = Image.open(cell_path)
+            skippocyte_score = predict_image(model, image)
+            cells_info.loc[index, "skippocyte_score"] = skippocyte_score
+        else:
+            cells_info.loc[index, "skippocyte_score"] = 0
+
+    for index, row in tqdm(cells_info.iterrows(), desc="Saving Skippocytes"):
+
         cellname = row["name"]
         cell_path = os.path.join(subfolder, "cells", cellname.split("-")[0], cellname)
         save_path = os.path.join(subfolder, "skippocytes", cellname)
