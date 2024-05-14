@@ -3,6 +3,7 @@ import shutil
 import pandas as pd
 from LL.brain.BMASkippocyteDetection import load_model, predict_image
 from tqdm import tqdm
+from PIL import Image
 
 model_path = "/media/hdd3/neo/MODELS/2024-05-13 blast-skippocyte balanced/1/version_0/checkpoints/epoch=499-step=36500.ckpt"
 data_dir = "/media/hdd3/neo/results_bma_normal_v2"
@@ -37,9 +38,10 @@ model = load_model(model_path)
 
 for subfolder in tqdm(subfolders, desc="Finding Skippocytes"):
     cells_info = pd.read_csv(os.path.join(subfolder, "cells/cells_info.csv"))
+
     cells_info["skippocyte_score"] = cells_info["name"].apply(
         lambda cellname: predict_image(
-            model, os.path.join(subfolder, f"cells/{cellname}")
+            Image.open(os.path.join(subfolder, f"cells/{cellname}")), model
         )
     )
     skippocytes = cells_info[cells_info["skippocyte_score"] > 0.5]
