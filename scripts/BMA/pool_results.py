@@ -111,10 +111,10 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     for key, value in grouped_stacked_differential.items():
         big_dict[key] = value * 100
 
-    # big_dict["M1L2"] = M1L2_results["M1L2"] * 100
-    # big_dict["L2M1"] = M1L2_results["L2M1"] * 100
-    # big_dict["M1L2_count"] = M1L2_results["M1L2_count"]
-    # big_dict["L2M1_count"] = M1L2_results["L2M1_count"]
+    big_dict["M1L2"] = M1L2_results["M1L2"] * 100
+    big_dict["L2M1"] = M1L2_results["L2M1"] * 100
+    big_dict["M1L2_count"] = M1L2_results["M1L2_count"]
+    big_dict["L2M1_count"] = M1L2_results["L2M1_count"]
 
     for key, value in bma_info_row.items():
         big_dict[key] = value
