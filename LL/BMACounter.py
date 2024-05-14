@@ -377,7 +377,9 @@ class BMACounter:
 
         self.profiling_data["filtering_focus_regions_time"] = time.time() - start_time
 
-        if self.extra_hoarding: # if extra hoarding is True, then save the focus regions
+        if (
+            self.extra_hoarding
+        ):  # if extra hoarding is True, then save the focus regions
             start_time = time.time()
             self.fr_tracker.save_all_focus_regions(self.save_dir)
             self.profiling_data["hoarding_focus_regions_time"] = (
@@ -812,7 +814,7 @@ class BMACounter:
                             pbar.update()
 
                     except RayTaskError as e:
-                        self.error = True 
+                        self.error = True
                         print(
                             f"Task for WBC candidate {tasks[done_id]} failed with error: {e}"
                         )
