@@ -48,7 +48,7 @@ for subfolder in tqdm(subfolders, desc="Finding Skippocytes"):
 
         if cellclass == "M1":
             image = Image.open(cell_path)
-            skippocyte_score = predict_image(model, image)
+            skippocyte_score = predict_image(image, model)
             cells_info.loc[index, "skippocyte_score"] = skippocyte_score
         else:
             cells_info.loc[index, "skippocyte_score"] = 0
