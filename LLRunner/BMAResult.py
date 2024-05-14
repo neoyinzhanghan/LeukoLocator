@@ -72,12 +72,7 @@ class BMAResult:
         # return a dictionary with the cell type as the key and the proportion of cells predicted as that type as the value
         return one_hot_differential.to_dict()
 
-    def get_grouped_differential(
-        self,
-        omitted_classes=omitted_classes,
-        removed_classes=removed_classes,
-        differential_group_dict=differential_group_dict,
-    ):
+    def get_grouped_differential(self):
         """
         First set the probability in the omitted classes to 0.
         Then classify the cells into the cellnames classes and remove all the cells in the removed classes.
