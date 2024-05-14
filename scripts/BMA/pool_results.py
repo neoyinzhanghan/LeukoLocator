@@ -54,7 +54,7 @@ for dname in tqdm(result_dirs, "Processing Results: "):
     grouped_raw_count = bma_result.get_grouped_raw_counts()
 
     # get the grouped_stacked differential
-    grouped_stacked_differential = bma_result.get_grouped_stacked_differential()
+    grouped_stacked_differential = bma_result.get_grouped_differential()
 
     # get the M1L2 results
     M1L2_results = bma_result.get_M1L2_results()
