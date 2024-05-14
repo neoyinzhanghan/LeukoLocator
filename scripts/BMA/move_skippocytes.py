@@ -37,17 +37,21 @@ for subfolder in tqdm(subfolders, desc="Creating Skippocytes Folder"):
 model = load_model(model_path)
 
 for subfolder in tqdm(subfolders, desc="Finding Skippocytes"):
-    cells_info = pd.read_csv(os.path.join(subfolder, "cells/cells_info.csv"))
+    cells_info = pd.read_csv(os.path.join(subfolder, "cells", "cells_info.csv"))
 
     cells_info["skippocyte_score"] = cells_info["name"].apply(
         lambda cellname: predict_image(
-            Image.open(os.path.join(subfolder, f"cells/{cellname.split('-')[0]}/{cellname}")), model))
+            Image.open(
+                os.path.join(subfolder, "cells", cellname.split("-")[0], cellname),
+                model,
+            )
+        )
+    )
     skippocytes = cells_info[cells_info["skippocyte_score"] > 0.5]
-
 
     for index, row in skippocytes.iterrows():
         cellname = row["name"]
-        cell_path = os.path.join(subfolder, f"cells/{cellname.split["-"][0]}/{cellname}")
-        save_path = os.path.join(subfolder, f"skippocytes/{cellname}")
+        cell_path = os.path.join(subfolder, "cells", cellname.split("-")[0], cellname)
+        save_path = os.path.join(subfolder, "skippocytes", cellname)
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         shutil.copy(cell_path, save_path)
