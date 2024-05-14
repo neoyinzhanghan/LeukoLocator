@@ -42,9 +42,9 @@ for subfolder in tqdm(subfolders, desc="Finding Skippocytes"):
     cells_info["skippocyte_score"] = cells_info["name"].apply(
         lambda cellname: predict_image(
             Image.open(
-                os.path.join(subfolder, "cells", cellname.split("-")[0], cellname),
-                model,
-            )
+                os.path.join(subfolder, "cells", cellname.split("-")[0], cellname)
+            ),
+            model,
         )
     )
     skippocytes = cells_info[cells_info["skippocyte_score"] > 0.5]
