@@ -1,6 +1,7 @@
 import os
 import random
 import shutil
+import pandas as pd
 from tqdm import tqdm
 
 PB_dir = "/media/hdd3/neo/resultsv5"
@@ -102,3 +103,7 @@ for i in tqdm(
     metadata["slide_folder"].append(folder)
 
     current_index += 1
+
+# save the metadata as a csv file
+metadata_df = pd.DataFrame(metadata)
+metadata_df.to_csv(os.path.join(save_dir, "metadata.csv"), index=False)
