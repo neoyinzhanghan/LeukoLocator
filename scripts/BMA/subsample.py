@@ -14,7 +14,11 @@ os.makedirs(output_folder, exist_ok=True)
 # the output folder should contain N images
 
 # get a list of all the images in the source folder
-image_files = [f for f in os.listdir(source_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff'))]
+image_files = [
+    f
+    for f in os.listdir(source_folder)
+    if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"))
+]
 
 # randomly subsample without replacement N images from the list
 subsampled_images = random.sample(image_files, num)
