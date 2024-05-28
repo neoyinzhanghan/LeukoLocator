@@ -23,14 +23,15 @@ def already_processed(fname, dump_dirs):
     return False
 
 
-slides_folder = "/media/hdd1/BMAs"
+slides_folder = "/pesgisipth/NDPI"
+tmp_dir = "/media/hdd1/BMA_tmp"
 
 print("Assembling slide paths")
 # first get the paths to all the ndpi files in the slides_folder
 slide_paths = [
     os.path.join(slides_folder, fname)
     for fname in os.listdir(slides_folder)
-    if fname.endswith(".ndpi")
+    if fname.endswith(".ndpi") and fname.startswith("H")
 ]
 
 
@@ -60,8 +61,14 @@ for slide_metadata in tqdm(normal_slides, "Processing Normal Slides: "):
         # try:
         bma_slide_path = os.path.join(slides_folder, bma_fname)
 
+        print("Copying slide to tmp directory")
+        # use rsync to copy the slide to the tmp_dir
+        os.system(f"rsync -av {bma_slide_path} {tmp_dir}")
+
+        accessible_bma_slide_path = os.path.join(tmp_dir, bma_fname)
+
         bma_counter = BMACounter(
-            bma_slide_path,
+            accessible_bma_slide_path,
             hoarding=True,
             continue_on_error=True,
             do_extract_features=False,
@@ -69,3 +76,7 @@ for slide_metadata in tqdm(normal_slides, "Processing Normal Slides: "):
         bma_counter.tally_differential()
 
         print("Saving to", bma_counter.save_dir)
+
+        print("Removing slide from tmp directory")
+        # delete the slide from the tmp directory
+        os.system(f"rm '{accessible_bma_slide_path}'")
