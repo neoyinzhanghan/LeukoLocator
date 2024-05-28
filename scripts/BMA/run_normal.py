@@ -5,6 +5,7 @@ from tqdm import tqdm
 from LL.resources.BMAassumptions import dump_dir
 from LL.BMACounter import BMACounter
 
+print("Getting all the slides with the diagnosis 'Normal BMA'")
 # get a list of all directories in the dump_dir
 dump_dirs = [
     dname
@@ -23,6 +24,7 @@ def already_processed(fname, dump_dirs):
 
 slides_folder = "/media/hdd1/BMAs"
 
+print("Assembling slide paths")
 # first get the paths to all the ndpi files in the slides_folder
 slide_paths = [
     os.path.join(slides_folder, fname)
@@ -30,8 +32,11 @@ slide_paths = [
     if fname.endswith(".ndpi")
 ]
 
+
+print("Getting all the normal slides")
 # get the all the slide metadata
 slide_pool_metadata_tracker = SlidePoolMetadataTracker(slide_paths)
+
 
 # what are all the slides with the diagnosis "AML" AND are predicted to be a bone marrow aspirate?
 normal_slides = slide_pool_metadata_tracker.get_slides_from_dx("Normal BMA")
