@@ -22,3 +22,6 @@ filelock==3.12.2
 pydantic==2.5.3
 ray==2.9.0
 statsmodels
+pytorch-lightning
+ray
+ray[tune]
