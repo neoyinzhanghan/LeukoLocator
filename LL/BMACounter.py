@@ -22,7 +22,7 @@ from pathlib import Path
 from LL.PBDifferential import Differential, to_count_dict
 from LL.FileNameManager import FileNameManager
 from LL.BMATopView import TopView, SpecimenError, TopViewError
-from LL.brain.HemeLabelLightningManager import HemeLabelManager
+from LL.brain.HemeLabelLightningManager import HemeLabelLightningManager
 from LL.brain.YOLOManager import YOLOManager
 from LL.brain.FeatureEngineer import CellFeatureEngineer
 from LL.vision.processing import SlideError, read_with_timeout
@@ -788,7 +788,7 @@ class BMACounter:
         if self.verbose:
             print("Initializing HemeLabelManager")
         task_managers = [
-            HemeLabelManager.remote(HemeLabel_ckpt_path) for _ in range(num_labellers)
+            HemeLabelLightningManager.remote(HemeLabel_ckpt_path) for _ in range(num_labellers)
         ]
 
         tasks = {}

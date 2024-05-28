@@ -190,7 +190,7 @@ def get_features_batch(pil_images, model):
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
 @ray.remote(num_gpus=1)
-class HemeLabelManager:
+class HemeLabelLightningManager:
     """A class representing a HemeLabel Manager that manages the classification of a WSI.
 
     === Class Attributes ===
@@ -213,9 +213,9 @@ class HemeLabelManager:
             [
                 transforms.Resize(96),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    [0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]
-                ),
+                # transforms.Normalize(
+                #     [0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]
+                # ),
             ]
         )
 
