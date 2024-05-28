@@ -26,3 +26,4 @@ pytorch-lightning
 ray
 ray[tune]
 pyvips
+openpyxl

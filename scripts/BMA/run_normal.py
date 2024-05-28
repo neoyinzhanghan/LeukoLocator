@@ -63,7 +63,7 @@ for slide_metadata in tqdm(normal_slides, "Processing Normal Slides: "):
 
         print("Copying slide to tmp directory")
         # use rsync to copy the slide to the tmp_dir
-        os.system(f"rsync -av {bma_slide_path} {tmp_dir}")
+        os.system(f'rsync -av "{bma_slide_path}" "{tmp_dir}"')
 
         accessible_bma_slide_path = os.path.join(tmp_dir, bma_fname)
 
@@ -79,4 +79,4 @@ for slide_metadata in tqdm(normal_slides, "Processing Normal Slides: "):
 
         print("Removing slide from tmp directory")
         # delete the slide from the tmp directory
-        os.system(f"rm '{accessible_bma_slide_path}'")
+        os.system(f'rm "{accessible_bma_slide_path}"')
