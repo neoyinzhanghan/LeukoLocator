@@ -14,7 +14,7 @@ from torchvision import transforms
 from collections import OrderedDict
 
 # Within package imports ###########################################################################
-from LL.resources.PBassumptions import *
+from LL.resources.BMAassumptions import *
 
 
 # class Myresnext50(nn.Module):
@@ -190,7 +190,7 @@ def get_features_batch(pil_images, model):
 
 # @ray.remote(num_gpus=num_gpus_per_manager, num_cpus=num_cpus_per_manager)
 @ray.remote(num_gpus=1)
-class HemeLabelLightningManager:
+class HemeLabelManager:
     """A class representing a HemeLabel Manager that manages the classification of a WSI.
 
     === Class Attributes ===
