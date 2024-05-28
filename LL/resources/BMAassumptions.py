@@ -3,7 +3,8 @@
 #################
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
-dump_dir = "/media/hdd3/neo/results_bma_all_v2_rerun"
+# dump_dir = "/media/hdd3/neo/results_bma_all_v2_rerun" # this one is for the current big data extraction that has only ran half way 2024-05-28
+dump_dir = "/media/hdd3/neo/results_bma_normal_v3"
 
 ############################
 ### WSI Image Parameters ###
@@ -92,7 +93,7 @@ YOLO_conf_thres = 0.252525
 # HemeLabel_ckpt_path = "/media/ssd1/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
 # HemeLabel_ckpt_path = "/media/hdd2/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
 # HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt" # This is the original DeepHeme trained by Harry
-HemeLabel_ckpt_path = "/media/hdd3/neo/MODELS/2024-05-22 DeepHeme Retrain 500 Epochs/1/version_0/checkpoints/epoch=499-step=27500.ckpt" # This is the lightning checkpoint trained by me
+HemeLabel_ckpt_path = "/media/hdd3/neo/MODELS/2024-05-22 DeepHeme Retrain 500 Epochs/1/version_0/checkpoints/epoch=499-step=27500.ckpt"  # This is the lightning checkpoint trained by me
 
 specimen_clf_checkpoint_path = "/home/greg/Documents/neo/LLCKPTS/SClf.ckpt"
 
@@ -144,6 +145,7 @@ def get_feat_extract_augmentation_pipeline(image_size):
     return A.Compose(
         [A.Resize(image_size, image_size), A.OneOf([transform_shape, transform_color])]
     )
+
 
 num_augmentations_per_image = 5
 
