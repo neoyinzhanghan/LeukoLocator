@@ -1,3 +1,4 @@
+print("Importing packages")
 import os
 import random
 from LLRunner.SlideTracker import SlidePoolMetadataTracker
