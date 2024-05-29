@@ -49,6 +49,10 @@ print("Found", len(aml_slides), "AML slides")
 pcm_slides = slide_pool_metadata_tracker.get_slides_from_dx("Plasma cell myeloma")
 print("Found", len(pcm_slides), "PCM slides")
 
+import sys
+
+sys.exit()
+
 for slide_path in tqdm(normal_slides, desc="Copying Normal Slides: "):
     slide_name = slide_path.slide_name
 
