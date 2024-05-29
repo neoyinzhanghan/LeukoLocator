@@ -76,6 +76,10 @@ for slide_metadata in tqdm(normal_slides, desc="Copying Normal Slides: "):
     except Exception as e:
         print(f"Error occurred: {e}")
 
+        # if it is keyboard interrupt, then actually exit the program
+        if isinstance(e, KeyboardInterrupt):
+            raise e
+
         # remove the slide from the normal_folder
         os.system(f'rm -rf "{new_slide_path}"')
 
@@ -127,6 +131,9 @@ for slide_metadata in tqdm(aml_slides, desc="Copying AML Slides: "):
     except Exception as e:
         print(f"Error occurred: {e}")
 
+        if isinstance(e, KeyboardInterrupt):
+            raise e
+
         # remove the slide from the aml_folder
         os.system(f'rm -rf "{new_slide_path}"')
 
@@ -177,6 +184,9 @@ for slide_metadata in tqdm(pcm_slides, desc="Copying PCM Slides: "):
 
     except Exception as e:
         print(f"Error occurred: {e}")
+
+        if isinstance(e, KeyboardInterrupt):
+            raise e
 
         # remove the slide from the pcm_folder
         os.system(f'rm -rf "{new_slide_path}"')
