@@ -97,6 +97,9 @@ for slide_path in tqdm(normal_slides, desc="Copying Normal Slides: "):
         # save the RGB image as a jpg file (the image comes out of openslide read region)
         top_view.save(topview_path)
 
+        print("Saved", topview_path)
+
+
 for slide_path in tqdm(aml_slides, desc="Copying AML Slides: "):
 
     slide_name = slide_path.slide_name
@@ -146,6 +149,8 @@ for slide_path in tqdm(aml_slides, desc="Copying AML Slides: "):
         # save the RGB image as a jpg file (the image comes out of openslide read region)
         top_view.save(topview_path)
 
+        print("Saved", topview_path)
+
 for slide_path in tqdm(pcm_slides, desc="Copying PCM Slides: "):
 
     slide_name = slide_path.slide_name
@@ -194,3 +199,5 @@ for slide_path in tqdm(pcm_slides, desc="Copying PCM Slides: "):
 
         # save the RGB image as a jpg file (the image comes out of openslide read region)
         top_view.save(topview_path)
+
+        print("Saved", topview_path)
