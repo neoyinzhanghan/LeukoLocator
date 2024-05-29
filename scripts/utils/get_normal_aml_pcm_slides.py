@@ -53,14 +53,15 @@ import sys
 
 sys.exit()
 
-for slide_path in tqdm(normal_slides, desc="Copying Normal Slides: "):
-    slide_name = slide_path.slide_name
+for slide_metadata in tqdm(normal_slides, desc="Copying Normal Slides: "):
+    slide_name = slide_metadata.slide_name
 
+    old_slide_path = os.path.join(slides_folder, slide_name)
     new_slide_path = os.path.join(normal_folder, slide_name)
 
     if not os.path.exists(new_slide_path):
         # use rsync to copy the slide to the normal_folder
-        os.system(f'rsync -av "{slide_path}" "{normal_folder}"')
+        os.system(f'rsync -av "{old_slide_path}" "{normal_folder}"')
 
     try:
         wsi = openslide.OpenSlide(new_slide_path)
@@ -103,16 +104,15 @@ for slide_path in tqdm(normal_slides, desc="Copying Normal Slides: "):
 
         print("Saved", topview_path)
 
+for slide_metadata in tqdm(aml_slides, desc="Copying AML Slides: "):
+    slide_name = slide_metadata.slide_name
 
-for slide_path in tqdm(aml_slides, desc="Copying AML Slides: "):
-
-    slide_name = slide_path.slide_name
-
+    old_slide_path = os.path.join(slides_folder, slide_name)
     new_slide_path = os.path.join(aml_folder, slide_name)
 
     if not os.path.exists(new_slide_path):
         # use rsync to copy the slide to the aml_folder
-        os.system(f'rsync -av "{slide_path}" "{aml_folder}"')
+        os.system(f'rsync -av "{old_slide_path}" "{aml_folder}"')
 
     try:
         wsi = openslide.OpenSlide(new_slide_path)
@@ -155,15 +155,15 @@ for slide_path in tqdm(aml_slides, desc="Copying AML Slides: "):
 
         print("Saved", topview_path)
 
-for slide_path in tqdm(pcm_slides, desc="Copying PCM Slides: "):
+for slide_metadata in tqdm(pcm_slides, desc="Copying PCM Slides: "):
+    slide_name = slide_metadata.slide_name
 
-    slide_name = slide_path.slide_name
-
+    old_slide_path = os.path.join(slides_folder, slide_name)
     new_slide_path = os.path.join(pcm_folder, slide_name)
 
     if not os.path.exists(new_slide_path):
         # use rsync to copy the slide to the pcm_folder
-        os.system(f'rsync -av "{slide_path}" "{pcm_folder}"')
+        os.system(f'rsync -av "{old_slide_path}" "{pcm_folder}"')
 
     try:
         wsi = openslide.OpenSlide(new_slide_path)
