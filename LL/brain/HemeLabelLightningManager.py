@@ -50,9 +50,11 @@ class Myresnext50(pl.LightningModule):
     def __init__(self, my_pretrained_model=None, num_classes=23, config=default_config):
         super(Myresnext50, self).__init__()
         if my_pretrained_model is None:
-            my_pretrained_model = torch.hub.load("pytorch/vision:v0.10.0", "resnext50_32x4d")
+            my_pretrained_model = torch.hub.load(
+                "pytorch/vision:v0.10.0", "resnext50_32x4d"
+            )
         else:
-            self.pretrained = my_pretrained_model
+            self.pretrained = models.resnext50_32x4d(pretrained=False)
         self.my_new_layers = nn.Sequential(
             nn.Linear(
                 1000, 100
@@ -131,7 +133,7 @@ def model_create(num_classes=23, path="not_existed_path"):
     """Create or load a Myresnext50 model based on the availability of a checkpoint."""
     assert os.path.exists(path) and os.path.isfile(path)
 
-    model = Myresnext50.load_from_checkpoint(path)
+    model = Myresnext50.load_from_checkpoint(path, num_classes=num_classes)
 
     model.eval()
     model.to("cuda")
