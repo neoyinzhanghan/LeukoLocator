@@ -88,6 +88,7 @@ class BMACounter:
         self.do_extract_features = do_extract_features
         self.overwrite = overwrite
         self.error = error
+        self.extract_hoarding = extra_hoarding
 
         # The focus regions and WBC candidates are None until they are processed
         self.focus_regions = None
