@@ -50,7 +50,7 @@ class Myresnext50(pl.LightningModule):
     def __init__(self, my_pretrained_model=None, num_classes=23, config=default_config):
         super(Myresnext50, self).__init__()
         if my_pretrained_model is None:
-            my_pretrained_model = models.resnext50_32x4d(pretrained=True)
+            my_pretrained_model = torch.hub.load("pytorch/vision:v0.10.0", "resnext50_32x4d")
         else:
             self.pretrained = my_pretrained_model
         self.my_new_layers = nn.Sequential(
