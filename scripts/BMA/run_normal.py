@@ -24,7 +24,7 @@ def already_processed(fname, dump_dirs):
 
 
 slides_folder = "/pesgisipth/NDPI"
-tmp_dir = "/media/hdd1/BMA_tmp"
+tmp_dir = "/media/hdd2/neo/BMA_Normal"
 
 print("Assembling slide paths")
 # first get the paths to all the ndpi files in the slides_folder
