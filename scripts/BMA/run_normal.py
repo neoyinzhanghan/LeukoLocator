@@ -21,7 +21,7 @@ def already_processed(fname, dump_dirs):
     return False
 
 
-slides_folder = "/media/hdd2/neo/BMA_Normal"
+slides_folder = "/media/hdd3/neo/debug_slides"
 
 # first get the paths to all the ndpi files in the slides_folder
 slide_paths = [
@@ -57,7 +57,7 @@ for slide_metadata in tqdm(aml_slides, "Processing Normal Slides: "):
         bma_counter = BMACounter(
             bma_slide_path,
             hoarding=True,
-            continue_on_error=True,
+            continue_on_error=False,
             do_extract_features=False,
         )
         bma_counter.tally_differential()
