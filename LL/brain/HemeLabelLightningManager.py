@@ -377,3 +377,9 @@ class HemeLabelLightningManager:
             )
 
         return image_paths
+
+
+if __name__ == "__main__":
+    from LL.resources.BMAassumptions import *
+
+    model = Myresnext50.load_from_checkpoint(HemeLabel_ckpt_path)
