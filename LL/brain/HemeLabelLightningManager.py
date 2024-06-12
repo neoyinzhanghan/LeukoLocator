@@ -140,7 +140,7 @@ def model_create(path, num_classes=23):
     # )  # Adjust the number of classes if needed
 
     # # Load the model weights from a checkpoint
-    model = model.load_from_checkpoint(path)
+    model = Myresnext50.load_from_checkpoint(path)
 
     return model
 
