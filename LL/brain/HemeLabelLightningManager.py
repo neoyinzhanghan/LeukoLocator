@@ -226,7 +226,8 @@ def predict_batch(pil_images, model):
     predictions = []
     for output in outputs:
         output = output.detach().cpu().numpy()
-        predictions.append(tuple(output[0]))
+        print("output numpy shape", output.shape)
+        predictions.append(tuple(output))
 
     # Return a list of predictions in the same order as the input images
     return predictions
