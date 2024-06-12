@@ -389,3 +389,9 @@ if __name__ == "__main__":
     print(model)
 
     print("Model loaded successfully")
+
+    # generate a list of 10 random PIL images of size 96x96
+    pil_images = [Image.new("RGB", (96, 96)) for _ in range(10)]
+
+    # make predictions on the batch of images
+    predictions = predict_batch(pil_images, model)
