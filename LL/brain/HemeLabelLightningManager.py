@@ -124,7 +124,7 @@ class Myresnext50(pl.LightningModule):
         self.log("learning_rate", current_lr, on_epoch=True)
 
 
-def model_create(checkpoint_path):
+def model_create(checkpoint_path, num_classes=23):
     """
     Create a model instance from a given checkpoint.
 
@@ -135,7 +135,9 @@ def model_create(checkpoint_path):
     - model (Myresnext50): The loaded model ready for inference or further training.
     """
     # Instantiate the model with any required configuration
-    model = Myresnext50(num_classes=23)  # Adjust the number of classes if needed
+    model = Myresnext50(
+        num_classes=num_classes
+    )  # Adjust the number of classes if needed
 
     # Load the model weights from a checkpoint
     model = model.load_from_checkpoint(checkpoint_path)
