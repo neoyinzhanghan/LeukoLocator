@@ -47,22 +47,18 @@ num_classes = 23
 
 # Model Module
 class Myresnext50(pl.LightningModule):
-    def __init__(self, my_pretrained_model=None, num_classes=23, config=default_config):
+    def __init__(self, num_classes=23, config=default_config):
         super(Myresnext50, self).__init__()
-        if my_pretrained_model is None:
-            my_pretrained_model = torch.hub.load(
-                "pytorch/vision:v0.10.0", "resnext50_32x4d"
-            )
-        else:
-            self.pretrained = models.resnext50_32x4d(pretrained=False)
-        self.my_new_layers = nn.Sequential(
-            nn.Linear(
-                1000, 100
-            ),  # Assuming the output of your pre-trained model is 1000
-            nn.ReLU(),
-            nn.Linear(100, num_classes),
-        )
-        self.num_classes = num_classes
+        self.pretrained = models.resnext50_32x4d(pretrained=True)
+        self.pretrained.fc = nn.Linear(self.pretrained.fc.in_features, num_classes)
+        # self.my_new_layers = nn.Sequential(
+        #     nn.Linear(
+        #         1000, 100
+        #     ),  # Assuming the output of your pre-trained model is 1000
+        #     nn.ReLU(),
+        #     nn.Linear(100, num_classes),
+        # )
+        # self.num_classes = num_classes
 
         task = "multiclass"
 
@@ -77,7 +73,6 @@ class Myresnext50(pl.LightningModule):
 
     def forward(self, x):
         x = self.pretrained(x)
-        x = self.my_new_layers(x)
 
         return x
 
@@ -129,14 +124,21 @@ class Myresnext50(pl.LightningModule):
         self.log("learning_rate", current_lr, on_epoch=True)
 
 
-def model_create(num_classes=23, path="not_existed_path"):
-    """Create or load a Myresnext50 model based on the availability of a checkpoint."""
-    assert os.path.exists(path) and os.path.isfile(path)
+def model_create(checkpoint_path):
+    """
+    Create a model instance from a given checkpoint.
 
-    model = Myresnext50.load_from_checkpoint(path, num_classes=num_classes)
+    Parameters:
+    - checkpoint_path (str): The file path to the PyTorch Lightning checkpoint.
 
-    model.eval()
-    model.to("cuda")
+    Returns:
+    - model (Myresnext50): The loaded model ready for inference or further training.
+    """
+    # Instantiate the model with any required configuration
+    model = Myresnext50(num_classes=23)  # Adjust the number of classes if needed
+
+    # Load the model weights from a checkpoint
+    model = model.load_from_checkpoint(checkpoint_path)
 
     return model
 
