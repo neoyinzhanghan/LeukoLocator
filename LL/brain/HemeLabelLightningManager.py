@@ -384,3 +384,5 @@ if __name__ == "__main__":
 
     model = Myresnext50.load_from_checkpoint(HemeLabel_ckpt_path)
     print(model)
+
+    print("Model loaded successfully")
