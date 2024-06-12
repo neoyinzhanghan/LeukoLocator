@@ -222,6 +222,12 @@ def predict_batch(pil_images, model):
     with torch.no_grad():
         outputs = model(batch)
 
+    print("outputs shape", outputs.shape)
+
+    import sys
+
+    sys.exit()
+
     # Process each output as in the original code snippet
     predictions = []
     for output in outputs:
