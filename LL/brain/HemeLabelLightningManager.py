@@ -225,7 +225,7 @@ def predict_batch(pil_images, model):
     # Process each output as in the original code snippet
     predictions = []
     for output in outputs:
-        output = torch.detach().cpu().numpy()
+        output = output.detach().cpu().numpy()
         predictions.append(tuple(output[0]))
 
     # Return a list of predictions in the same order as the input images
