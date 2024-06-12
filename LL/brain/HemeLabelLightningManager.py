@@ -285,9 +285,6 @@ class HemeLabelLightningManager:
             [
                 transforms.Resize(96),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    [0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]
-                ),
             ]
         )
 
