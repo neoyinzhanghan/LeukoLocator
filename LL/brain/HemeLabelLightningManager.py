@@ -156,51 +156,6 @@ def remove_data_parallel(old_state_dict):
     return new_state_dict
 
 
-def predict_on_cpu(image, model):
-    # Define the transformations
-
-    # make sure the image is RGB if it is not already
-    if image.mode != "RGB":
-        image = image.convert("RGB")
-
-    image_transforms = transforms.Compose(
-        [
-            transforms.Resize(96),
-            transforms.ToTensor(),
-        ]
-    )
-
-    # Apply transformations to the input image and create a batch
-    image = image_transforms(image).float().unsqueeze(0)
-
-    # Set the model to evaluation mode and make predictions
-    model.to("cpu")
-    model.eval()
-
-    # Move the image to the CPU if available
-    device = torch.device("cpu")
-
-    image = image.to(device)
-
-    with torch.no_grad():
-        output = model(image)
-
-    print("output shape", output.shape)
-
-    print("output", output)
-
-    import sys
-
-    sys.exit()
-
-    # Process the output as in the original code snippet
-    output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
-    prediction = tuple(output[0])
-
-    # Return the prediction
-    return prediction
-
-
 def predict_batch(pil_images, model):
     # Define the transformations
     image_transforms = transforms.Compose(
@@ -226,7 +181,6 @@ def predict_batch(pil_images, model):
     predictions = []
     for output in outputs:
         output = output.detach().cpu().numpy()
-        print("output numpy shape", output.shape)
         predictions.append(tuple(output))
 
     # Return a list of predictions in the same order as the input images
@@ -239,7 +193,6 @@ def get_features_batch(pil_images, model):
         [
             transforms.Resize((96, 96)),
             transforms.ToTensor(),
-            transforms.Normalize([0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]),
         ]
     )
 
@@ -258,8 +211,6 @@ def get_features_batch(pil_images, model):
     # Process each output as in the original code snippet
     features = []
     for output in outputs:
-        # print the shape of the output
-        # print(output.shape)
         output = output.detach().cpu().numpy()
         features.append(output)
 
