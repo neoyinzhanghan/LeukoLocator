@@ -167,7 +167,6 @@ def predict_on_cpu(image, model):
         [
             transforms.Resize(96),
             transforms.ToTensor(),
-            transforms.Normalize([0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]),
         ]
     )
 
@@ -186,6 +185,14 @@ def predict_on_cpu(image, model):
     with torch.no_grad():
         output = model(image)
 
+    print("output shape", output.shape)
+
+    print("output", output)
+
+    import sys
+
+    sys.exit()
+
     # Process the output as in the original code snippet
     output = torch.flatten(output, start_dim=1).detach().cpu().numpy()
     prediction = tuple(output[0])
@@ -200,7 +207,6 @@ def predict_batch(pil_images, model):
         [
             transforms.Resize(96),
             transforms.ToTensor(),
-            transforms.Normalize([0.5594, 0.4984, 0.6937], [0.2701, 0.2835, 0.2176]),
         ]
     )
 
