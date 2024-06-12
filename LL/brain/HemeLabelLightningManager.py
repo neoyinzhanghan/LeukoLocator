@@ -135,11 +135,11 @@ def model_create(path, num_classes=23):
     - model (Myresnext50): The loaded model ready for inference or further training.
     """
     # Instantiate the model with any required configuration
-    model = Myresnext50(
-        num_classes=num_classes
-    )  # Adjust the number of classes if needed
+    # model = Myresnext50(
+    #     num_classes=num_classes
+    # )  # Adjust the number of classes if needed
 
-    # Load the model weights from a checkpoint
+    # # Load the model weights from a checkpoint
     model = model.load_from_checkpoint(path)
 
     return model
