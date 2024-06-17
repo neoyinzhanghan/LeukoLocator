@@ -6,7 +6,7 @@ from tqdm import tqdm
 from PIL import Image
 
 model_path = "/media/hdd3/neo/MODELS/2024-05-13 blast-skippocyte balanced/1/version_0/checkpoints/epoch=499-step=36500.ckpt"
-data_dir = "/media/hdd3/neo/results_bma_aml_v2"
+data_dir = "/media/hdd3/neo/results_bma_normal_v3"
 
 # find all subfolders in data_dir that do not start with 'ERROR_'
 subfolders = [
