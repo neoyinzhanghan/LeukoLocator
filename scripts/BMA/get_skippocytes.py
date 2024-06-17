@@ -4,7 +4,7 @@ import shutil
 from tqdm import tqdm
 from LLRunner.assumptions import cellnames
 
-data_dir = "/media/hdd3/neo/results_bma_normal_v2"
+data_dir = "/media/hdd3/neo/results_bma_normal_v3"
 
 # find all subfolders in data_dir that do not start with 'ERROR_'
 subfolders = [
