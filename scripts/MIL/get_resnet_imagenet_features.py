@@ -1,6 +1,6 @@
 import ray
 
-from LL.resources.PBassumptions import *
+from LL.resources.BMAassumptions import *
 from LL.brain.ImageNetResNeXtManager import *
 from LL.brain.utils import *
 from ray.exceptions import RayTaskError
@@ -39,9 +39,7 @@ list_of_batches = create_list_of_batches_from_list(
     cell_image_paths, cell_clf_batch_size
 )
 
-task_managers = [
-    ResNeXtManager.remote(HemeLabel_ckpt_path) for _ in range(num_labellers)
-]
+task_managers = [HemeLabelLightningManager.remote() for _ in range(num_labellers)]
 
 tasks = {}
 
