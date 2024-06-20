@@ -21,3 +21,5 @@ LeukoLocator/build/lib/
 LL/resources/PB_annotations_filtered.csv
 LL/resources/H16-20230726.csv
 LL/resources/H16-20230726-reexported.csv
+LeukoLocator.egg-info/
+build/
