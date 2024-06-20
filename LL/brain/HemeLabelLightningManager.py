@@ -76,6 +76,15 @@ class Myresnext50(pl.LightningModule):
 
         return x
 
+    def get_features(self, x):
+        feature_extractor = nn.Sequential(*list(self.pretrained.children())[:-2])
+
+        features = feature_extractor(x)
+        features = nn.AdaptiveAvgPool2d((1, 1))(features)
+        features = torch.flatten(features, 1)
+
+        return features
+
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self.forward(x)
@@ -206,7 +215,7 @@ def get_features_batch(pil_images, model):
     # Set the model to evaluation mode and make predictions
     model.eval()
     with torch.no_grad():
-        _, outputs = model(batch, return_features=True)
+        outputs = model.get_features(batch)
 
     # Process each output as in the original code snippet
     features = []
@@ -300,7 +309,7 @@ class HemeLabelLightningManager:
 
         return processed_wbc_candidates
 
-    def async_save_wbc_image_feature_batch(self, image_paths):
+    def async_save_wbc_image_feature_batch(self, image_paths, alias="features_v3"):
         """For each image, save the image;s feature vector to save_dir."""
 
         # first read in the batch of images using PIL
@@ -316,13 +325,11 @@ class HemeLabelLightningManager:
         # for each image, save the feature vector
         for i, image_path in enumerate(image_paths):
             # save the feature vector as a torch tensor
-            os.makedirs(
-                os.path.join(os.path.dirname(image_path), "features"), exist_ok=True
-            )
+            os.makedirs(os.path.join(os.path.dirname(image_path), alias), exist_ok=True)
 
             save_path = os.path.join(
                 os.path.dirname(image_path),
-                "features",
+                alias,
                 os.path.basename(image_path).replace(".jpg", ".pt"),
             )
 

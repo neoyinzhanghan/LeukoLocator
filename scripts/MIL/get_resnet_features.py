@@ -1,7 +1,7 @@
 import ray
 
 from LL.resources.PBassumptions import *
-from LL.brain.HemeLabelManager import *
+from LL.brain.HemeLabelLightningManager import *
 from LL.brain.utils import *
 from ray.exceptions import RayTaskError
 from tqdm import tqdm
@@ -40,7 +40,7 @@ list_of_batches = create_list_of_batches_from_list(
 )
 
 task_managers = [
-    HemeLabelManager.remote(HemeLabel_ckpt_path) for _ in range(num_labellers)
+    HemeLabelLightningManager.remote(HemeLabel_ckpt_path) for _ in range(num_labellers)
 ]
 
 tasks = {}
