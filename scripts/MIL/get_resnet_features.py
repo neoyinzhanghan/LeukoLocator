@@ -1,6 +1,6 @@
 import ray
 
-from LL.resources.PBassumptions import *
+from LL.resources.BMAassumptions import *
 from LL.brain.HemeLabelLightningManager import *
 from LL.brain.utils import *
 from ray.exceptions import RayTaskError
