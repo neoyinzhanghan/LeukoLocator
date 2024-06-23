@@ -4,8 +4,8 @@ import shutil
 from pathlib import Path
 from tqdm import tqdm
 
-data_dir = "/media/hdd1/neo/BMA_Normal"
-save_dir = "/media/hdd1/neo/BMA_Normal_lite"
+data_dir = "/media/hdd2/neo/BMA_Normal"
+save_dir = "/media/hdd2/neo/BMA_Normal_lite"
 results_dir = "/media/hdd3/neo/results_bma_normal_v3"
 num_slides = 25
 
