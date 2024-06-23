@@ -4,9 +4,9 @@ import shutil
 from pathlib import Path
 from tqdm import tqdm
 
-data_dir = "/media/hdd1/neo/BMA_AML"
-save_dir = "/media/hdd1/neo/BMA_AML_lite"
-results_dir = "/media/hdd3/neo/results_bma_aml_v3"
+data_dir = "/media/hdd1/neo/BMA_Normal"
+save_dir = "/media/hdd1/neo/BMA_Normal_lite"
+results_dir = "/media/hdd3/neo/results_bma_normal_v3"
 num_slides = 25
 
 # make the save_dir if it does not exist
