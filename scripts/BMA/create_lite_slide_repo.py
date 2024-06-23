@@ -44,8 +44,8 @@ for ndpi_file in tqdm(ndpi_files, desc="Creating Lite Slide Repo"):
     if subfolder.startswith("ERROR_"):
         continue
 
-    # copy the ndpi file to the save_dir as a symlink
+    # copy the ndpi file to the save_dir using rsync
     os.makedirs(os.path.join(save_dir, subfolder), exist_ok=True)
-    os.symlink(ndpi_file, os.path.join(save_dir, subfolder, ndpi_file_name + ".ndpi"))
+    os.system(f'rsync -av "{ndpi_file}" "{os.path.join(save_dir, subfolder)}"')
 
     num_found += 1
