@@ -14,3 +14,7 @@ subfolders = [
 for subfolder in tqdm(subfolders, desc="Moving Files"):
     for f in os.scandir(subfolder):
         shutil.move(f.path, os.path.join(data_dir, f.name))
+
+# remove the subfolders
+for subfolder in subfolders:
+    shutil.rmtree(subfolder)
