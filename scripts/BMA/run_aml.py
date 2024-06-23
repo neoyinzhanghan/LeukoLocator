@@ -21,7 +21,7 @@ def already_processed(fname, dump_dirs):
     return False
 
 
-slides_folder = "/media/hdd1/neo/BMA_AML"
+slides_folder = "/media/hdd1/neo/BMA_AML_lite"
 
 # first get the paths to all the ndpi files in the slides_folder
 slide_paths = [
