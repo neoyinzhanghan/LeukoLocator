@@ -2,7 +2,7 @@ import os
 import shutil
 from tqdm import tqdm
 
-data_dir = "/media/hdd2/neo/BMA_Normal_lite"
+data_dir = "/media/hdd1/neo/BMA_AML_lite"
 
 # move all the files in the subfolders of data_dir to the data_dir
 subfolders = [
