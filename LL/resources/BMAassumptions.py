@@ -4,7 +4,7 @@
 
 # dump_dir = "/media/hdd2/neo/LLResults/debug" # this one is for alpaca
 # dump_dir = "/media/hdd3/neo/results_bma_all_v2_rerun" # this one is for the current big data extraction that has only ran half way 2024-05-28
-dump_dir = "/media/hdd3/neo/results_bma_normal_lite_v3"
+dump_dir = "/media/hdd3/neo/results_bma_aml_lite_v3"
 
 ############################
 ### WSI Image Parameters ###
