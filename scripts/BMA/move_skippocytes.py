@@ -60,7 +60,7 @@ for subfolder in tqdm(subfolders, desc="Finding Skippocytes"):
         save_path = os.path.join(subfolder, "skippocytes", cellname)
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
-        if row["skippocyte_score"] > 0.85:
+        if row["skippocyte_score"] > 0.5:
             shutil.copy(cell_path, save_path)
 
     # save the cells_info.csv file with the skippocyte_score column included
