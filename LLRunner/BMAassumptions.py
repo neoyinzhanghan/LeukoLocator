@@ -25,7 +25,7 @@ cellnames = [
 ]
 
 differential_group_dict = {
-    "blasts": ["M1"],
+    "blasts": ["M1", "M2", "ER1"],
     "blast-equivalents": [],
     "promyelocytes": ["M2"],
     "myelocytes": ["M3"],
