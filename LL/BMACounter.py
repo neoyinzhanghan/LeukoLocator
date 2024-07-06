@@ -23,7 +23,7 @@ from LL.PBDifferential import Differential, to_count_dict
 from LL.FileNameManager import FileNameManager
 from LL.BMATopView import TopView, SpecimenError, TopViewError
 from LL.brain.HemeLabelLightningManager import HemeLabelLightningManager
-from LL.brain.YOLOManager import YOLOManager
+from LL.brain.BMAYOLOManager import YOLOManager
 from LL.brain.FeatureEngineer import CellFeatureEngineer
 from LL.vision.processing import SlideError, read_with_timeout
 from LL.vision.BMAWSICropManager import WSICropManager
