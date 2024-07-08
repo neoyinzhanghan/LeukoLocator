@@ -5,7 +5,7 @@ from LL.brain.BMASkippocyteDetection import load_model, predict_image
 from tqdm import tqdm
 from PIL import Image
 
-data_dir = "/media/hdd3/neo/results_bma_aml_lite_v4"
+data_dir = "/media/hdd3/neo/results_bma_normal_lite_v4"
 
 # find all subfolders in data_dir that do not start with 'ERROR_'
 subfolders = [
