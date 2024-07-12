@@ -15,6 +15,6 @@ subfolders = [f for f in subfolders if not f.split("/")[-1].startswith("ERROR")]
 
 # copy all the subfolders to the save directory recursively all the files in the subfolders
 for subfolder in tqdm(subfolders, desc="Copying subfolders"):
-    os.system(f"cp -r \"{subfolder} {save_dir}\"")
+    os.system(f"cp -r \'{subfolder}\' \'{save_dir}\'")
 
 print("Done!")
