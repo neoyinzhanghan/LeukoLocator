@@ -1,8 +1,8 @@
 import os
 from tqdm import tqdm
 
-results_dir = "/media/hdd3/neo/results_bma_aml_v3"
-save_dir = "/media/hdd3/neo/results_bma_aml_v3_cleaned"
+results_dir = "/media/hdd3/neo/results_bma_normal_v3"
+save_dir = "/media/hdd3/neo/results_bma_normal_v3_cleaned"
 
 os.makedirs(save_dir, exist_ok=True)
 
