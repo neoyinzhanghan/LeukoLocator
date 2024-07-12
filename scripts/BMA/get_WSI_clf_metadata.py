@@ -38,3 +38,6 @@ for key in results_dirs_dct:
 
 metadata_df = pd.DataFrame(metadata)
 save_path = "/media/hdd3/neo/BMA_WSI-clf_AML-Normal_v3_metadata.csv"
+
+
+metadata_df.to_csv(save_path, index=False)
