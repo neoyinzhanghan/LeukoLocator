@@ -53,13 +53,13 @@ min_num_focus_regions = 10
 ### Parallel Processing ###
 ###########################
 
-num_gpus = 3
+num_gpus = 2
 num_cpus = 12
 num_croppers = 32
-num_YOLOManagers = 3
+num_YOLOManagers = 2
 max_num_wbc_per_manager = max_num_cells // num_YOLOManagers
-num_labellers = 3
-num_region_clf_managers = 3
+num_labellers = 2
+num_region_clf_managers = 2
 num_focus_region_makers = 32
 num_gpus_per_manager = 1
 num_cpus_per_manager = num_cpus // (num_gpus // num_gpus_per_manager)
