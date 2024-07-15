@@ -4,8 +4,8 @@ import random
 from tqdm import tqdm
 
 results_dirs_dct = {
-    "AML": "/media/hdd3/neo/results_bma_aml_v3",
-    "NL": "/media/hdd3/neo/results_bma_normal_v3",
+    "AML": "/media/hdd1/neo/results_bma_aml_v3",
+    "NL": "/media/hdd1/neo/results_bma_normal_v3",
 }
 
 metadata = {
@@ -37,7 +37,7 @@ for key in results_dirs_dct:
 
 
 metadata_df = pd.DataFrame(metadata)
-save_path = "/media/hdd3/neo/BMA_WSI-clf_AML-Normal_v3_metadata.csv"
+save_path = "/media/hdd1/neo/BMA_WSI-clf_AML-Normal_v3_metadata.csv"
 
 
 metadata_df.to_csv(save_path, index=False)
