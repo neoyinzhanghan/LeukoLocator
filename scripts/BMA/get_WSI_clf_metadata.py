@@ -4,8 +4,8 @@ import random
 from tqdm import tqdm
 
 results_dirs_dct = {
-    "AML": "/media/hdd1/neo/results_bma_aml_v3",
-    "NL": "/media/hdd1/neo/results_bma_normal_v3",
+    "AML": "/media/hdd1/neo/results_bma_aml_v3_cleaned",
+    "NL": "/media/hdd1/neo/results_bma_normal_v3_cleaned",
 }
 
 metadata = {
