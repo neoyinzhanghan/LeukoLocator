@@ -2,7 +2,7 @@ import os
 import shutil
 from tqdm import tqdm
 
-data_dir = "/media/hdd1/neo/results_bma_aml_v3_cleaned"
+data_dir = "/media/hdd1/neo/results_bma_normal_v3_cleaned"
 
 # get the paths of all first level subdirectories in data_dir
 subfolders = [f.path for f in os.scandir(data_dir) if f.is_dir()]
