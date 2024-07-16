@@ -92,8 +92,8 @@ YOLO_conf_thres = 0.252525
 
 # HemeLabel_ckpt_path = "/media/ssd1/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
 # HemeLabel_ckpt_path = "/media/hdd2/neo/LLCKPTS/HemeLabel_weights.ckpt" # this one is for alpaca
-# HemeLabel_ckpt_path = "/media/hdd3/neo/resources/HemeLabel_weights.ckpt" # This is the original DeepHeme trained by Harry
-HemeLabel_ckpt_path = "/media/hdd3/neo/MODELS/2024-06-11  DeepHemeRetrain non-frog feature deploy/1/version_0/checkpoints/epoch=499-step=27500.ckpt"  # This is the lightning checkpoint trained by me
+HemeLabel_ckpt_path = "/media/hdd1/neo/resources/HemeLabel_weights.ckpt" # This is the original DeepHeme trained by Harry
+# HemeLabel_ckpt_path = "/media/hdd3/neo/MODELS/2024-06-11  DeepHemeRetrain non-frog feature deploy/1/version_0/checkpoints/epoch=499-step=27500.ckpt"  # This is the lightning checkpoint trained by me
 
 specimen_clf_checkpoint_path = "/home/greg/Documents/neo/LLCKPTS/SClf.ckpt"
 
