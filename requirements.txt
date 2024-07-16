@@ -10,7 +10,6 @@ seaborn==0.12.2
 sympy==1.11.1
 # torch==2.0.1
 torch>=2.2
-torchaudio==2.0.2
 torchvision==0.15.2
 tqdm==4.65.0
 ultralytics==8.0.118

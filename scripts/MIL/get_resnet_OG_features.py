@@ -12,7 +12,7 @@ from tqdm import tqdm
 # each cells folder contains a bunch of subdirectories, each of which is a cell type and contains a bunch of images in .jpg format
 # get the list of all the cell image paths
 
-dump_dir = "/media/hdd1/neo/results_bma_aml_v3_clean"
+dump_dir = "/media/hdd1/neo/results_bma_aml_v3_cleaned"
 
 cell_image_paths = []
 
